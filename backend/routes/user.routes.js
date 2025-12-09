@@ -1,0 +1,26 @@
+const {getUserCart, clearUserCart, addToCart, editCartItemQuantity,} = require("../controllers/customer/cart.controller")
+const {createOrder, getUserOrders,getOrderById,cancelOrder} = require('../controllers/customer/order.controller')
+const {getAllProduct,getProductById}=require('../controllers/customer/product.controller')
+const {createReview} = require('../controllers/customer/review.controller')
+const router = require('express').Router();
+
+// Cart routes
+router.get('/cart', getUserCart);
+router.post('/cart', addToCart);
+router.put('/cart/item/:itemId', editCartItemQuantity);
+router.delete('/cart', clearUserCart);
+
+// Order routes
+router.post('/orders', createOrder);
+router.get('/orders', getUserOrders);
+router.get('/orders/:orderId', getOrderById);
+router.put('/orders/:orderId/cancel', cancelOrder);
+
+// Product routes
+router.get('/products', getAllProduct);
+router.get('/products/:productId', getProductById);
+
+// Review routes
+router.post('/reviews', createReview);
+
+module.exports = router;

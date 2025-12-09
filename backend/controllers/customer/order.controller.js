@@ -1,11 +1,12 @@
-import Order from "../../models/Order.js";
-import Cart from "../../models/Cart.js";
-import Product from "../../models/Product.js";
-import redisClient from "../../utils/redisClinet.js";
-import logger from "../../utils/logger.js";
+const Order = require("../../models/Order");
+
+const Cart = require("../../models/Cart");  
+
+const { redisClient } = require("../../config/redis");
+const logger = require("../../utils/logger");
 
 
-export const createOrder = async (req, res) => {
+exports.createOrder = async (req, res) => {
   try {
     const userId = req.user.id;
 
@@ -44,7 +45,7 @@ export const createOrder = async (req, res) => {
 };
 
 
-export const getUserOrders = async (req, res) => {
+exports.getUserOrders = async (req, res) => {
   try {
     const userId = req.user.id;
     const cacheKey = `orders:${userId}`;
@@ -66,7 +67,7 @@ export const getUserOrders = async (req, res) => {
 };
 
 
-export const getOrderById = async (req, res) => {
+exports.getOrderById = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id).populate("items.product");
     if (!order) return res.status(404).json({ message: "Order not found" });
@@ -78,7 +79,7 @@ export const getOrderById = async (req, res) => {
   }
 };
 
-export const cancelOrder = async (req, res) => {
+exports.cancelOrder = async (req, res) => {
   try {
     const order = await Order.findOne({
       _id: req.params.id,

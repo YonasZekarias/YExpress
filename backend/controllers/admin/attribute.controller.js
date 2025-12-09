@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const Attribute = require("../../models/Attribute");
-const AttributeValue = require("../../models/AttributeValues");
+const AttributeValue = require("../../models/AttributeValue");
 
 const addAttribute = async (req, res) => {
   try {

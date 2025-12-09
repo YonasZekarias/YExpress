@@ -1,6 +1,6 @@
 const Order = require('../../models/Order')
 const logger = require('../../utils/logger')
-const redisClient = require('../../utils/redisClient')
+const redisClient = require('../../utils/redisClinet')
 
 const getAllOrder = async (req, res) =>{
     try {

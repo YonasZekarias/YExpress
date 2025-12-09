@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const attributeSchema = new mongoose.Schema({
   category: {
@@ -9,4 +9,4 @@ const attributeSchema = new mongoose.Schema({
   name: { type: String, required: true },
 });
 
-export default mongoose.model("Attribute", attributeSchema);
+module.exports = mongoose.model("Attribute", attributeSchema);

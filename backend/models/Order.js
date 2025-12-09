@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const orderItemSchema = new mongoose.Schema({
   product: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
@@ -41,4 +41,4 @@ const orderSchema = new mongoose.Schema({
   deleted: { type: Boolean, default: false },
 }, { timestamps: true });
 
-export default mongoose.model("Order", orderSchema);
+module.exports = mongoose.model("Order", orderSchema);

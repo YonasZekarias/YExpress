@@ -1,11 +1,16 @@
-import { createClient } from 'redis';
+const { createClient } = require('redis');
 const logger = require('./logger')
 const redisClient = createClient();
 
 redisClient.on('error', (err) => console.error('Redis Client Error', err));
 
-await redisClient.connect();
+async function connectRedis() {
+  await redisClient.connect();
+}
 
-logger.info("redis connected successfully")
+connectRedis().then(() =>logger.info("redis connected successfully")
+).catch((err) => logger.error("Redis connection error", err));
 
-export default redisClient;
+
+
+module.exports = redisClient;

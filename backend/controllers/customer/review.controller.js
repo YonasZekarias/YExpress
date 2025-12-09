@@ -1,5 +1,5 @@
-const Review= require('../../models/review');
-const User = require('../../models/user.model');
+const Review= require('../../models/Review');
+const User = require('../../models/User');
 const Product = require('../../models/Product')
 
 const createReview = async (req, res) => {

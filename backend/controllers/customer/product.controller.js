@@ -1,7 +1,7 @@
-import logger from '../../utils/logger.js';
-import redisClient from '../../utils/redisClient.js';
-import Product from '../../models/product.js';
-export const getAllProduct = async (req, res) => {
+const Product = require("../../models/Product");
+const { redisClient } = require("../../config/redis");
+const logger = require("../../utils/logger");
+exports.getAllProduct = async (req, res) => {
   try {
     const { page = 1, limit = 10, category } = req.query;
 
@@ -39,7 +39,7 @@ export const getAllProduct = async (req, res) => {
   }
 };
 
-export const getProductById = async (req, res) => {
+exports.getProductById = async (req, res) => {
   try {
     const productId = req.params.id;
     const cacheKey = `product:${productId}`;

@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const productVariantSchema = new mongoose.Schema({
   product: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
@@ -13,4 +13,4 @@ const productVariantSchema = new mongoose.Schema({
   ]
 });
 
-export default mongoose.model("ProductVariant", productVariantSchema);
+module.exports = mongoose.model("ProductVariant", productVariantSchema);
