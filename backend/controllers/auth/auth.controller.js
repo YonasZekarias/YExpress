@@ -8,7 +8,6 @@ const jwt = require("jsonwebtoken");
 
 const sendEmail = async (to, subject, message) => {
 
-  // ante denez behola replace madreg endatresa
   logger.info(`EMAIL SENT TO ${to} | SUBJECT: ${subject} | MESSAGE: ${message}`);
 };
 
@@ -16,7 +15,7 @@ const sendEmail = async (to, subject, message) => {
 
 exports.register = async (req, res) => {
   try {
-    const { email, phone, password, restaurantId, role } = req.body;
+    const { username,email, phone, password, role } = req.body;
 
 
     const userExist = await User.findOne({ $or: [{ email }, { phone }] });
@@ -25,12 +24,11 @@ exports.register = async (req, res) => {
 
 
     const verificationCode = "123456"; // radome code genenrate 
-
     const user = await User.create({
+      username,
       email,
       phone,
       password,
-      restaurantId,
       role,
       verificationCode,
       isVerified: false,
@@ -59,16 +57,17 @@ exports.register = async (req, res) => {
 
 exports.verifyEmail = async (req, res) => {
   try {
+    verificationCode = "123456"; // 🔥 Testing code
     const { email, code } = req.body;
 
     const user = await User.findOne({ email });
     if (!user)
       return res.status(404).json({ message: "User not found" });
 
-    if (user.verificationCode !== code)
+    if (verificationCode !== code)
       return res.status(400).json({ message: "Invalid code" });
 
-    user.isVerified = true;
+    user.verified = true;
     user.verificationCode = undefined;
     await user.save();
 
@@ -87,17 +86,14 @@ exports.verifyEmail = async (req, res) => {
 
 exports.login = async (req, res) => {
   try {
-    const { email, phone, password } = req.body;
+    const { email,  password } = req.body;
 
-    let user = email
-      ? await User.findOne({ email })
-      : await User.findOne({ phone });
-
+    const user = await User.findOne({ email });
     if (!user || !(await bcrypt.compare(password, user.password)))
       return res.status(401).json({ message: "Invalid credentials" });
 
     // Block login if not verified
-    if (!user.isVerified)
+    if (!user.verified)
       return res.status(403).json({
         message: "Please verify your email first.",
       });

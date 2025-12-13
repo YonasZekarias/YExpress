@@ -1,14 +1,15 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "Ecommerce API",
-    "description": "Auto generated",
+    "title": "Real-Time Food Delivery API",
+    "description": "API documentation for your food delivery app",
     "version": "1.0.0"
   },
   "host": "localhost:5000",
   "basePath": "/",
   "schemes": [
-    "http"
+    "http",
+    "https"
   ],
   "paths": {
     "/api/auth/register": {
@@ -21,6 +22,9 @@
             "schema": {
               "type": "object",
               "properties": {
+                "username": {
+                  "example": "any"
+                },
                 "email": {
                   "example": "any"
                 },
@@ -28,9 +32,6 @@
                   "example": "any"
                 },
                 "password": {
-                  "example": "any"
-                },
-                "restaurantId": {
                   "example": "any"
                 },
                 "role": {
