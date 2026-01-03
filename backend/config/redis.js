@@ -1,6 +1,6 @@
 const redis = require("redis");
 const logger = require("../utils/logger");
-const { cli } = require("winston/lib/winston/config");
+
 
 const client = redis.createClient({
   url: process.env.REDIS_URL,

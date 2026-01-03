@@ -1,10 +1,13 @@
+const {protect} = require('../middleware/auth.middleware');
+const role = require('../middleware/role.middleware');
 const {addAttribute,deleteAttribute,editAttribute,getAllAtributes} = require('../controllers/admin/attribute.controller')
 const {addCategory, allCategories,deleteCategory,editCategory,getACategoryByID} = require('../controllers/admin/category.controller')
-const {getAllOrder,getOrderById,getOrderByStatus,updateOrderStatus} = require('../controllers/admin/order.controller')
+const {getAllOrder,getOrderById,getOrderByStatus,updateOrderStatus,orderStats} = require('../controllers/admin/order.controller')
 const {addProduct,deleteAProduct,getAProductByID,getAllProducts,updateAProduct} = require('../controllers/admin/product.controller')
 const {allUsers,banUnbanUser,getUserById} = require('../controllers/admin/users.controller')  
 const router = require('express').Router();
 
+router.use(protect, role('admin'));
 // Attribute routes
 router.post('/attributes', addAttribute);
 router.get('/attributes', getAllAtributes);
@@ -30,6 +33,7 @@ router.get('/orders', getAllOrder);
 router.get('/orders/status/:status', getOrderByStatus);
 router.get('/orders/:orderId', getOrderById);
 router.put('/orders/:orderId/status', updateOrderStatus);
+router.get('/orders/stats', orderStats);
 
 // User routes
 router.get('/users', allUsers);

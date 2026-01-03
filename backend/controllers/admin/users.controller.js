@@ -1,12 +1,28 @@
 const User = require('../../models/User')
 const logger = require('../../utils/logger')
-const allUsers = async (req, res) =>{
-    try {
-        const users = await User.find().select('-password')
-        res.status(401).json(users)
-    } catch (error) {
-        logger.error({error : "error fetching users", error})
+const buildUserQuery = require("../../utils/userQueryBuilder");
+const allUsers = async (req, res) => {
+  try {
+    const limit = Number(req.query.limit) || 10;
+
+    const pipeline = buildUserQuery(req.query);
+    const users = await User.aggregate(pipeline);
+
+    let nextCursor = null;
+    if (users.length > limit) {
+      nextCursor = users[limit - 1]._id;
+      users.pop();
     }
+
+    res.status(200).json({
+      nextCursor,
+      results: users.length,
+      users,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
 };
 const getUserById = async (req, res) =>{
     try {

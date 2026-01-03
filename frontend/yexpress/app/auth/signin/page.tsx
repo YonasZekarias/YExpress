@@ -1,10 +1,11 @@
 "use client";
-
+import axios from "axios";
 import { useState } from "react";
 import AuthFormContainer from "../_components/AuthFormContainer";
 import { Mail, Lock, LogIn } from "lucide-react";
 import { useRouter } from "next/navigation";
-
+import useAuthStore from "@/store/authStore";
+import toast from "react-hot-toast";
 export default function SignInPage() {
   const router = useRouter();
 
@@ -12,15 +13,30 @@ export default function SignInPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const { login } = useAuthStore();
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    try {
+      const res = await login({ email, password });
 
-    // 👉 Add your API call logic here
-    // Example:
-    // await loginUser({ email, password });
+      setLoading(false);
 
-    setLoading(false);
+      if (!res.success) {
+        toast.error("LogIn failed");
+        return;
+      }
+      const { role } = useAuthStore.getState();
+
+      if (role === "admin") {
+        router.push("/admin/");
+      } else {
+        router.push("/users/overview");
+      }
+    }finally{
+      setLoading(false)
+    }
   };
 
   return (
@@ -66,7 +82,6 @@ export default function SignInPage() {
 
         {/* Submit */}
         <button
-        onClick={()=>{router.push('/users')}}
           type="submit"
           disabled={loading}
           className="w-full py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition flex items-center justify-center space-x-2"

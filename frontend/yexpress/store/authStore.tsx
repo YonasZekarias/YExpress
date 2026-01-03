@@ -1,72 +1,103 @@
+'use client'
 import { create } from "zustand";
 import axios from "axios";
 
-// Axios instance with cookies enabled
+
+interface AuthState {
+  isLoggedIn: boolean;
+  user: any;
+  pendingUser: any;
+  role: string | null;
+  loading: boolean;
+
+  login: (data: { email: string; password: string }) => Promise<{
+    success: boolean;
+    message?: string;
+  }>;
+
+  logout: () => Promise<void>;
+  checkAuth: () => Promise<void>;
+
+  signupUser: (data: {
+    username?: string;
+    email: string;
+    phone?: string;
+    password: string;
+  }) => Promise<{
+    success: boolean;
+    message?: string;
+  }>;
+}
+
+
 const api = axios.create({
   baseURL: "http://localhost:5000/api/",
-  withCredentials: true, // important for HttpOnly cookies
+  withCredentials: true,
 });
 
-const useAuthStore = create((set) => ({
+
+const useAuthStore = create<AuthState>((set) => ({
   isLoggedIn: false,
   user: null,
   pendingUser: null,
+  role: null,
+  loading: false,
 
-  // Login
-  login: async ({ email, password }: { email: string; password: string }) => {
+  login: async ({ email, password }) => {
     try {
       const response = await api.post("/auth/login", { email, password });
-      set({ isLoggedIn: true, user: response.data.data });
+
+      set({
+        isLoggedIn: true,
+        user: response.data.data,
+        role: response.data.data.role,
+      });
+
       return { success: true };
     } catch (err: any) {
       return {
         success: false,
-        message: err?.response?.data?.message || err?.message || "Login failed",
+        message:
+          err?.response?.data?.message || err?.message || "Login failed",
       };
     }
   },
 
-  // Logout
   logout: async () => {
     try {
       await api.post("/auth/logout");
     } catch {}
-    set({ isLoggedIn: false, user: null, pendingUser: null });
+    set({ isLoggedIn: false, user: null, pendingUser: null, role: null });
   },
 
-  // Check session / refresh
   checkAuth: async () => {
     set({ loading: true });
     try {
       const res = await api.get("/auth/refresh-token");
-      set({ isLoggedIn: true, user: res.data.data, loading: false });
+      set({
+        isLoggedIn: true,
+        user: res.data.data,
+        role: res.data.data.role,
+        loading: false,
+      });
     } catch {
-      set({ isLoggedIn: false, user: null, loading: false });
+      set({ isLoggedIn: false, user: null, role: null, loading: false });
     }
   },
 
-  // Optional signup
-  signupUser: async ({
-    email,
-    phone,
-    password,
-    role,
-  }: {
-    email: string;
-    phone?: string;
-    password: string;
-    role?: string;
-  }) => {
+  signupUser: async ({ username, email, phone, password }) => {
     try {
       const response = await api.post("/auth/register", {
+        username,
         email,
         phone,
         password,
-        role,
       });
+
       set({
-        pendingUser: { id: response.data.data.userid, email, phone, role },
+        pendingUser: { id: response.data.data.userid, email, phone },
       });
+
       return { success: true };
     } catch (err: any) {
       return {
@@ -79,26 +110,3 @@ const useAuthStore = create((set) => ({
 }));
 
 export default useAuthStore;
-
-("use client");
-
-// import { create } from "zustand";
-
-// interface UserProfile {
-//   name: string;
-//   email: string;
-//   avatar: string;
-//   memberSince: string;
-// }
-
-// interface UserStore {
-//   user: UserProfile | null;
-//   setUser: (data: UserProfile) => void;
-//   clearUser: () => void;
-// }
-
-// export const useUserStore = create<UserStore>((set) => ({
-//   user: null,
-//   setUser: (data) => set({ user: data }),
-//   clearUser: () => set({ user: null }),
-// }));

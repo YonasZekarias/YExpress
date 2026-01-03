@@ -4,25 +4,42 @@ import { useState } from "react";
 import AuthFormContainer from "../_components/AuthFormContainer";
 import { Mail, Lock, User } from "lucide-react";
 import { useRouter } from "next/navigation";
+import useAuthStore from "@/store/authStore";
+import toast from "react-hot-toast";
 
 export default function SignUpPage() {
   const router = useRouter();
 
-  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const { signupUser } = useAuthStore();
 
-  const handleSignup = (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+const handleSignup = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setLoading(true);
 
-    // 👉 Add your API call logic here
-    // Example:
-    // await registerUser({ name, email, password });
+  try {
+    const res = await signupUser({
+      username,
+      email,
+      phone,
+      password,
+    });
 
+    if (!res.success) {
+      toast.error(res.message || "Signup failed");
+      return;
+    }
+
+    toast.success("Account created successfully 🎉");
+    router.push("/auth/signin");
+  } finally {
     setLoading(false);
-  };
+  }
+};
 
   return (
     <AuthFormContainer
@@ -31,10 +48,10 @@ export default function SignUpPage() {
     >
       <form onSubmit={handleSignup} className="space-y-6">
 
-        {/* Name */}
+        {/* username */}
         <div>
           <label className="text-sm font-medium text-slate-700 block mb-2">
-            Full Name
+            Username
           </label>
           <div className="relative">
             <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-violet-400" />
@@ -43,9 +60,9 @@ export default function SignUpPage() {
               required
               placeholder="John Doe"
               className="w-full pl-10 pr-4 py-3 border text-black border-slate-300 rounded-xl focus:ring-violet-500 focus:border-violet-500"
-              value={name}
+              value={username}
               disabled={loading}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => setUsername(e.target.value)}
             />
           </div>
         </div>
@@ -68,7 +85,24 @@ export default function SignUpPage() {
             />
           </div>
         </div>
-
+        {/* phone */}
+        <div>
+          <label className="text-sm font-medium text-slate-700 block mb-2">
+            Phone Number
+          </label>
+          <div className="relative">
+            <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-violet-400" />
+            <input
+              type="text"
+              required
+              placeholder="John Doe"
+              className="w-full pl-10 pr-4 py-3 border text-black border-slate-300 rounded-xl focus:ring-violet-500 focus:border-violet-500"
+              value={phone}
+              disabled={loading}
+              onChange={(e) => setPhone(e.target.value)}
+            />
+          </div>
+        </div>
         {/* Password */}
         <div>
           <label className="text-sm font-medium text-slate-700 block mb-2">

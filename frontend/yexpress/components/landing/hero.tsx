@@ -32,9 +32,9 @@ const Hero = () => {
                 Start Shopping
                 <ChevronRight className="ml-2 h-5 w-5" />
               </button>
-              <button className="w-full sm:w-auto px-8 py-4 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-full font-bold text-lg transition-all shadow-sm flex items-center justify-center">
+              {/* <button className="w-full sm:w-auto px-8 py-4 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-full font-bold text-lg transition-all shadow-sm flex items-center justify-center">
                 View Admin Demo
-              </button>
+              </button> */}
             </div>
 
             <div className="mt-8 flex items-center justify-center lg:justify-start space-x-4 text-sm text-slate-500">

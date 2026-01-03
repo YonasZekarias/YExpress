@@ -1,4 +1,4 @@
-const Product = require("../../models/Product");
+const Product = require("../../models/product");
 const { redisClient } = require("../../config/redis");
 const logger = require("../../utils/logger");
 exports.getAllProduct = async (req, res) => {
@@ -22,7 +22,7 @@ exports.getAllProduct = async (req, res) => {
       .populate('category')
       .skip(skip)
       .limit(Number(limit))
-      .lean(); // lean() makes it faster and cache-friendly
+      .lean(); 
 
     const total = await Product.countDocuments(filter);
     const totalPages = Math.ceil(total / limit);

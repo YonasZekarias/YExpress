@@ -3,6 +3,7 @@ const Attribute = require('../../models/Attribute');
 const AttributeValue = require('../../models/AttributeValue');
 const Product = require('../../models/product')
 const logger = require('../../utils/logger')
+const buildProductQuery = require("../../utils/productQueryBuilder");
 const addProduct = async (req, res) => {
   try {
     const { name, description, category_id, variants } = req.body;
@@ -69,30 +70,42 @@ const addProduct = async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 };
+
+
+
 const getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find()
-      .populate({
-        path: 'variants',
-        populate: {
-          path: 'attributes.attribute',
-        },
-      });
+    const limit = Number(req.query.limit) || 10;
 
-    res.status(200).json(products);
+    const pipeline = buildProductQuery(req.query);
+    const products = await Product.aggregate(pipeline);
+
+    let nextCursor = null;
+    if (products.length > limit) {
+      nextCursor = products[limit - 1]._id;
+      products.pop();
+    }
+
+    res.status(200).json({
+      nextCursor,
+      results: products.length,
+      products,
+    });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ error: "Server error" });
   }
 };
+
+module.exports = { getAllProducts };
+
 const getAProductByID = async (req, res) => {
   try {
     const productId = req.params.id;
     const product = await Product.findById(productId)
       .populate({ 
-        path: 'variants',
+        path: 'ProductVariant',
         populate: {
-          path: 'attributes.attribute',
+          path: 'Attributes.attribute',
         },
       });
 

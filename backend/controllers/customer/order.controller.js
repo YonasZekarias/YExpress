@@ -100,3 +100,26 @@ exports.cancelOrder = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+exports.orderStats = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const pendingOrderCount = await Order.countDocuments({ user: userId, orderStatus: "pending" });
+    const processingOrderCount = await Order.countDocuments({ user: userId, orderStatus: "processing" });
+    const deliveredOrderCount = await Order.countDocuments({ user: userId, orderStatus: "delivered" });
+    const cancelledOrderCount = await Order.countDocuments({ user: userId, orderStatus: "cancelled" });
+    
+    res.status(200).json({
+      success: true,
+      data: {
+        pending: pendingOrderCount,
+        processing: processingOrderCount,
+        delivered: deliveredOrderCount,
+        cancelled: cancelledOrderCount,
+      },
+    });
+  } catch (error) {
+    logger.error(error);
+    res.status(500).json({ message: error.message });
+  }
+};

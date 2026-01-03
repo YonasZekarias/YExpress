@@ -1,15 +1,32 @@
 const Order = require('../../models/Order')
+const Cart = require('../../models/Cart')
 const logger = require('../../utils/logger')
 const redisClient = require('../../utils/redisClinet')
+const buildOrderQuery = require("../../utils/orderQueryBuilder");
 
-const getAllOrder = async (req, res) =>{
-    try {
-        const allOrders = await Order.find()
-        res.status(200).json(allOrders)
-    } catch (error) {
-        logger.error({error : "error fetching orders", error})
-        res.status(500).json("error fetching orders")
+const getAllOrder = async (req, res) => {
+  try {
+    const limit = Number(req.query.limit) || 10;
+
+    const pipeline = buildOrderQuery(req.query, req.user);
+
+    const orders = await Order.aggregate(pipeline);
+
+    let nextCursor = null;
+    if (orders.length > limit) {
+      nextCursor = orders[limit - 1]._id;
+      orders.pop();
     }
+
+    res.status(200).json({
+      nextCursor,
+      results: orders.length,
+      orders,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
 };
 const getOrderById = async (req, res) =>{
     try {
@@ -62,9 +79,36 @@ const updateOrderStatus = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+const orderStats= async(req, res)=>{
+  try {
+    const totalOrders = await Order.countDocuments();
+    const wishlistCount = await Cart.countDocuments()
+    const pendingOrderCount = await Order.countDocuments({ orderStatus: "pending" });
+    const processingOrderCount = await Order.countDocuments({ orderStatus: "processing" });
+    const deliveredOrderCount = await Order.countDocuments({ orderStatus: "delivered" });
+    const cancelledOrderCount = await Order.countDocuments({ orderStatus: "cancelled" });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        totalOrders: totalOrders,
+        wishlistCount: wishlistCount,
+        pending:  pendingOrderCount,
+        processing:  processingOrderCount,
+        delivered:  deliveredOrderCount,
+        cancelled:  cancelledOrderCount,
+      },
+    });
+
+  } catch (error) {
+    logger.error("error",error)
+    res.status(500).json({success :false, message : error.message })
+  }
+}
 module.exports ={
     getAllOrder,
     getOrderById,
     getOrderByStatus,
     updateOrderStatus,
+    orderStats,
 } 
