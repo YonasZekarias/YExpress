@@ -35,7 +35,7 @@ const handleSignup = async (e: React.FormEvent) => {
     }
 
     toast.success("Account created successfully 🎉");
-    router.push("/auth/signin");
+    router.push("/auth/verification");
   } finally {
     setLoading(false);
   }

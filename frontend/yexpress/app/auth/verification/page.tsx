@@ -1,6 +1,8 @@
 "use client";
 
 import { useRef, useState } from "react";
+import axios from "axios";
+import toast from "react-hot-toast";
 import {
   Card,
   CardHeader,
@@ -9,16 +11,17 @@ import {
   CardDescription,
   CardFooter,
 } from "@/components/ui/card";
+import useAuthStore from "@/store/authStore";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 const VerificationPage = () => {
   const [code, setCode] = useState(["", "", "", "", "", ""]);
   const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
-
+  const pendingUser = useAuthStore(state => state.pendingUser)
   // Handles input change and auto-move
   const handleChange = (value: string, index: number) => {
-    if (!/^\d?$/.test(value)) return; // allow only digits
+    if (!/^\d?$/.test(value)) return; 
 
     const newCode = [...code];
     newCode[index] = value;
@@ -39,7 +42,20 @@ const VerificationPage = () => {
 
   const handleSubmit = () => {
     const fullCode = code.join("");
-    console.log("Verification code:", fullCode);
+    const email = pendingUser?.email;
+    if (!email) {
+      toast.error("No pending user email found.");
+      return;
+    }
+    axios.post("http://127.0.0.1:5000/api/auth/verify-email", { email, code: fullCode })
+      .then(response => {
+        toast.success(response.data.message || "Email verified successfully!");
+        console.log("Verification code:", fullCode);
+      })
+      .catch(error => {
+        toast.error("Failed to verify email.");
+        console.error("Verification error:", error);
+      });
   };
 
   return (

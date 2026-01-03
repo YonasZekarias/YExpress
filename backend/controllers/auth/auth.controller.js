@@ -1,29 +1,24 @@
-const User = require('../../models/User');
+const User = require("../../models/User");
 const { generateToken, refreshToken } = require("../../utils/generateToken");
 const bcrypt = require("bcryptjs");
 const logger = require("../../utils/logger");
 const jwt = require("jsonwebtoken");
 
-
-
 const sendEmail = async (to, subject, message) => {
-
-  logger.info(`EMAIL SENT TO ${to} | SUBJECT: ${subject} | MESSAGE: ${message}`);
+  logger.info(
+    `EMAIL SENT TO ${to} | SUBJECT: ${subject} | MESSAGE: ${message}`
+  );
 };
-
-
 
 exports.register = async (req, res) => {
   try {
-    const { username,email, phone, password, role } = req.body;
-
+    const { username, email, phone, password, role } = req.body;
 
     const userExist = await User.findOne({ $or: [{ email }, { phone }] });
     if (userExist)
       return res.status(400).json({ message: "User already exists" });
 
-
-    const verificationCode = "123456"; // radome code genenrate 
+    const verificationCode = "123456"; // radome code genenrate
     const user = await User.create({
       username,
       email,
@@ -31,7 +26,7 @@ exports.register = async (req, res) => {
       password,
       role,
       verificationCode,
-      isVerified: false,
+      verified: false,
     });
 
     // Send verification email
@@ -46,14 +41,11 @@ exports.register = async (req, res) => {
       message: "Verification code sent to your email.",
       data: { userId: user._id },
     });
-
   } catch (error) {
     logger.error(error.message);
     res.status(500).json({ message: error.message });
   }
 };
-
-
 
 exports.verifyEmail = async (req, res) => {
   try {
@@ -61,8 +53,7 @@ exports.verifyEmail = async (req, res) => {
     const { email, code } = req.body;
 
     const user = await User.findOne({ email });
-    if (!user)
-      return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ message: "User not found" });
 
     if (verificationCode !== code)
       return res.status(400).json({ message: "Invalid code" });
@@ -75,18 +66,15 @@ exports.verifyEmail = async (req, res) => {
       status: "success",
       message: "Email verified successfully",
     });
-
   } catch (err) {
     logger.error(err.message);
     res.status(500).json({ message: "Server error" });
   }
 };
 
-
-
 exports.login = async (req, res) => {
   try {
-    const { email,  password } = req.body;
+    const { email, password } = req.body;
 
     const user = await User.findOne({ email });
     if (!user || !(await bcrypt.compare(password, user.password)))
@@ -102,21 +90,23 @@ exports.login = async (req, res) => {
     const token = generateToken(user);
     const refreshTokenValue = refreshToken(user);
 
-    await User.updateOne(
-      { _id: user._id },
-      { refreshToken: refreshTokenValue }
-    );
+    user.refreshToken = refreshTokenValue;
+    await user.save();
 
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
       path: "/",
+      maxAge: 15 * 60 * 1000,
     });
 
     res.cookie("refreshToken", refreshTokenValue, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
       path: "/",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     res.status(200).json({
@@ -124,31 +114,62 @@ exports.login = async (req, res) => {
       token,
       data: {
         userId: user._id,
+        username: user.username,
+        email: user.email,
+        phone: user.phone,
         role: user.role,
+        createdAt: user.createdAt,
       },
     });
-
   } catch (err) {
     logger.error(err.message);
     res.status(500).json({ message: err.message });
   }
 };
 
-
-
 exports.refreshToken = async (req, res) => {
   try {
-    const refreshTokenCookie = req.cookies.refreshToken;
-    if (!refreshTokenCookie)
-      return res.status(401).json({ message: "No refresh token provided" });
+    const token = req.cookies?.refreshToken;
 
-    const decoded = jwt.verify(refreshTokenCookie, process.env.JWT_REFRESH_SECRET);
+    if (!token) {
+      logger.error("No refresh token provided");
+      return res.status(401).json({ message: "Not authenticated" });
+    }
 
-    const user = await User.findById(decoded.id);
-    if (!user)
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+
+    } catch (err) {
+      logger.error("Invalid or expired refresh token:", err);
+      return res
+        .status(401)
+        .json({ message: "Invalid or expired refresh token" });
+    }
+    const userId = decoded.userId || decoded.id;
+
+    if (!userId) {
+      logger.error("Invalid token payload: missing userId");
+      return res.status(401).json({ message: "Invalid token payload" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      logger.error("User not found in database");
+      return res.status(401).json({ message: "User not found" });
+    }
+
+    if (user.refreshToken !== token) {
       return res.status(401).json({ message: "Invalid refresh token" });
+    }
 
     const newAccessToken = generateToken(user);
+
+    res.cookie("token", newAccessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+    });
 
     res.status(200).json({
       status: "success",
@@ -156,34 +177,37 @@ exports.refreshToken = async (req, res) => {
       data: {
         userId: user._id,
         role: user.role,
+        email: user.email,
+        username: user.username,
+        phone: user.phone,
+        createdAt: user.createdAt,
       },
     });
-
   } catch (err) {
-    logger.error(err.message);
-    res.status(500).json({ message: "Invalid refresh token" });
+    logger.error("🔥 REFRESH TOKEN ERROR:", err);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
+exports.logout = async (req, res) => {
+  if (req.user?.id) {
+    await User.updateOne({ _id: req.user.id }, { refreshToken: null });
+  }
 
-
-exports.logout = (req, res) => {
   res.clearCookie("token");
   res.clearCookie("refreshToken");
+
   res.status(200).json({ message: "Logged out" });
 };
-
-
 
 exports.forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
 
     const user = await User.findOne({ email });
-    if (!user)
-      return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-    const code = "123456"; // 🔥 Testing code
+    const code = "123456"; // TODO: random code generate
     const expires = Date.now() + 10 * 60 * 1000;
 
     user.resetPasswordToken = code;
@@ -201,7 +225,6 @@ exports.forgotPassword = async (req, res) => {
       status: "success",
       message: "Password reset code sent to your email.",
     });
-
   } catch (err) {
     logger.error(err.message);
     res.status(500).json({ message: "Server error" });

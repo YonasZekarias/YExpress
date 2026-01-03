@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema({
     verified: { type: Boolean, default: false },
     phone: { type: String },
     isBanned: { type: Boolean, default: false },
+    refreshToken: { type: String },
     },
     { timestamps: true },
 );

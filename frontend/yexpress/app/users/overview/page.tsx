@@ -3,13 +3,15 @@
 import { Package, Truck, Heart, MapPin, CreditCard } from "lucide-react";
 import RecentOrdersWidget from "@/components/users/recentOrdersWidget";
 import StatCard from "../../../components/users/statCard";
-import { mockUser } from "@/data/mockUser";
+
+import useAuthStore from "@/store/authStore";
 const Overview = () => {
+  const { username } = useAuthStore();
   return (
     <div>
-      <div className="mb-8">
+      <div>
         <h1 className="text-2xl md:text-3xl font-bold text-slate-900">
-          Welcome back, {mockUser.name.split(" ")[0]}! 👋
+          Welcome back, {username}! 👋
         </h1>
         <p className="text-slate-500 mt-2">
           Here's what's happening with your account today.

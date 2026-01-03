@@ -1,11 +1,11 @@
 "use client";
-import axios from "axios";
 import { useState } from "react";
 import AuthFormContainer from "../_components/AuthFormContainer";
 import { Mail, Lock, LogIn } from "lucide-react";
 import { useRouter } from "next/navigation";
 import useAuthStore from "@/store/authStore";
 import toast from "react-hot-toast";
+
 export default function SignInPage() {
   const router = useRouter();
 
@@ -28,7 +28,8 @@ export default function SignInPage() {
         return;
       }
       const { role } = useAuthStore.getState();
-
+      const {user} = useAuthStore.getState();
+      console.log("Logged in user:", user);
       if (role === "admin") {
         router.push("/admin/");
       } else {
@@ -38,7 +39,6 @@ export default function SignInPage() {
       setLoading(false)
     }
   };
-
   return (
     <AuthFormContainer title="Sign In" onBack={() => router.push("/")}>
       <form onSubmit={handleLogin} className="space-y-6">
