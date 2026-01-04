@@ -19,9 +19,6 @@ export default function App() {
   const checkAuth = useAuthStore((state) => state.checkAuth);
   const role = useAuthStore((state) => state.role);
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
-  useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
 
   useEffect(() => {
     if (!isLoggedIn) return;
