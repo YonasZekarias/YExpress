@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -11,11 +11,27 @@ import Promo from "../components/landing/promo";
 import Footer from "../components/landing/footer";
 import Testimonials from "@/components/landing/testimonials";
 import Demo from "@/components/landing/demo";
+import useAuthStore from "@/store/authStore";
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const router = useRouter();
-  // Handle scroll effect for navbar
+  const checkAuth = useAuthStore((state) => state.checkAuth);
+  const role = useAuthStore((state) => state.role);
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
+  useEffect(() => {
+    if (!isLoggedIn) return;
+
+    if (role === "admin") {
+      router.replace("/admin");
+    } else if (role === "user") {
+      router.replace("/users/overview");
+    }
+  }, [role, isLoggedIn, router]);
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
@@ -67,7 +83,12 @@ export default function App() {
               >
                 Stories
               </a>
-              <button onClick={()=>{router.push('/auth/signin')}} className="bg-slate-900 text-white px-6 py-2.5 rounded-full font-medium hover:bg-indigo-600 transition-colors duration-300 shadow-lg shadow-indigo-500/20">
+              <button
+                onClick={() => {
+                  router.push("/auth/signin");
+                }}
+                className="bg-slate-900 text-white px-6 py-2.5 rounded-full font-medium hover:bg-indigo-600 transition-colors duration-300 shadow-lg shadow-indigo-500/20"
+              >
                 Get Started
               </button>
             </div>
@@ -119,9 +140,9 @@ export default function App() {
       <Brand />
       <Feature />
       <Demo />
-      <Testimonials/>
+      <Testimonials />
       <Promo />
-      <Footer/>
+      <Footer />
     </div>
   );
 }
