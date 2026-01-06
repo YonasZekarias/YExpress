@@ -1,34 +1,93 @@
-'use client';
+"use client";
 import { Settings } from "lucide-react";
-import {  useEffect, useState } from "react";
-const axios = require("axios").default;
+import { useEffect, useState } from "react";
+import axios from "axios";
+
+interface User {
+  _id: string;
+  name: string;
+  email: string;
+}
+
+interface UsersResponse {
+  nextCursor: string | null;
+  results: number;
+  users: User[];
+}
 
 export default function ProductsPage() {
-  const token= "yJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NDNkYzg2NDFkMWY4NmM1ODNhNjQyZiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2NjA3MDE2MywiZXhwIjoxNzY2MzI5MzYzfQ.yP6D1RnR1txlBrckrvogs4isFgItdfbU_TGbtdN10TE"
-  const [users, setUsers] = useState([]);
-  useEffect(() => {
-    axios.get("http://localhost:5000/api/admin/users",
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
+
+  const [users, setUsers] = useState<User[]>([]);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  // Fetch users function
+  const fetchUsers = async (cursor?: string) => {
+    setLoading(true);
+    try {
+      const response = await axios.get<UsersResponse>(
+        "http://localhost:5000/api/admin/users",
+        {
+          params: cursor ? { cursor } : {},
+          withCredentials: true,
         },
-      }
-  ).then((response: any) => {
-      console.log(response.data);
-      setUsers(response.data);
-    });
+      );
+
+      // Append new users
+      setUsers((prev) => [...prev, ...response.data.users]);
+
+      // Update nextCursor
+      setNextCursor(response.data.nextCursor || null);
+    } catch (err) {
+      console.error("Error fetching users:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Initial load
+  useEffect(() => {
+    fetchUsers();
   }, []);
+
   return (
-    <div className="flex flex-col items-center justify-center h-96 bg-white rounded-2xl border border-dashed border-slate-300">
+    <div className="flex flex-col items-center justify-center h-auto p-6 bg-white rounded-2xl border border-dashed border-slate-300">
       <Settings className="w-16 h-16 text-slate-200 mb-4" />
-      <h3 className="text-xl font-bold text-slate-800 capitalize">Customer Management</h3>
-      <p className="text-slate-500">This module is under development.</p>
-    {  users.map((user: any) => (
-        <div key={user._id}>
-          <h2>{user.name}</h2>
-          <p>{user.email}</p>
-        </div>
-      ))}    
+      <h3 className="text-xl font-bold text-slate-800 capitalize">
+        Customer Management
+      </h3>
+      <p className="text-slate-500 mb-6">This module is under development.</p>
+
+      <div className="w-full max-w-2xl">
+        <h4 className="text-lg font-semibold mb-2">Fetched Users:</h4>
+
+        {users.length === 0 && !loading && (
+          <p className="text-slate-500">No users found.</p>
+        )}
+
+        <ul className="list-disc list-inside mb-4">
+          {users.map((user) => (
+            <li key={user._id}>
+              {user.name} ({user.email})
+            </li>
+          ))}
+        </ul>
+
+        {loading && <p className="text-slate-500 mb-2">Loading...</p>}
+
+        {nextCursor && !loading && (
+          <button
+            onClick={() => fetchUsers(nextCursor)}
+            className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition"
+          >
+            Load More
+          </button>
+        )}
+
+        {!nextCursor && users.length > 0 && (
+          <p className="text-slate-400 mt-2">All users loaded.</p>
+        )}
+      </div>
     </div>
   );
 }

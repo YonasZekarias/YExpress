@@ -96,7 +96,7 @@ exports.login = async (req, res) => {
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "lax",
       path: "/",
       maxAge: 15 * 60 * 1000,
     });
@@ -104,7 +104,15 @@ exports.login = async (req, res) => {
     res.cookie("refreshToken", refreshTokenValue, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.cookie("role", user.role, {
+      httpOnly: false, 
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
       path: "/",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
@@ -139,7 +147,6 @@ exports.refreshToken = async (req, res) => {
     let decoded;
     try {
       decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
-
     } catch (err) {
       logger.error("Invalid or expired refresh token:", err);
       return res

@@ -1,6 +1,6 @@
 "use client";
 import { create } from "zustand";
-import axios from "axios";
+import api from "@/lib/axios";
 
 interface AuthState {
   isLoggedIn: boolean;
@@ -32,11 +32,6 @@ interface AuthState {
     message?: string;
   }>;
 }
-
-const api = axios.create({
-  baseURL: "http://localhost:5000/api/",
-  withCredentials: true,
-});
 
 const generateAvatar = (name?: string, email?: string) => {
   const displayName = name || email || "User";

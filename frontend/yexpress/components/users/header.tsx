@@ -1,15 +1,16 @@
 import { Menu, Search, Bell } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import LogoutAlert from "../common/logoutAlert";
 const useAuthStore = require("@/store/authStore").default;
 
 const Header = ({
-  activeTab,
   setIsMobileMenuOpen,
 }: {
-  activeTab: string;
   setIsMobileMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
+  const pathname = usePathname()
+  const activeTab = pathname?.split('/users/')[1] || 'overview';
   const router = useRouter();
   const { avatar, username, email, phone, role, createdAt, logout } = useAuthStore();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -118,16 +119,11 @@ const Header = ({
                   router.push("/users/profile");
                   setIsDropdownOpen(false);
                 }}
-                className="w-full text-left px-4 py-2 text-sm hover:bg-slate-100  rounded-lg transition-colors"
+                className="w-full text-left px-4 py-2 text-sm hover:bg-slate-100 rounded-lg transition-colors"
               >
                 Profile
               </button>
-              <button
-                onClick={handleLogout}
-               className="w-full text-left px-4 py-2 text-sm hover:bg-rose-50 text-rose-500  rounded-lg transition-colors"
-              >
-                Logout
-              </button>
+              <LogoutAlert />
             </div>
           )}
         </div>

@@ -29,10 +29,11 @@ export default function SignInPage() {
       }
       const { role } = useAuthStore.getState();
       const {user} = useAuthStore.getState();
-      console.log("Logged in user:", user);
+      console.log("Logged in user:", user, role);
       if (role === "admin") {
         router.push("/admin/");
-      } else {
+      }
+      else if (role === "user") {
         router.push("/users/overview");
       }
     }finally{

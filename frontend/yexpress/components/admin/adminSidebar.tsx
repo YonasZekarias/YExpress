@@ -59,14 +59,11 @@ const AdminSidebar = ({
         />
       )}
       <aside
-        className={`fixed top-0 left-0 z-50 h-screen w-64 bg-white border border-b-0 border-slate-200
-        md:relative md:transform-none md:z-0 transition-transform duration-300 ease-in-out
-        ${
-          isMobileMenuOpen
-            ? "translate-x-0"
-            : "-translate-x-full md:translate-x-0"
-        }`}
-      >
+  className={`fixed top-0 left-0 z-50 h-screen w-64 bg-white border border-slate-200
+    transition-transform duration-300 ease-in-out
+    ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
+>
+
         {/* Inner content */}
         <div className="flex flex-col justify-between h-full p-6">
           {/* Top: Brand + Navigation */}

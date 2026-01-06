@@ -19,7 +19,7 @@ const mockUser: UserProfile = {
 };
 
 const UserLayout = ({ children }: { children: ReactNode }) => {
-  const [activeTab, setActiveTab] = useState("overview");
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   interface UserChildProps {
@@ -35,15 +35,12 @@ const childrenWithProps = React.Children.map(children, (child) => {
   return (
     <div className="min-h-screen bg-slate-50 flex font-sans text-slate-900">
       <UserSidebar
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
         isMobileMenuOpen={isMobileMenuOpen}
         setIsMobileMenuOpen={setIsMobileMenuOpen}
       />
 
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="md:ml-64 flex-1 flex flex-col min-w-0">
         <Header
-          activeTab={activeTab}
           setIsMobileMenuOpen={setIsMobileMenuOpen}
         />
 
