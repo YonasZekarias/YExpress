@@ -12,44 +12,35 @@ const buildUserQuery = (queryParams) => {
 
   let matchStage = {};
 
-
-  if (search) {
+  if (search && search.trim() !== "") {
     matchStage.$or = [
       { username: { $regex: search, $options: "i" } },
       { email: { $regex: search, $options: "i" } },
-      { phone: { $regex: search, $options: "i" } },
     ];
   }
 
 
-  if (role) {
+  if (role && role !== "") {
     matchStage.role = role;
   }
 
-  if (verified !== undefined) {
+
+  if (verified === "true" || verified === "false") {
     matchStage.verified = verified === "true";
   }
 
-  if (isBanned !== undefined) {
+  if (isBanned === "true" || isBanned === "false") {
     matchStage.isBanned = isBanned === "true";
   }
-
 
   if (cursor) {
     matchStage._id = { $lt: new mongoose.Types.ObjectId(cursor) };
   }
 
-
-  const pipeline = [
+  return [
     { $match: matchStage },
-
-    // Sort newest first
     { $sort: { _id: -1 } },
-
-    // Fetch one extra to detect next page
-    { $limit: Number(limit) + 1 },
-
-    // Remove sensitive fields
+    { $limit: Number(limit) + 1 }, 
     {
       $project: {
         password: 0,
@@ -57,8 +48,6 @@ const buildUserQuery = (queryParams) => {
       },
     },
   ];
-
-  return pipeline;
 };
 
 module.exports = buildUserQuery;

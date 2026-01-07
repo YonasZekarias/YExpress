@@ -1,92 +1,109 @@
 "use client";
-import { Settings } from "lucide-react";
-import { useEffect, useState } from "react";
-import axios from "axios";
 
-interface User {
-  _id: string;
-  name: string;
-  email: string;
+import { ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { useUsers } from "@/components/users/useUsers";
+import UserRow from "@/components/users/UserRow";
+import useAuthStore from "@/store/authStore";
+function SkeletonRow() {
+  return (
+    <tr className="animate-pulse">
+      <td className="px-4 py-3">
+        <div className="h-4 w-32 bg-slate-200 rounded mb-2" />
+        <div className="h-3 w-48 bg-slate-200 rounded" />
+      </td>
+      <td className="px-4 py-3">
+        <div className="h-4 w-12 bg-slate-200 rounded" />
+      </td>
+      <td className="px-4 py-3">
+        <div className="h-4 w-16 bg-slate-200 rounded" />
+      </td>
+      <td className="px-4 py-3">
+        <div className="h-4 w-24 bg-slate-200 rounded" />
+      </td>
+      <td className="px-4 py-3" />
+    </tr>
+  );
 }
 
-interface UsersResponse {
-  nextCursor: string | null;
-  results: number;
-  users: User[];
-}
-
-export default function ProductsPage() {
-
-  const [users, setUsers] = useState<User[]>([]);
-  const [nextCursor, setNextCursor] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  // Fetch users function
-  const fetchUsers = async (cursor?: string) => {
-    setLoading(true);
-    try {
-      const response = await axios.get<UsersResponse>(
-        "http://localhost:5000/api/admin/users",
-        {
-          params: cursor ? { cursor } : {},
-          withCredentials: true,
-        },
-      );
-
-      // Append new users
-      setUsers((prev) => [...prev, ...response.data.users]);
-
-      // Update nextCursor
-      setNextCursor(response.data.nextCursor || null);
-    } catch (err) {
-      console.error("Error fetching users:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Initial load
-  useEffect(() => {
-    fetchUsers();
-  }, []);
+export default function UsersTable() {
+  const role = useAuthStore((state) => state.user?.role);
+  const {
+    users,
+    loading,
+    filters,
+    setFilters,
+    next,
+    prev,
+    hasNext,
+    hasPrev,
+    toggleBan,
+  } = useUsers(role);
 
   return (
-    <div className="flex flex-col items-center justify-center h-auto p-6 bg-white rounded-2xl border border-dashed border-slate-300">
-      <Settings className="w-16 h-16 text-slate-200 mb-4" />
-      <h3 className="text-xl font-bold text-slate-800 capitalize">
-        Customer Management
-      </h3>
-      <p className="text-slate-500 mb-6">This module is under development.</p>
+    <div className="bg-white rounded-xl border p-6">
+      <div className="flex gap-3 mb-4">
+        <div className="relative">
+          <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+          <input
+            placeholder="Search users..."
+            className="pl-9 pr-3 py-2 border rounded-md text-sm"
+            value={filters.search}
+            onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+          />
+        </div>
 
-      <div className="w-full max-w-2xl">
-        <h4 className="text-lg font-semibold mb-2">Fetched Users:</h4>
+        <select
+          className="border rounded-md px-3 text-sm"
+          value={filters.role} // IMPORTANT: Keep the UI in sync with state
+          onChange={(e) => setFilters({ ...filters, role: e.target.value })}
+        >
+          <option value="">All roles</option>
+          <option value="admin">Admin</option>
+          <option value="user">User</option>
+        </select>
+      </div>
 
-        {users.length === 0 && !loading && (
-          <p className="text-slate-500">No users found.</p>
-        )}
+      {/* TABLE */}
+      <table className="w-full text-sm">
+        <thead className="bg-slate-50 text-xs uppercase">
+          <tr>
+            <th className="px-4 py-3 text-left">User</th>
+            <th className="px-4 py-3">Role</th>
+            <th className="px-4 py-3">Status</th>
+            <th className="px-4 py-3">Joined</th>
+            <th className="px-4 py-3 text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {loading
+            ? Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)
+            : users.map((u) => (
+                <UserRow
+                  key={u._id}
+                  user={u}
+                  canBan={role === "admin"}
+                  onBanToggle={toggleBan}
+                />
+              ))}
+        </tbody>
+      </table>
 
-        <ul className="list-disc list-inside mb-4">
-          {users.map((user) => (
-            <li key={user._id}>
-              {user.name} ({user.email})
-            </li>
-          ))}
-        </ul>
-
-        {loading && <p className="text-slate-500 mb-2">Loading...</p>}
-
-        {nextCursor && !loading && (
-          <button
-            onClick={() => fetchUsers(nextCursor)}
-            className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition"
-          >
-            Load More
-          </button>
-        )}
-
-        {!nextCursor && users.length > 0 && (
-          <p className="text-slate-400 mt-2">All users loaded.</p>
-        )}
+      {/* PAGINATION */}
+      <div className="flex justify-end gap-2 mt-4">
+        <button
+          disabled={!hasPrev}
+          onClick={prev}
+          className="p-2 border rounded disabled:opacity-40"
+        >
+          <ChevronLeft className="w-4 h-4" />
+        </button>
+        <button
+          disabled={!hasNext}
+          onClick={next}
+          className="p-2 border rounded disabled:opacity-40"
+        >
+          <ChevronRight className="w-4 h-4" />
+        </button>
       </div>
     </div>
   );
