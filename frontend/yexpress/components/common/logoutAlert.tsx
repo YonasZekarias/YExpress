@@ -32,7 +32,7 @@ const LogoutAlert: React.FC = () => {
       <AlertDialogTrigger asChild>
         <Button
           variant="logout"
-          className="w-full flex items-center justify-start px-4 py-3 text-sm font-medium hover:bg-slate-100"
+          className="w-full flex items-center justify-start px-4 py-3 text-sm font-medium"
         >
           <LogOut className="w-5 h-5 mr-3" />
           Logout
@@ -48,7 +48,7 @@ const LogoutAlert: React.FC = () => {
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
-            className="bg-rose-600 hover:bg-rose-700"
+            className="bg-rose-600 hover:bg-rose-700 dark:bg-rose-500 dark:hover:bg-rose-600"
             onClick={handleLogout}
           >
             Logout

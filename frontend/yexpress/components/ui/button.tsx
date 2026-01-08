@@ -19,7 +19,8 @@ const buttonVariants = cva(
         ghost:
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "text-primary underline-offset-4 hover:underline",
-        logout : "flex justify-start bg-white text-rose-600 hover:bg-rose-50! rounded-lg transition-colors",
+        logout: "flex items-center justify-start px-4 py-2 bg-white text-rose-600 rounded-lg shadow-sm hover:bg-rose-50 transition-colors duration-200 dark:bg-slate-800 dark:text-rose-400 dark:hover:bg-rose-900 dark:hover:text-rose-200"
+
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",

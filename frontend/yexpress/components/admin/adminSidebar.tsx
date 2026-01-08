@@ -10,6 +10,8 @@ import {
   LogOut,
   X,
 } from "lucide-react";
+import useAuthStore from "@/store/authStore";
+import LogoutAlert from "../common/logoutAlert";
 
 const AdminSidebar = ({
   activeTab,
@@ -23,6 +25,7 @@ const AdminSidebar = ({
   setIsMobileMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const router = useRouter();
+  const { username, email, avatar } = useAuthStore();
 
   const menuItems = [
     {
@@ -51,28 +54,28 @@ const AdminSidebar = ({
   return (
     <>
       {/* Mobile Overlay */}
-      {/* Mobile Overlay */}
       {isMobileMenuOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          className="fixed inset-0 bg-black/50 dark:bg-black/40 z-40 md:hidden"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
-      <aside
-  className={`fixed top-0 left-0 z-50 h-screen w-64 bg-white border border-slate-200
-    transition-transform duration-300 ease-in-out
-    ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
->
 
+      <aside
+        className={`fixed top-0 left-0 z-50 h-screen w-64 bg-card border border-border transition-transform duration-300 ease-in-out
+          ${
+            isMobileMenuOpen
+              ? "translate-x-0"
+              : "-translate-x-full md:translate-x-0"
+          }`}
+      >
         {/* Inner content */}
         <div className="flex flex-col justify-between h-full p-6">
           {/* Top: Brand + Navigation */}
           <div>
             {/* Brand */}
-            <div className="flex items-center space-x-2 mb-10 font-bold text-2xl tracking-wider">
-              <div className="bg-indigo-500 p-1.5 rounded-lg">
-                <ShoppingBag className="w-6 h-6 text-white" />
-              </div>
+            <div className="flex items-center space-x-2 mb-10 text-indigo-600  font-bold text-2xl">
+              <ShoppingBag className="w-8 h-8" />
               <span>YExpress</span>
               <button
                 className="md:hidden ml-auto text-slate-400"
@@ -80,6 +83,23 @@ const AdminSidebar = ({
               >
                 <X className="w-6 h-6" />
               </button>
+            </div>
+
+            {/* Admin Info */}
+            <div className="flex items-center p-3 mb-8 bg-muted rounded-xl border border-border">
+              <img
+                src={avatar}
+                alt="Profile"
+                className="w-10 h-10 rounded-full mr-3"
+              />
+              <div className="overflow-hidden">
+                <p className="font-semibold text-foreground truncate">
+                  {username}
+                </p>
+                <p className="text-xs text-muted-foreground truncate">
+                  {email}
+                </p>
+              </div>
             </div>
 
             {/* Navigation */}
@@ -97,8 +117,9 @@ const AdminSidebar = ({
                   className={`w-full flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200
                     ${
                       activeTab === item.id
-                        ? "bg-indigo-100 text-indigo-800 shadow-lg shadow-indigo-500/30"
-                        : "text-black-200 hover:bg-slate-100"
+                        ? "bg-indigo-50 text-indigo-900 shadow-md dark:bg-indigo-900 dark:text-indigo-100 dark:shadow-lg dark:shadow-indigo-500/30"
+                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  
                     }`}
                 >
                   <span className="mr-3">{item.icon}</span>
@@ -109,14 +130,8 @@ const AdminSidebar = ({
           </div>
 
           {/* Bottom: Logout */}
-          <div className="mt-5 pt-6 border-t border-slate-800 w-full">
-            <button
-              className="w-full flex items-center px-4 py-3 text-sm font-medium text-red-600 
-                         hover:bg-red-50 rounded-lg transition-colors"
-            >
-              <LogOut className="w-5 h-5 mr-3" />
-              Sign Out
-            </button>
+          <div className="mt-5 pt-6 border-t border-border">
+            <LogoutAlert />
           </div>
         </div>
       </aside>
