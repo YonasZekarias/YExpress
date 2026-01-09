@@ -10,6 +10,7 @@ import {
 import useAuthStore from "@/store/authStore";
 import { useRouter, usePathname } from "next/navigation";
 import LogoutAlert from "../common/logoutAlert";
+
 const UserSidebar = ({
   isMobileMenuOpen,
   setIsMobileMenuOpen,
@@ -21,34 +22,21 @@ const UserSidebar = ({
     { id: "overview", label: "Overview", icon: <User className="w-5 h-5" /> },
     { id: "orders", label: "Orders", icon: <Package className="w-5 h-5" /> },
     { id: "profile", label: "Profile", icon: <User className="w-5 h-5" /> },
-    {
-      id: "products",
-      label: "Products",
-      icon: <Package className="w-5 h-5" />,
-    },
+    { id: "products", label: "Products", icon: <Package className="w-5 h-5" /> },
     { id: "cart", label: "Wishlist", icon: <Heart className="w-5 h-5" /> },
-    {
-      id: "addresses",
-      label: "Addresses",
-      icon: <MapPin className="w-5 h-5" />,
-    },
-    {
-      id: "payment",
-      label: "Payment Methods",
-      icon: <CreditCard className="w-5 h-5" />,
-    },
+    { id: "addresses", label: "Addresses", icon: <MapPin className="w-5 h-5" /> },
+    { id: "payment", label: "Payment Methods", icon: <CreditCard className="w-5 h-5" /> },
   ];
 
   const { username, email, avatar } = useAuthStore();
   const router = useRouter();
   const pathname = usePathname();
-  const logout = useAuthStore((state) => state.logout);
 
-  // Derive active tab from pathname
   const currentTab = pathname?.split("/users/")[1] || "overview";
 
   return (
     <>
+      {/* Overlay */}
       {isMobileMenuOpen && (
         <div
           className="fixed inset-0 bg-black/50 z-40 md:hidden"
@@ -56,15 +44,21 @@ const UserSidebar = ({
         />
       )}
 
-      <aside className={`fixed top-0 left-0 z-50 h-screen w-64 bg-white border border-slate-200 transition-transform duration-300 ease-in-out
-          ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}>
+      {/* Sidebar */}
+      <aside
+        className={`fixed top-0 left-0 z-50 h-screen w-64
+        bg-white dark:bg-slate-900
+        border-r border-slate-200 dark:border-slate-700
+        transition-transform duration-300 ease-in-out
+        ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
+      >
         <div className="p-6 h-full flex flex-col">
-          {/* Logo / Brand */}
-          <div className="flex items-center space-x-2 mb-10 text-indigo-600 font-bold text-2xl">
+          {/* Brand */}
+          <div className="flex items-center space-x-2 mb-10 font-bold text-2xl text-indigo-600 dark:text-indigo-400">
             <ShoppingBag className="w-8 h-8" />
             <span>YExpress</span>
             <button
-              className="md:hidden ml-auto text-slate-400"
+              className="md:hidden ml-auto text-slate-400 dark:text-slate-500"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               <X className="w-6 h-6" />
@@ -72,17 +66,21 @@ const UserSidebar = ({
           </div>
 
           {/* User Info */}
-          <div className="flex items-center p-3 mb-8 bg-slate-50 rounded-xl border border-slate-100">
+          <div className="flex items-center p-3 mb-8 rounded-xl
+            bg-slate-50 dark:bg-slate-800
+            border border-slate-100 dark:border-slate-700">
             <img
               src={avatar}
               alt="Profile"
               className="w-10 h-10 rounded-full mr-3"
             />
             <div className="overflow-hidden">
-              <p className="font-semibold text-slate-900 truncate">
+              <p className="font-semibold text-slate-900 dark:text-slate-100 truncate">
                 {username}
               </p>
-              <p className="text-xs text-slate-500 truncate">{email}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                {email}
+              </p>
             </div>
           </div>
 
@@ -95,11 +93,21 @@ const UserSidebar = ({
                   router.push(`/users/${item.id}`);
                   setIsMobileMenuOpen(false);
                 }}
-                className={`w-full flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-colors
+                className={`relative w-full flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-all
                   ${
                     currentTab === item.id
-                      ? "bg-indigo-50 text-indigo-700 shadow-lg shadow-indigo-500/30"
-                      : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                      ? `
+                        bg-indigo-50 dark:bg-indigo-500/10
+                        text-indigo-700 dark:text-indigo-300
+                        before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2
+                        before:h-6 before:w-1 before:rounded-r
+                        before:bg-indigo-600 dark:before:bg-indigo-400
+                      `
+                      : `
+                        text-slate-600 dark:text-slate-400
+                        hover:bg-slate-50 dark:hover:bg-slate-800
+                        hover:text-slate-900 dark:hover:text-slate-200
+                      `
                   }`}
               >
                 <span className="mr-3">{item.icon}</span>
@@ -109,7 +117,7 @@ const UserSidebar = ({
           </nav>
 
           {/* Logout */}
-          <div className="pt-6 border-t border-slate-100 mt-auto">
+          <div className="pt-6 mt-auto border-t border-slate-100 dark:border-slate-700">
             <LogoutAlert />
           </div>
         </div>
