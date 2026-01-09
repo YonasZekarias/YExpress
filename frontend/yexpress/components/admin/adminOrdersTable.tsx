@@ -24,7 +24,7 @@ const statusClasses = {
 };
 
 const AdminOrdersTable = () => (
-  <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
+  <div className="bg-card dark:bg-slate-900 rounded-2xl border border-border shadow-sm overflow-hidden">
     <div className="p-6 border-b border-border flex justify-between items-center">
       <h3 className="font-bold text-foreground">Recent Orders</h3>
       <button className="text-primary hover:text-primary/80 text-sm font-medium">
@@ -34,7 +34,7 @@ const AdminOrdersTable = () => (
 
     <div className="overflow-x-auto">
       <table className="w-full">
-        <thead className="bg-muted text-xs uppercase text-muted-foreground font-semibold">
+        <thead className="text-xs uppercase text-muted-foreground font-semibold">
           <tr>
             <th className="px-6 py-4 text-left">Order ID</th>
             <th className="px-6 py-4 text-left">Customer</th>
@@ -66,7 +66,7 @@ const AdminOrdersTable = () => (
                 {order.amount}
               </td>
               <td className="px-6 py-4 text-center">
-                <button className="text-muted-foreground hover:text-primary">
+                <button className="text-muted-foreground hover:text-foreground p-2 rounded-full hover:bg-muted/50 transition-colors">
                   <MoreVertical className="w-4 h-4" />
                 </button>
               </td>

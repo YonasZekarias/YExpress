@@ -51,7 +51,7 @@ const LogoutAlert: React.FC = () => {
             className="bg-rose-600 hover:bg-rose-700 dark:bg-rose-500 dark:hover:bg-rose-600"
             onClick={handleLogout}
           >
-            Logout
+            <LogOut className="w-5 h-5 mr-2" /> Logout
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

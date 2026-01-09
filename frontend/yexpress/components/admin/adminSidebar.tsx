@@ -1,17 +1,10 @@
 "use client";
 import React from "react";
 const { useRouter } = require("next/navigation");
-import {
-  LayoutDashboard,
-  ShoppingBag,
-  Package,
-  Users,
-  Settings,
-  LogOut,
-  X,
-} from "lucide-react";
+import {LayoutDashboard,ShoppingBag,Package,Users,Settings,X,} from "lucide-react";
 import useAuthStore from "@/store/authStore";
 import LogoutAlert from "../common/logoutAlert";
+import UserInfo from "../common/userInfo";
 
 const AdminSidebar = ({
   activeTab,
@@ -62,12 +55,15 @@ const AdminSidebar = ({
       )}
 
       <aside
-        className={`fixed top-0 left-0 z-50 h-screen w-64 bg-card border border-border transition-transform duration-300 ease-in-out
-          ${
-            isMobileMenuOpen
-              ? "translate-x-0"
-              : "-translate-x-full md:translate-x-0"
-          }`}
+        className={`fixed top-0 left-0 z-50 h-screen w-64
+        bg-white dark:bg-slate-900
+        border-r border-slate-200 dark:border-slate-700
+        transition-transform duration-300 ease-in-out
+        ${
+          isMobileMenuOpen
+            ? "translate-x-0"
+            : "-translate-x-full md:translate-x-0"
+        }`}
       >
         {/* Inner content */}
         <div className="flex flex-col justify-between h-full p-6">
@@ -86,22 +82,11 @@ const AdminSidebar = ({
             </div>
 
             {/* Admin Info */}
-            <div className="flex items-center p-3 mb-8 bg-muted rounded-xl border border-border">
-              <img
-                src={avatar}
-                alt="Profile"
-                className="w-10 h-10 rounded-full mr-3"
-              />
-              <div className="overflow-hidden">
-                <p className="font-semibold text-foreground truncate">
-                  {username}
-                </p>
-                <p className="text-xs text-muted-foreground truncate">
-                  {email}
-                </p>
-              </div>
-            </div>
-
+            <UserInfo
+              avatar={avatar ?? ""}
+              username={username ?? ""}
+              email={email ?? ""}
+            />
             {/* Navigation */}
             <nav className="space-y-2 flex flex-col">
               {menuItems.map((item) => (
@@ -114,13 +99,22 @@ const AdminSidebar = ({
                       `/admin/${item.id === "dashboard" ? "" : item.id}`
                     );
                   }}
-                  className={`w-full flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200
-                    ${
-                      activeTab === item.id
-                        ? "bg-indigo-50 text-indigo-900 shadow-md dark:bg-indigo-900 dark:text-indigo-100 dark:shadow-lg dark:shadow-indigo-500/30"
-                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  
-                    }`}
+                  className={`relative w-full flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-all
+                  ${
+                    activeTab === item.id
+                      ? `
+                        bg-indigo-50 dark:bg-indigo-500/10
+                        text-indigo-700 dark:text-indigo-300
+                        before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2
+                        before:h-6 before:w-1 before:rounded-r
+                        before:bg-indigo-600 dark:before:bg-indigo-400
+                      `
+                      : `
+                        text-slate-600 dark:text-slate-400
+                        hover:bg-slate-50 dark:hover:bg-slate-800
+                        hover:text-slate-900 dark:hover:text-slate-200
+                      `
+                  }`}
                 >
                   <span className="mr-3">{item.icon}</span>
                   {item.label}

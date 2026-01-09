@@ -13,7 +13,10 @@ const AdminHeader = ({
 }) => {
   const { avatar, username, email, phone, role, createdAt } = useAuthStore();
   return (
-    <header className="bg-background border-b border-border h-16 px-8 flex items-center justify-between sticky top-0 z-30">
+   <header className="sticky top-0 z-30 h-16 px-8 flex items-center justify-between
+      bg-white/80 dark:bg-slate-900/80 backdrop-blur
+      border-b border-slate-200 dark:border-slate-700"
+    >
       <div className="flex items-center">
         <button
           className="mr-4 md:hidden text-muted-foreground hover:text-foreground"

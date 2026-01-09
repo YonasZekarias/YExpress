@@ -14,7 +14,7 @@ const StatsCard = ({
   icon: React.ReactNode;
   trend: "up" | "down";
 }) => (
-  <div className="bg-card p-6 rounded-2xl border border-border shadow-sm">
+  <div className="bg-card dark:bg-slate-900 p-6 rounded-2xl border border-border shadow-sm">
     <div className="flex justify-between items-start mb-4">
       <div>
         <p className="text-muted-foreground text-sm font-medium mb-1">{title}</p>

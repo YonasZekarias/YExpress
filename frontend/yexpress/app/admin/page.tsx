@@ -5,7 +5,7 @@ import { DollarSign, ShoppingBag, Users, Package } from "lucide-react";
 
 export default function DashboardPage() {
   return (
-    <div className="space-y-8 bg-background dark:bg-background-dark min-h-screen p-6">
+    <div className="space-y-8 bg-background dark:bg-slate-900 min-h-screen p-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatsCard
           title="Total Revenue"

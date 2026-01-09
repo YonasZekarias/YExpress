@@ -16,7 +16,7 @@ const mockProducts: Product[] = [
 ];
 
 const InventoryWidget = () => (
-  <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden h-full">
+  <div className="bg-card dark:bg-slate-900 rounded-2xl border border-border shadow-sm overflow-hidden h-full">
     <div className="p-6 border-b border-border flex justify-between items-center">
       <h3 className="font-bold text-foreground">Low Stock Alert</h3>
       <button className="text-primary text-sm font-medium hover:text-primary/80">
@@ -28,10 +28,10 @@ const InventoryWidget = () => (
       {mockProducts.map((product) => (
         <div
           key={product.id}
-          className="flex items-center justify-between p-3 bg-muted rounded-xl"
+          className="flex items-center dark:bg-slate-800 justify-between p-3 bg-muted rounded-xl"
         >
           <div>
-            <p className="font-semibold text-foreground text-sm">{product.name}</p>
+            <p className="font-semibold text-foreground  text-sm">{product.name}</p>
             <p className="text-xs text-muted-foreground">{product.category}</p>
           </div>
           <div className="text-right">

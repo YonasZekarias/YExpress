@@ -13,7 +13,7 @@ export default function AdminLayout({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen flex bg-background text-black">
+    <div className="min-h-screen flex bg-background dark:bg-slate-900 text-black">
       <AdminSidebar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
