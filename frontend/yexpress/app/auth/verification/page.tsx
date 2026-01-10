@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import axios from "axios";
 import toast from "react-hot-toast";
 import {
@@ -19,6 +20,7 @@ const VerificationPage = () => {
   const [code, setCode] = useState(["", "", "", "", "", ""]);
   const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
   const pendingUser = useAuthStore(state => state.pendingUser)
+  const router = useRouter();
   // Handles input change and auto-move
   const handleChange = (value: string, index: number) => {
     if (!/^\d?$/.test(value)) return; 
@@ -50,6 +52,7 @@ const VerificationPage = () => {
     axios.post("http://127.0.0.1:5000/api/auth/verify-email", { email, code: fullCode })
       .then(response => {
         toast.success(response.data.message || "Email verified successfully!");
+        router.push("/auth/signin");
         console.log("Verification code:", fullCode);
       })
       .catch(error => {

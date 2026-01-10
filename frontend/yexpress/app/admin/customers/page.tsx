@@ -75,6 +75,7 @@ export default function UsersTable() {
               <th className="px-4 py-3 text-left">User</th>
               <th className="px-4 py-3">Role</th>
               <th className="px-4 py-3">Status</th>
+              <th className="px-4 py-3">Verified</th>
               <th className="px-4 py-3">Joined</th>
               <th className="px-4 py-3 text-right">Actions</th>
             </tr>
@@ -86,7 +87,6 @@ export default function UsersTable() {
                   <UserRow
                     key={u._id}
                     user={u}
-                    canBan={role === "admin"}
                     onBanToggle={toggleBan}
                   />
                 ))}

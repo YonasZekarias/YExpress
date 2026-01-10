@@ -2,7 +2,6 @@
 import { useState } from "react";
 import AdminSidebar from "@/components/admin/adminSidebar";
 import AdminHeader from "@/components/admin/adminHeader";
-import { ThemeProvider } from "@/components/ui/theme-provider";
 
 export default function AdminLayout({
   children,

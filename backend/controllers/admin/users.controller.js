@@ -25,8 +25,8 @@ const allUsers = async (req, res) => {
   }
 };
 const getUserById = async (req, res) =>{
-    try {
-        const user = await User.findById(req.params.userID).select('-password')
+    try { 
+        const user = await User.findById(req.params.userId).select('-password')
         if(!user) return res.status(404).json({error : "user not found"})
         res.status(200).json(user)
     } catch (error) {
@@ -36,8 +36,8 @@ const getUserById = async (req, res) =>{
 };
 const banUnbanUser = async (req, res) =>{
     try {
-        const userID = req.params.userID;
-        const user = await User.findById(userID);
+        const userId = req.params.userId;
+        const user = await User.findById(userId);
         if(!user) return res.status(404).json({error : "user not found"})
         user.isBanned = !user.isBanned;
         await user.save();

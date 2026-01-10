@@ -18,28 +18,37 @@ export default function SignInPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+
     try {
       const res = await login({ email, password });
 
-      setLoading(false);
-
       if (!res.success) {
-        toast.error("LogIn failed");
+        console.log("Login failed:", res.message);
+        toast.error("Login failed: " + res.message);
+
+        // Redirect if email not verified
+        if (res.message === "Please verify your email first.") {
+          router.push("/auth/verification");
+        }
         return;
       }
+      // Successful login
       const { role } = useAuthStore.getState();
-      const {user} = useAuthStore.getState();
-      console.log("Logged in user:", user, role);
+      const { user } = useAuthStore.getState();
+
       if (role === "admin") {
         router.push("/admin/");
-      }
-      else if (role === "user") {
+      } else if (role === "user") {
         router.push("/users/overview");
       }
-    }finally{
-      setLoading(false)
+    } catch (err) {
+      console.error(err);
+      toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
     }
   };
+
   return (
     <AuthFormContainer title="Sign In" onBack={() => router.push("/")}>
       <form onSubmit={handleLogin} className="space-y-6">

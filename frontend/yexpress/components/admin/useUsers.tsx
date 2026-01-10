@@ -2,7 +2,8 @@
 
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
-
+import { banUnbanUser } from "@/services/admin.service";
+import toast from "react-hot-toast";
 export interface User {
   _id: string;
   username: string;
@@ -58,13 +59,20 @@ export function useUsers(currentUserRole: string | undefined) {
       });
 
       setUsers(res.data.users);
+      console.log("Fetched Users:", res.data.users);
       setNextCursor(res.data.nextCursor);
     } catch (err) {
       console.error("Fetch Error:", err);
     } finally {
       setLoading(false);
     }
-  }, [cursor, debouncedSearch, filters.role, filters.verified, filters.isBanned]);
+  }, [
+    cursor,
+    debouncedSearch,
+    filters.role,
+    filters.verified,
+    filters.isBanned,
+  ]);
 
   // When filters change, reset the pagination to the first page
   useEffect(() => {
@@ -77,20 +85,22 @@ export function useUsers(currentUserRole: string | undefined) {
   }, [fetchUsers]);
 
   const next = () => nextCursor && setCursorStack((p) => [...p, nextCursor]);
-  const prev = () => cursorStack.length > 1 && setCursorStack((p) => p.slice(0, -1));
+  const prev = () =>
+    cursorStack.length > 1 && setCursorStack((p) => p.slice(0, -1));
 
   const toggleBan = async (id: string) => {
-    if (currentUserRole !== "admin") return;
-    const originalUsers = [...users];
-    setUsers((prev) => prev.map((u) => (u._id === id ? { ...u, isBanned: !u.isBanned } : u)));
-
     try {
-      await axios.patch(`http://localhost:5000/api/admin/users/${id}/ban`, {}, { withCredentials: true });
-    } catch {
-      setUsers(originalUsers);
+      await banUnbanUser(id);
+      setUsers((prevUsers) =>
+        prevUsers.map((user) =>
+          user._id === id ? { ...user, isBanned: !user.isBanned } : user
+        )
+      );
+      toast.success("User ban status updated");
+    } catch (err) {
+      toast.error("Failed to update user ban status");
     }
   };
-
   return {
     users,
     loading,

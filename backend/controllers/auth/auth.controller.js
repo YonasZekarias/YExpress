@@ -49,7 +49,7 @@ exports.register = async (req, res) => {
 
 exports.verifyEmail = async (req, res) => {
   try {
-    verificationCode = "123456"; // 🔥 Testing code
+    verificationCode = "123456"; //Testing code
     const { email, code } = req.body;
 
     const user = await User.findOne({ email });
