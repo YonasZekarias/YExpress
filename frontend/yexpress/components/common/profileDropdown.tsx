@@ -9,7 +9,9 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import LogoutAlert from "../common/logoutAlert";
-
+import UserInfoDialog from "./userInfoDialgo";
+import { useState } from "react";
+import useAuthStore from "@/store/authStore";
 interface ProfileDropdownProps {
   avatar: string;
   username?: string;
@@ -27,8 +29,9 @@ const ProfileDropdown = ({
   role,
   createdAt,
 }: ProfileDropdownProps) => {
+  const user = useAuthStore((state) => state.user);
   const router = useRouter();
-
+  const [open, setOpen] = useState(false)
   const memberSince = createdAt
     ? new Date(createdAt).toLocaleDateString(undefined, {
         month: "short",
@@ -52,7 +55,7 @@ const ProfileDropdown = ({
           <div className="flex items-center space-x-3">
             <img src={avatar} alt="Profile" className="w-10 h-10 rounded-full" />
             <div>
-              <p className="font-semibold text-slate-800">
+              <p className="font-semibold text-slate-550">
                 {username || "User"}
               </p>
               <p className="text-sm text-slate-500">{email}</p>
@@ -72,11 +75,8 @@ const ProfileDropdown = ({
           </div>
         </div>
 
-        <DropdownMenuItem
-          onClick={() => router.push("/users/profile")}
-          className="cursor-pointer"
-        >
-          Profile
+        <DropdownMenuItem onClick={() => setOpen(true)} className="cursor-pointer">
+          View Profile
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />
@@ -86,6 +86,7 @@ const ProfileDropdown = ({
           <LogoutAlert />
         </div>
       </DropdownMenuContent>
+      <UserInfoDialog open={open} userId={user} onOpenChange={setOpen} />
     </DropdownMenu>
   );
 };
