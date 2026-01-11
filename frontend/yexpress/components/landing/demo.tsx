@@ -30,56 +30,65 @@ const steps = [
 
 const Demo = () => {
   return (
-    <section id="demo" className="py-20 bg-white sm:py-28">
+    <section
+      id="demo"
+      className="py-20 sm:py-28 bg-white dark:bg-slate-900"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
         <div className="text-center mb-16">
-          <span className="text-indigo-600 font-semibold uppercase tracking-wider text-sm">Demo</span>
-          <h2 className="text-4xl font-extrabold text-slate-900 mt-3 sm:text-5xl">
+          <span className="text-indigo-600 dark:text-indigo-400 font-semibold uppercase tracking-wider text-sm">
+            Demo
+          </span>
+          <h2 className="text-4xl font-extrabold text-slate-900 dark:text-slate-100 mt-3 sm:text-5xl">
             See YExpress in Action
           </h2>
-          <p className="mt-4 text-xl text-slate-500 max-w-3xl mx-auto">
+          <p className="mt-4 text-xl text-slate-500 dark:text-slate-400 max-w-3xl mx-auto">
             A seamless experience for both your customers and your operations team.
           </p>
         </div>
 
-        {/* Desktop Layout */}
+        {/* Desktop */}
         <div className="hidden lg:grid grid-cols-4 gap-8 relative">
-          {/* Connector Line */}
-          <div className="absolute top-1/4 left-0 right-0 h-0.5 bg-slate-200 mx-16"></div>
+          <div className="absolute top-1/4 left-0 right-0 h-0.5 bg-slate-200 dark:bg-slate-700 mx-16" />
 
           {steps.map((step, index) => (
             <div key={index} className="flex flex-col items-center text-center relative z-10">
-              {/* Icon Circle */}
-              <div className={`p-4 rounded-full ${step.color} shadow-xl ring-4 ring-white mb-6`}>
+              <div className={`p-4 rounded-full ${step.color} shadow-xl ring-4 ring-white dark:ring-slate-900 mb-6`}>
                 {step.icon}
               </div>
-              
-              <h3 className="text-xl font-bold text-slate-900 mb-2">{step.title}</h3>
-              <p className="text-slate-600 text-base">{step.description}</p>
+              <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+                {step.title}
+              </h3>
+              <p className="text-slate-600 dark:text-slate-400 text-base">
+                {step.description}
+              </p>
             </div>
           ))}
         </div>
 
-        {/* Mobile/Tablet Vertical Layout */}
+        {/* Mobile */}
         <div className="lg:hidden space-y-8">
-            {steps.map((step, index) => (
-                 <div key={index} className="flex items-start space-x-4">
-                     <div className="flex flex-col items-center">
-                         {/* Icon Circle */}
-                        <div className={`p-3 rounded-full ${step.color} ring-2 ring-white shadow-md shrink-0`}>
-                            {step.icon}
-                        </div>
-                        {/* Vertical Line */}
-                        {index < steps.length - 1 && (
-                            <div className="w-0.5 h-16 bg-slate-200"></div>
-                        )}
-                     </div>
-                     <div className="pt-2">
-                        <h3 className="text-xl font-bold text-slate-900 mb-1">{step.title}</h3>
-                        <p className="text-slate-600 text-base">{step.description}</p>
-                     </div>
-                 </div>
-            ))}
+          {steps.map((step, index) => (
+            <div key={index} className="flex items-start space-x-4">
+              <div className="flex flex-col items-center">
+                <div className={`p-3 rounded-full ${step.color} ring-2 ring-white dark:ring-slate-900 shadow-md`}>
+                  {step.icon}
+                </div>
+                {index < steps.length - 1 && (
+                  <div className="w-0.5 h-16 bg-slate-200 dark:bg-slate-700" />
+                )}
+              </div>
+              <div className="pt-2">
+                <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-1">
+                  {step.title}
+                </h3>
+                <p className="text-slate-600 dark:text-slate-400">
+                  {step.description}
+                </p>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>

@@ -19,24 +19,25 @@ import { Button } from "@/components/ui/button";
 const VerificationPage = () => {
   const [code, setCode] = useState(["", "", "", "", "", ""]);
   const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
-  const pendingUser = useAuthStore(state => state.pendingUser)
+  const pendingUser = useAuthStore((state) => state.pendingUser);
   const router = useRouter();
-  // Handles input change and auto-move
+
   const handleChange = (value: string, index: number) => {
-    if (!/^\d?$/.test(value)) return; 
+    if (!/^\d?$/.test(value)) return;
 
     const newCode = [...code];
     newCode[index] = value;
     setCode(newCode);
 
-    // Move to next automatically
     if (value && index < 5) {
       inputsRef.current[index + 1]?.focus();
     }
   };
 
-  // Handle backspace focus move
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    index: number
+  ) => {
     if (e.key === "Backspace" && !code[index] && index > 0) {
       inputsRef.current[index - 1]?.focus();
     }
@@ -45,30 +46,37 @@ const VerificationPage = () => {
   const handleSubmit = () => {
     const fullCode = code.join("");
     const email = pendingUser?.email;
+
     if (!email) {
       toast.error("No pending user email found.");
       return;
     }
-    axios.post("http://127.0.0.1:5000/api/auth/verify-email", { email, code: fullCode })
-      .then(response => {
-        toast.success(response.data.message || "Email verified successfully!");
-        router.push("/auth/signin");
-        console.log("Verification code:", fullCode);
+
+    axios
+      .post("http://127.0.0.1:5000/api/auth/verify-email", {
+        email,
+        code: fullCode,
       })
-      .catch(error => {
+      .then((response) => {
+        toast.success(
+          response.data.message || "Email verified successfully!"
+        );
+        router.push("/auth/signin");
+      })
+      .catch((error) => {
         toast.error("Failed to verify email.");
         console.error("Verification error:", error);
       });
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-slate-100 font-sans px-4">
-      <Card className="w-full max-w-md bg-white shadow-md">
+    <div className="flex items-center justify-center min-h-screen bg-slate-100 dark:bg-slate-950 font-sans px-4">
+      <Card className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-md">
         <CardHeader className="text-center">
           <CardTitle className="text-indigo-500 text-2xl font-semibold">
             Email Verification
           </CardTitle>
-          <CardDescription className="mt-1 text-gray-600">
+          <CardDescription className="mt-1 text-slate-600 dark:text-slate-400">
             Enter the 6-digit code we sent to your email address.
           </CardDescription>
         </CardHeader>
@@ -84,13 +92,21 @@ const VerificationPage = () => {
                   inputMode="numeric"
                   onChange={(e) => handleChange(e.target.value, i)}
                   onKeyDown={(e) => handleKeyDown(e, i)}
-                  ref={(el) => { inputsRef.current[i] = el; }}
-                  className="w-12 h-12 text-center text-black text-lg font-semibold border-gray-300 focus-visible:ring-indigo-500"
+                  ref={(el) => {
+                    inputsRef.current[i] = el;
+                  }}
+                  className="
+                    w-12 h-12 text-center text-lg font-semibold
+                    bg-white dark:bg-slate-950
+                    text-slate-900 dark:text-white
+                    border-slate-300 dark:border-slate-700
+                    focus-visible:ring-indigo-500
+                  "
                 />
               ))}
             </div>
 
-            <p className="text-center text-sm text-gray-500">
+            <p className="text-center text-sm text-slate-500 dark:text-slate-400">
               Didn’t receive a code?
               <button
                 className="ml-1 text-indigo-500 hover:underline"

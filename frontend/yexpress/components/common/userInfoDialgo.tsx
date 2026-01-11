@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "../ui/button";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { getUserById, banUnbanUser } from "@/services/admin.service";
 import useAuthStore from "@/store/authStore";
 import toast from "react-hot-toast";
@@ -35,7 +36,7 @@ interface UserInfoDialogProps {
 
 const UserInfoDialog = ({ userId, open, onOpenChange }: UserInfoDialogProps) => {
   const userRole = useAuthStore((state) => state.role);
-
+  const router = useRouter();
   const [userData, setUserData] = useState<UserData>({
     _id: "",
     username: "",
@@ -119,6 +120,12 @@ const UserInfoDialog = ({ userId, open, onOpenChange }: UserInfoDialogProps) => 
 
           {userRole === "admin" && (
             <Button variant="destructive">Delete User</Button>
+          )}
+          {userRole === "user" &&(
+            <Button onClick={()=>{
+              router.push('/users/profile')
+              onOpenChange(false);
+            }} variant="default">Edit Profile</Button>
           )}
         </DialogFooter>
       </DialogContent>

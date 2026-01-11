@@ -10,15 +10,20 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>
+      <body className="bg-background text-foreground overflow-x-hidden">
         <ThemeProvider>
-          <div className="min-h-screen bg-background text-foreground">
+          <div className="min-h-screen w-full">
             <AuthHydrator />
-            <main className="container">{children}</main>
+
+            {/* Full-width wrapper */}
+            <main className="w-full">
+              {children}
+            </main>
+
             <Toaster
               position="bottom-center"
               toastOptions={{
-                duration: 4000, // default duration
+                duration: 4000,
                 style: {
                   padding: "16px 20px",
                   borderRadius: "12px",

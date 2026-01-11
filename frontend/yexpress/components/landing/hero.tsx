@@ -12,17 +12,18 @@ const Hero = () => {
         <div className="lg:grid lg:grid-cols-2 gap-16 items-center">
           {/* Hero Text */}
           <div className="text-center lg:text-left max-w-2xl mx-auto lg:mx-0 mb-12 lg:mb-0">
-            <div className="inline-flex items-center px-4 py-2 rounded-full bg-indigo-50 text-indigo-700 text-sm font-semibold mb-6 border border-indigo-100">
+            <div className="inline-flex items-center px-4 py-2 rounded-full bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-800">
               <span className="flex h-2 w-2 rounded-full bg-indigo-600 mr-2"></span>
               Complete Platform V1.0
             </div>
-            <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight text-slate-900 mb-6 leading-tight">
+            <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 mb-6">
+
               The Ultimate{" "}
               <span className="text-transparent bg-clip-text bg-linear-to-r from-indigo-600 to-violet-600">
                 Commerce Solution
               </span>
             </h1>
-            <p className="text-xl text-slate-600 mb-8 leading-relaxed">
+            <p className="text-xl text-slate-600 dark:text-slate-400 mb-8">
               A complete online shopping platform designed for everyone.
               Customers get a seamless shopping experience, while store owners
               get a powerful dashboard to manage it all.
@@ -53,7 +54,8 @@ const Hero = () => {
           {/* --- Video Container --- */}
           <div id="hero" className="relative w-full">
             <div className="absolute -inset-1 bg-linear-to-r from-indigo-500 to-violet-500 rounded-2xl blur opacity-30"></div>
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-slate-200 bg-slate-900 aspect-video group cursor-pointer">
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-700 bg-slate-900">
+
               {/* Video with fallback */}
               <video
                 className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity duration-500"
@@ -71,7 +73,7 @@ const Hero = () => {
             </div>
 
             {/* Floating Stats Card */}
-            <div className="hidden xl:block absolute -left-12 -bottom-6 bg-white p-5 rounded-2xl shadow-xl border border-slate-100 max-w-xs animate-bounce-slow z-20">
+            <div className="hidden xl:block rounded p-1 absolute -left-12 -bottom-6 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
               <div className="flex items-center space-x-4 mb-3">
                 <div className="bg-green-100 p-2 rounded-lg">
                   <TrendingUp className="h-6 w-6 text-green-600" />
@@ -80,7 +82,7 @@ const Hero = () => {
                   <p className="text-xs text-slate-500 font-medium">
                     Weekly Orders
                   </p>
-                  <p className="text-lg font-bold text-slate-900">1,245</p>
+                  <p className="text-lg font-bold text-slate-900 dark:text-slate-100">1,245</p>
                 </div>
               </div>
             </div>

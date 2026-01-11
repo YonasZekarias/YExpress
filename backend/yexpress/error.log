@@ -4190,3 +4190,11 @@
 {"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-11T03:27:21.113Z"}
 {"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-11T03:27:24.223Z"}
 {"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-11T03:27:27.231Z"}
+{"level":"error","message":"No refresh token provided","timestamp":"2026-01-11T04:00:44.057Z"}
+{"level":"error","message":"No refresh token provided","timestamp":"2026-01-11T04:00:44.085Z"}
+{"level":"error","message":"No refresh token provided","timestamp":"2026-01-11T04:00:57.354Z"}
+{"level":"error","message":"No refresh token provided","timestamp":"2026-01-11T04:00:57.358Z"}
+{"level":"error","message":"No refresh token provided","timestamp":"2026-01-11T04:04:49.183Z"}
+{"level":"error","message":"No refresh token provided","timestamp":"2026-01-11T04:19:48.384Z"}
+{"level":"error","message":"No refresh token provided","timestamp":"2026-01-11T04:22:46.573Z"}
+{"level":"error","message":"No refresh token provided","timestamp":"2026-01-11T04:25:11.817Z"}

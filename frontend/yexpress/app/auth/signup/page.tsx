@@ -1,8 +1,8 @@
 "use client";
-
 import { useState } from "react";
 import AuthFormContainer from "../_components/AuthFormContainer";
-import { Mail, Lock, User } from "lucide-react";
+import { Input } from "@/components/ui/input"
+import { Mail, Lock, User, Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import useAuthStore from "@/store/authStore";
 import toast from "react-hot-toast";
@@ -14,43 +14,35 @@ export default function SignUpPage() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+
   const { signupUser } = useAuthStore();
 
-const handleSignup = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setLoading(true);
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
 
-  try {
-    const res = await signupUser({
-      username,
-      email,
-      phone,
-      password,
-    });
+    try {
+      const res = await signupUser({ username, email, phone, password });
+      if (!res.success) {
+        toast.error(res.message || "Signup failed");
+        return;
+      }
 
-    if (!res.success) {
-      toast.error(res.message || "Signup failed");
-      return;
+      toast.success("Account created successfully 🎉");
+      router.push("/auth/verification");
+    } finally {
+      setLoading(false);
     }
-
-    toast.success("Account created successfully 🎉");
-    router.push("/auth/verification");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   return (
-    <AuthFormContainer
-      title="Sign Up"
-      onBack={() => router.push("/")}
-    >
+    <AuthFormContainer title="Sign Up" onBack={() => router.push("/")}>
       <form onSubmit={handleSignup} className="space-y-6">
-
-        {/* username */}
+        {/* Username */}
         <div>
-          <label className="text-sm font-medium text-slate-700 block mb-2">
+          <label className="text-sm font-medium text-slate-700 dark:text-slate-300 block mb-2">
             Username
           </label>
           <div className="relative">
@@ -58,8 +50,8 @@ const handleSignup = async (e: React.FormEvent) => {
             <input
               type="text"
               required
-              placeholder="John Doe"
-              className="w-full pl-10 pr-4 py-3 border text-black border-slate-300 rounded-xl focus:ring-violet-500 focus:border-violet-500"
+              className="w-full pl-10 pr-4 py-3 border rounded-xl bg-white dark:bg-slate-900 text-slate-900 dark:text-white border-slate-300 dark:border-slate-700 focus:ring-violet-500 focus:border-violet-500"
+              placeholder="Username"
               value={username}
               disabled={loading}
               onChange={(e) => setUsername(e.target.value)}
@@ -69,7 +61,7 @@ const handleSignup = async (e: React.FormEvent) => {
 
         {/* Email */}
         <div>
-          <label className="text-sm font-medium text-slate-700 block mb-2">
+          <label className="text-sm font-medium text-slate-700 dark:text-slate-300 block mb-2">
             Email Address
           </label>
           <div className="relative">
@@ -77,86 +69,75 @@ const handleSignup = async (e: React.FormEvent) => {
             <input
               type="email"
               required
-              placeholder="you@example.com"
-              className="w-full pl-10 pr-4 py-3 border text-black border-slate-300 rounded-xl focus:ring-violet-500 focus:border-violet-500"
+              className="w-full pl-10 pr-4 py-3 border rounded-xl bg-white dark:bg-slate-900 text-slate-900 dark:text-white border-slate-300 dark:border-slate-700 focus:ring-violet-500 focus:border-violet-500"
+              placeholder="Email address"
               value={email}
               disabled={loading}
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
         </div>
-        {/* phone */}
+
+        {/* Phone */}
         <div>
-          <label className="text-sm font-medium text-slate-700 block mb-2">
+          <label className="text-sm font-medium text-slate-700 dark:text-slate-300 block mb-2">
             Phone Number
           </label>
           <div className="relative">
             <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-violet-400" />
             <input
-              type="text"
-              required
-              placeholder="John Doe"
-              className="w-full pl-10 pr-4 py-3 border text-black border-slate-300 rounded-xl focus:ring-violet-500 focus:border-violet-500"
+              type="tel"
+              className="w-full pl-10 pr-4 py-3 border rounded-xl bg-white dark:bg-slate-900 text-slate-900 dark:text-white border-slate-300 dark:border-slate-700 focus:ring-violet-500 focus:border-violet-500"
+              placeholder="Phone number"
               value={phone}
               disabled={loading}
               onChange={(e) => setPhone(e.target.value)}
             />
           </div>
         </div>
+
         {/* Password */}
         <div>
-          <label className="text-sm font-medium text-slate-700 block mb-2">
+          <label className="text-sm font-medium text-slate-700 dark:text-slate-300 block mb-2">
             Password
           </label>
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-violet-400" />
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               required
               minLength={6}
+              className="w-full pl-10 pr-12 py-3 border rounded-xl bg-white dark:bg-slate-900 text-slate-900 dark:text-white border-slate-300 dark:border-slate-700 focus:ring-violet-500 focus:border-violet-500"
               placeholder="Minimum 6 characters"
-              className="w-full pl-10 pr-4 py-3 border text-black border-slate-300 rounded-xl focus:ring-violet-500 focus:border-violet-500"
               value={password}
               disabled={loading}
               onChange={(e) => setPassword(e.target.value)}
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-violet-500"
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
           </div>
         </div>
 
-        {/* Submit */}
         <button
           type="submit"
           disabled={loading}
           className="w-full py-3 bg-violet-600 text-white font-bold rounded-xl hover:bg-violet-700 transition flex items-center justify-center space-x-2"
         >
-          {loading ? (
-            <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
-              <circle
-                className="opacity-25"
-                cx="12" cy="12" r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.37 0 0 5.37 0 12h4z"
-              />
-            </svg>
-          ) : (
-            <>
-              <User className="h-5 w-5" />
-              <span>Create Account</span>
-            </>
-          )}
+          <User className="h-5 w-5" />
+          <span>Create Account</span>
         </button>
       </form>
 
-      <p className="mt-8 text-center text-sm text-slate-600">
+      <p className="mt-8 text-center text-sm text-slate-600 dark:text-slate-400">
         Already have an account?{" "}
         <button
           onClick={() => router.push("/auth/signin")}
-          className="font-semibold text-violet-600 hover:text-violet-800"
+          className="font-semibold text-violet-600 hover:text-violet-800 dark:hover:text-violet-400"
         >
           Sign In
         </button>
