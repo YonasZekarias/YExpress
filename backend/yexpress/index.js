@@ -9,7 +9,7 @@ const { connectRedis } = require("./config/redis");
 const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
 const adminRoutes = require("./routes/admin.routes");
-
+const commonRoutes = require("./routes/common.route");
 const app = express();
 
 
@@ -26,6 +26,7 @@ app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/me", commonRoutes);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 // Define routes here
 

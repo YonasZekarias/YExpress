@@ -1,4 +1,4 @@
-const {protect} = require('../middleware/auth.middleware');
+const protect = require('../middleware/auth.middleware');
 const role = require('../middleware/role.middleware');
 const {addAttribute,deleteAttribute,editAttribute,getAllAtributes} = require('../controllers/admin/attribute.controller')
 const {addCategory, allCategories,deleteCategory,editCategory,getACategoryByID} = require('../controllers/admin/category.controller')

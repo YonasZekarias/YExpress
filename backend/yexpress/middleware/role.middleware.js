@@ -1,6 +1,7 @@
 const role = (requiredRole) => {
   return (req, res, next) => {
     if (!req.user) {
+      console.log('role is',requiredRole);
       return res.status(401).json({ message: 'Unauthorized' });
     }
 

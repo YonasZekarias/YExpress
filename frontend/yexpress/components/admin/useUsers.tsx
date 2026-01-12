@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { banUnbanUser } from "@/services/admin.service";
 import toast from "react-hot-toast";
+
 export interface User {
   _id: string;
   username: string;

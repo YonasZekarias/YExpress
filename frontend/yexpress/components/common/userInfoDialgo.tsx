@@ -15,7 +15,7 @@ import { useRouter } from "next/navigation";
 import { getUserById, banUnbanUser } from "@/services/admin.service";
 import useAuthStore from "@/store/authStore";
 import toast from "react-hot-toast";
-
+import { getProfile } from "@/services/common.service";
 interface UserData {
   _id: string;
   username: string;
@@ -58,8 +58,14 @@ const UserInfoDialog = ({ userId, open, onOpenChange }: UserInfoDialogProps) => 
     try {
       setLoading(true);
       setError(null);
-      const response = await getUserById(userId);
-      setUserData(response.data);
+      const response = async () => {
+        if (userRole === "admin") {
+          return getUserById(userId);
+        } else {
+          return getProfile();
+        }
+      }
+      setUserData((await response()).data);
     } catch (err) {
       console.error("Error fetching user data:", err);
       setError("Failed to load user data");
