@@ -80,18 +80,6 @@ const UserInfoDialog = ({ userId, open, onOpenChange }: UserInfoDialogProps) => 
     }
   }, [userId, open]);
 
-  // Handle Ban/Unban
-  const handleBanUnban = async () => {
-    try {
-      await banUnbanUser(userId);
-      toast.success("User status updated successfully");
-      await fetchUserData(); // Refresh user data after action
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to update user status");
-    }
-  };
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">

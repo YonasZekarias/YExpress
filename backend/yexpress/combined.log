@@ -4646,3 +4646,184 @@
 {"level":"info","message":"redis connected successfully","timestamp":"2026-01-12T17:56:03.626Z"}
 {"level":"info","message":"MongoDB Atlas connected successfully!","timestamp":"2026-01-12T17:56:03.645Z"}
 {"level":"info","message":"Redis connected successfully","timestamp":"2026-01-12T17:56:04.095Z"}
+{"level":"error","message":"Redis error: read ETIMEDOUT","timestamp":"2026-01-12T18:16:22.327Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:16:27.336Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:16:32.340Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:16:37.453Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:16:42.661Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:16:47.964Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:16:53.393Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:16:58.896Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:17:04.498Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:17:10.226Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:17:16.040Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:17:21.943Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:17:27.947Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:17:34.049Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:17:40.251Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:17:46.553Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:17:52.956Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:17:59.461Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:18:06.064Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:18:12.766Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:18:19.568Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:18:26.477Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:18:33.482Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:18:40.586Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:18:47.801Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:18:55.104Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:19:02.507Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:19:10.010Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:19:17.614Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:19:25.317Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:19:33.121Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:19:41.025Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:19:49.029Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:19:57.032Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:20:05.035Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:20:13.039Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:20:21.041Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:20:29.044Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:20:37.046Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:20:45.049Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:20:53.051Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:21:01.053Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:21:09.057Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:21:17.059Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:21:25.076Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:21:33.080Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:21:41.082Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:21:49.088Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:21:57.090Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:22:05.092Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:22:13.096Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:22:21.098Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:22:29.102Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:22:37.105Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:22:45.108Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:22:53.111Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:23:01.112Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:23:09.113Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:23:17.122Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:23:25.125Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:23:33.129Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:23:41.131Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:23:49.134Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:23:57.137Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:24:05.186Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:24:13.190Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:24:21.192Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:24:29.196Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:24:37.198Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:24:45.201Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:24:53.204Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:25:01.206Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:25:09.207Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:25:17.210Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:25:25.218Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:25:33.221Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:25:41.223Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:25:49.227Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:25:57.251Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:26:05.254Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:26:13.258Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:26:21.262Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:26:29.308Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:26:37.314Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:26:45.318Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:26:53.323Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:27:01.328Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:27:09.331Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:27:17.332Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:27:25.335Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:27:33.338Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:27:41.340Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:27:49.343Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:27:57.346Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:28:05.350Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:28:13.353Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:28:21.357Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:28:29.361Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:28:37.364Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:28:45.367Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:28:53.371Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:29:01.373Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:29:09.376Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:29:17.380Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:29:25.383Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:29:33.388Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:29:41.392Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:29:49.397Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:29:57.402Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:30:05.409Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T18:30:50.013Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T18:30:53.017Z"}
+{"level":"info","message":"Redis connected successfully","timestamp":"2026-01-12T18:30:57.241Z"}
+{"level":"error","message":"Redis error: read ETIMEDOUT","timestamp":"2026-01-12T19:00:20.253Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:00:20.255Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:00:20.258Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:00:20.361Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:00:20.565Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:00:20.869Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:00:21.271Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:00:21.772Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:00:22.379Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:00:23.080Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:00:23.883Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:00:24.787Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:00:25.789Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:00:26.892Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:00:28.095Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:00:29.397Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:00:30.799Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:00:32.302Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:00:33.904Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:00:35.609Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:00:37.411Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:00:39.315Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:00:41.320Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:00:43.424Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:00:45.628Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:00:47.930Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:00:50.333Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:00:52.835Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:00:55.439Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:17:55.060Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:17:57.863Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:18:00.764Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:18:03.767Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:18:06.768Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:18:09.771Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:18:12.774Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:18:15.778Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:18:18.781Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:18:21.785Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:18:24.786Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:18:27.790Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:18:30.792Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:18:33.797Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:18:36.799Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:18:39.801Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:18:42.803Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:45:08.095Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-01-12T19:45:16.099Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:45:19.103Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:45:22.105Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:45:25.107Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:45:28.109Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:45:31.111Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:45:34.114Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:45:37.115Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:45:40.118Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:45:43.122Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:45:46.124Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:45:49.129Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:45:52.133Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:45:55.135Z"}
+{"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:51:25.032Z"}
+{"level":"info","message":"Redis connected successfully","timestamp":"2026-01-12T19:51:29.198Z"}
+{"level":"error","message":"Redis error: read ECONNRESET","timestamp":"2026-01-12T20:08:33.055Z"}
+{"level":"info","message":"Redis connected successfully","timestamp":"2026-01-12T20:08:33.799Z"}
+{"level":"info","message":"redis connected successfully","timestamp":"2026-01-13T18:57:20.402Z"}
+{"level":"info","message":"Redis connected successfully","timestamp":"2026-01-13T18:57:21.383Z"}
+{"level":"error","message":"MongoDB Atlas connection error: connect ECONNREFUSED ::1:27017, connect ECONNREFUSED 127.0.0.1:27017","timestamp":"2026-01-13T18:57:50.379Z"}
