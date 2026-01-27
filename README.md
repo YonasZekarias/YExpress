@@ -46,3 +46,4 @@ The goal is to provide a **simple, fast, and user-friendly shopping experience**
 ## 🗂 Project Structure
 
 ### Frontend (Next.js + ShadCN UI)
+### Backend (Express.js + mongoDB)
