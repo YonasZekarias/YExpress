@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import useAuthStore from "@/store/authStore";
 import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react"; // Add this import
+import { useState } from "react"; 
 
 const LogoutAlert: React.FC = () => {
   const logout = useAuthStore((state) => state.logout);

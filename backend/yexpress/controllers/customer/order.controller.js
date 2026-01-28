@@ -16,7 +16,6 @@ exports.createOrder = async (req, res) => {
 
     const { shippingAddress, paymentMethod } = req.body;
 
-
     const order = await Order.create({
       user: userId,
       items: cart.items.map(item => ({

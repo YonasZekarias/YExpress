@@ -1,6 +1,6 @@
 const Cart = require('../../models/Cart')
 const Product = require('../../models/Product')
-const ProductVariant = require('../../models/ProductVariant')
+const ProductVariant = require('../../models/productVariant')
 const logger = require('../../utils/logger')
 
 const getUserCart = async (req, res) => {

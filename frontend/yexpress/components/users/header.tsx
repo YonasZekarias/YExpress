@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu, Search, Bell } from "lucide-react";
+import { Menu, Search} from "lucide-react";
 import { usePathname } from "next/navigation";
 import ProfileDropdown from "../common/profileDropdown";
 import { ModeToggle } from "../common/modeToggle";

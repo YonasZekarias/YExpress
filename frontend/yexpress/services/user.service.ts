@@ -39,3 +39,13 @@ export const getProductById = (productId: string) =>
 /* ================= REVIEWS ================= */
 export const createReview = (data: any) =>
   api.post("/user/reviews", data);
+
+/* ================= USER ================= */
+export const getUserProfile = () =>
+  api.get("/user/user/profile");
+
+export const editUserProfile = (data: any) =>
+  api.put("/user/user/profile", data);
+
+export const getUserStats = () =>
+  api.get("/user/user/stats");

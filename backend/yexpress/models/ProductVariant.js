@@ -13,4 +13,6 @@ const productVariantSchema = new mongoose.Schema({
   ]
 });
 
-module.exports = mongoose.model("ProductVariant", productVariantSchema);
+const ProductVariant = mongoose.models.ProductVariant || mongoose.model("ProductVariant", productVariantSchema);
+
+module.exports = ProductVariant;

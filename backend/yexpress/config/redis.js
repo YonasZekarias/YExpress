@@ -1,13 +1,11 @@
 const redis = require("redis");
 const logger = require("../utils/logger");
 
-
 const client = redis.createClient({
   url: process.env.REDIS_URL,
   socket: {
     reconnectStrategy: (retries) => Math.min(retries * 100, 3000),
   },
-  
 });
 
 client.on("error", (err) => {
@@ -26,4 +24,5 @@ const connectRedis = async () => {
   }
 };
 
-module.exports = { client, connectRedis };
+// CHANGE IS HERE: Export 'client' as 'redisClient'
+module.exports = { redisClient: client, connectRedis };

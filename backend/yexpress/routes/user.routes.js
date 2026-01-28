@@ -4,6 +4,7 @@ const {getUserCart, clearUserCart, addToCart, editCartItemQuantity,} = require("
 const {createOrder, getUserOrders,getOrderById,cancelOrder,orderStats} = require('../controllers/customer/order.controller')
 const {getAllProduct,getProductById}=require('../controllers/customer/product.controller')
 const {createReview} = require('../controllers/customer/review.controller')
+const {getUserStats,getUserProfile, editUserProfile} = require('../controllers/customer/user.controller')
 const router = require('express').Router();
 
 // Cart routes
@@ -23,9 +24,14 @@ router.get('/orders/stats', orderStats);
 
 // Product routes
 router.get('/products', getAllProduct);
-router.get('/products/:productId', getProductById);
+router.get('/products/:id', getProductById);
 
 // Review routes
 router.post('/reviews', createReview);
+
+// User routes
+router.get('/user/profile', getUserProfile);
+router.put('/user/profile', editUserProfile);
+router.get('/user/stats', getUserStats);
 
 module.exports = router;

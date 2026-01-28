@@ -1,20 +1,27 @@
 "use client";
 
-import {
-  Package,
-  Truck,
-  Heart,
-  MapPin,
-  CreditCard,
-} from "lucide-react";
+import {Package,Truck,Heart,MapPin,CreditCard}from "lucide-react";
 
 import RecentOrdersWidget from "@/components/users/recentOrdersWidget";
 import StatCard from "@/components/users/statCard";
 import useAuthStore from "@/store/authStore";
-
+import {getUserStats} from "@/services/user.service";
+import { useEffect, useState } from "react";
 const Overview = () => {
   const { username } = useAuthStore();
-
+  const [stats, setStats] = useState({ totalOrders: 0,pendingOrders: 0,wishListCount: 0 });
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await getUserStats();
+        setStats(response.data);
+        console.log("User stats fetched:", response.data);
+      } catch (error) {
+        console.log("Error fetching user stats:", error);
+      }
+    };
+    fetchStats();
+  }, []);
   return (
     <div className="space-y-10">
       {/* Header */}
@@ -34,19 +41,19 @@ const Overview = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <StatCard
             title="Total Orders"
-            value="24"
+            value={stats.totalOrders.toString()}
             icon={<Package className="w-6 h-6 text-indigo-600" />}
             color="bg-indigo-50 dark:bg-indigo-900/20"
           />
           <StatCard
             title="Pending Delivery"
-            value="2"
+            value={stats.pendingOrders.toString()}
             icon={<Truck className="w-6 h-6 text-amber-600" />}
             color="bg-amber-50 dark:bg-amber-900/20"
           />
           <StatCard
             title="Wishlist Items"
-            value="12"
+            value={stats.wishListCount.toString()}
             icon={<Heart className="w-6 h-6 text-rose-600" />}
             color="bg-rose-50 dark:bg-rose-900/20"
           />

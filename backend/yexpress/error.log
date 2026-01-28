@@ -4385,3 +4385,24 @@
 {"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-01-12T19:51:25.032Z"}
 {"level":"error","message":"Redis error: read ECONNRESET","timestamp":"2026-01-12T20:08:33.055Z"}
 {"level":"error","message":"MongoDB Atlas connection error: connect ECONNREFUSED ::1:27017, connect ECONNREFUSED 127.0.0.1:27017","timestamp":"2026-01-13T18:57:50.379Z"}
+{"level":"error","message":"No refresh token provided","timestamp":"2026-01-28T17:37:16.129Z"}
+{"level":"error","message":{"details":{},"error":"Error fetching products"},"timestamp":"2026-01-28T18:57:52.194Z"}
+{"level":"error","message":{"details":{},"error":"Error fetching products"},"timestamp":"2026-01-28T18:57:52.590Z"}
+{"level":"error","message":{"details":{},"error":"Error fetching products"},"timestamp":"2026-01-28T18:57:53.415Z"}
+{"level":"error","message":{"details":{},"error":"Error fetching products"},"timestamp":"2026-01-28T18:57:58.019Z"}
+{"level":"error","message":{"details":{},"error":"Error fetching products"},"timestamp":"2026-01-28T18:57:59.409Z"}
+{"level":"error","message":{"details":{},"error":"Error fetching products"},"timestamp":"2026-01-28T18:58:01.708Z"}
+{"level":"error","message":{"details":{},"error":"Error fetching products"},"timestamp":"2026-01-28T18:58:17.705Z"}
+{"level":"error","message":{"details":{},"error":"Error fetching products"},"timestamp":"2026-01-28T18:58:17.982Z"}
+{"level":"error","message":{"details":{},"error":"Error fetching products"},"timestamp":"2026-01-28T18:58:19.886Z"}
+{"level":"error","message":{"details":{},"error":"Error fetching products"},"timestamp":"2026-01-28T18:58:26.581Z"}
+{"level":"error","message":{"details":{},"error":"Error fetching products"},"timestamp":"2026-01-28T19:04:03.332Z"}
+{"level":"error","message":{"details":{},"error":"Error fetching products"},"timestamp":"2026-01-28T19:04:11.086Z"}
+{"level":"error","message":{"details":{},"error":"Error fetching products"},"timestamp":"2026-01-28T19:04:40.704Z"}
+{"level":"error","message":{"details":{},"error":"Error fetching products"},"timestamp":"2026-01-28T19:05:12.055Z"}
+{"level":"error","message":{"details":{},"error":"Error fetching products"},"timestamp":"2026-01-28T19:05:23.133Z"}
+{"level":"error","message":{"details":{},"error":"Error fetching products"},"timestamp":"2026-01-28T19:07:33.268Z"}
+{"level":"error","message":{"details":{},"error":"Error fetching products"},"timestamp":"2026-01-28T19:13:09.368Z"}
+{"level":"error","message":{"details":{},"error":"Error fetching products"},"timestamp":"2026-01-28T19:14:08.470Z"}
+{"level":"error","message":{"details":{},"error":"Error fetching product"},"timestamp":"2026-01-28T19:45:59.830Z"}
+{"level":"error","message":{"details":{},"error":"Error fetching product"},"timestamp":"2026-01-28T19:47:42.190Z"}

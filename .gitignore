@@ -10,6 +10,7 @@ frontend/yexpress/.next/
 frontend/yexpress/out/
 frontend/yexpress/.turbo/
 frontend/yexpress/dist/
+frontend/yexpress/.DS_Store/
 
 # Env files
 frontend/yexpress/.env
