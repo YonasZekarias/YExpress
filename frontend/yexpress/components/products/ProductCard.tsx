@@ -30,7 +30,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   return (
     <Link href={`/users/products/${product._id}`} className="group block">
       <div className="
-        relative border rounded-lg overflow-hidden transition-all duration-300 shadow-sm hover:shadow-md
+        relative border rounded-lg overflow-hidden transition-all shadow-sm hover:scale-105  duration-300
         bg-white border-gray-200
         dark:bg-gray-800 dark:border-gray-700
       ">
@@ -41,7 +41,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             src={mainImage}
             alt={product.name}
             fill
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
+            className="object-cover group-hover:scale-105 transition-transform duration-500"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         </div>

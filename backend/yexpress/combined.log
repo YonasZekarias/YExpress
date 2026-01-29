@@ -5030,3 +5030,15 @@
 {"level":"info","message":"Cache hit for product:697a48b9251517ece90169ef","timestamp":"2026-01-28T19:58:56.875Z"}
 {"level":"info","message":"Cache hit for product:697a48b9251517ece90169ef","timestamp":"2026-01-28T19:59:26.950Z"}
 {"level":"info","message":"Cache hit for product:697a48bb251517ece9016a00","timestamp":"2026-01-28T20:00:15.747Z"}
+{"level":"info","message":"redis connected successfully","timestamp":"2026-01-29T20:18:30.448Z"}
+{"level":"info","message":"Redis connected successfully","timestamp":"2026-01-29T20:18:31.643Z"}
+{"level":"info","message":"MongoDB Atlas connected successfully!","timestamp":"2026-01-29T20:18:36.451Z"}
+{"level":"info","message":"Cache hit for products:all:page=2","timestamp":"2026-01-29T20:23:05.352Z"}
+{"level":"info","message":"Cache hit for product:697a48d1251517ece9016abb","timestamp":"2026-01-29T20:23:07.464Z"}
+{"level":"info","message":"Cache hit for product:697a48d1251517ece9016abb","timestamp":"2026-01-29T20:23:37.400Z"}
+{"level":"info","message":"Cache hit for products:all:page=2","timestamp":"2026-01-29T20:24:03.783Z"}
+{"level":"info","message":"Cache hit for products:all:page=2","timestamp":"2026-01-29T20:26:52.833Z"}
+{"level":"info","message":"Cache hit for products:all:page=2","timestamp":"2026-01-29T20:27:07.419Z"}
+{"level":"info","message":"Cache hit for products:all:page=2","timestamp":"2026-01-29T20:29:18.230Z"}
+{"level":"info","message":"Cache hit for products:all:page=2","timestamp":"2026-01-29T20:29:42.450Z"}
+{"level":"info","message":"Cache hit for products:all:page=2","timestamp":"2026-01-29T20:30:04.587Z"}

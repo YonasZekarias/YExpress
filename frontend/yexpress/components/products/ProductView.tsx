@@ -30,8 +30,7 @@ export default function ProductView({ product, variants, priceRange }: ProductVi
   const [quantity, setQuantity] = useState(1);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 ">
       <div className="space-y-4">
         <div className="relative aspect-square overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
           <Image
