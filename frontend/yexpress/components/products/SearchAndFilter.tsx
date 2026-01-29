@@ -47,7 +47,7 @@ export default function SearchAndFilter({ categories }: SearchAndFilterProps) {
         updateFilters('search', searchTerm);
       }
     }, 500);
-
+    console.log(categories.map((cat) => cat.name));
     return () => clearTimeout(timer);
   }, [searchTerm]);
 

@@ -1,92 +1,106 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { Star } from 'lucide-react';
+import { Star, Plus } from 'lucide-react';
 import { Product } from '@/types/product';
 
 interface ProductCardProps {
   product: Product;
 }
 
-// Helper to fix image paths or return placeholder for seed data
 const getImageUrl = (photo?: string): string => {
-  // 1. If no photo, return placeholder
   if (!photo) return '/placeholder.jpg';
-  
-  // 2. If it's a real URL (http) or a local file path (/), use it
-  if (photo.startsWith('http') || photo.startsWith('/')) {
-    return photo;
-  }
-
-  // 3. If it is seed data like "phone-1" or "prodt-1", return placeholder
-  // (Or you could map these to specific files later if you have them)
+  if (photo.startsWith('http') || photo.startsWith('/')) return photo;
   return '/placeholder.jpg';
 };
 
+const isNewArrival = (dateString?: string) => {
+  if (!dateString) return false;
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffTime = Math.abs(now.getTime() - date.getTime());
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return diffDays <= 7;
+};
+
 export default function ProductCard({ product }: ProductCardProps) {
-  // Safe Image Handling
-  const rawPhoto = product.photo && product.photo.length > 0 ? product.photo[0] : undefined;
-  const mainImage = getImageUrl(rawPhoto);
+  // If product.photo is empty, use the variant photo if backend sends it, else placeholder
+  // For now, using product.photo as per your schema
+  const mainImage = getImageUrl(product.photo?.[0]);
+  
+  const isOutOfStock = product.stock === 0;
+  const isLowStock = product.stock > 0 && product.stock <= 5;
+  const isNew = isNewArrival(product.createdAt);
+  
+  // Backend now guarantees 'price' is the minimum variant price
+  const displayPrice = product.price || 0;
 
   return (
-    <Link href={`/users/products/${product._id}`} className="group block">
-      <div className="
-        relative border rounded-lg overflow-hidden transition-all shadow-sm hover:scale-105  duration-300
-        bg-white border-gray-200
-        dark:bg-gray-800 dark:border-gray-700
-      ">
+    <Link href={`/users/products/${product._id}`} className="group relative flex flex-col h-full bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
         
-        {/* Image Container */}
-        <div className="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-700">
+        <div className="relative aspect-4/5 w-full overflow-hidden bg-gray-100 dark:bg-gray-900">
           <Image
             src={mainImage}
             alt={product.name}
             fill
-            className="object-cover group-hover:scale-105 transition-transform duration-500"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className={`object-cover transition-transform duration-700 ease-out group-hover:scale-105 ${isOutOfStock ? 'opacity-50 grayscale' : ''}`}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
           />
+
+          <div className="absolute top-3 left-3 flex flex-col gap-2 z-10">
+            {isOutOfStock ? (
+              <span className="bg-gray-900/90 text-white text-[10px] font-bold px-2 py-1 uppercase tracking-wider rounded-sm backdrop-blur-sm">
+                Sold Out
+              </span>
+            ) : (
+              <>
+                {isNew && (
+                  <span className="bg-blue-600 text-white text-[10px] font-bold px-2 py-1 uppercase tracking-wider rounded-sm shadow-sm">
+                    New
+                  </span>
+                )}
+                {isLowStock && (
+                  <span className="bg-orange-500 text-white text-[10px] font-bold px-2 py-1 uppercase tracking-wider rounded-sm shadow-sm">
+                    Low Stock
+                  </span>
+                )}
+              </>
+            )}
+          </div>
         </div>
 
-        {/* Content */}
-        <div className="p-4">
-          {/* Category Label */}
-          <p className="text-xs font-medium uppercase tracking-wide mb-1 
-            text-gray-500 dark:text-gray-400">
-            {product.category?.name || 'Uncategorized'}
+        <div className="p-4 flex flex-col flex-1">
+          <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
+            {product.category?.name || 'General'}
           </p>
-          
-          {/* Product Name */}
-          <h3 className="text-lg font-semibold truncate 
-            text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+
+          <h3 className="text-base font-semibold text-gray-900 dark:text-white line-clamp-2 min-h-12 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
             {product.name}
           </h3>
-          
-          {/* Rating */}
-          <div className="flex items-center mt-2">
-            <Star className="w-4 h-4 text-yellow-400 fill-current" />
-            <span className="ml-1 text-sm text-gray-600 dark:text-gray-300">
-              {product.averageRating.toFixed(1)} ({product.ratingsCount})
+
+          <div className="flex items-center gap-1 mt-2 mb-3">
+            <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
+            <span className="text-sm font-medium text-gray-900 dark:text-gray-200">
+              {product.averageRating?.toFixed(1) || '0.0'}
+            </span>
+            <span className="text-xs text-gray-500 dark:text-gray-400">
+              ({product.ratingsCount || 0} reviews)
             </span>
           </div>
 
-          {/* Footer: Price & Button */}
-          <div className="mt-4 flex items-center justify-between">
-            <span className="text-lg font-bold text-gray-900 dark:text-gray-100">
-              {/* Check if minPrice exists */}
-              {product.minPrice !== undefined && product.minPrice !== null && product.minPrice > 0
-                ? `$${product.minPrice.toFixed(2)}` 
-                : <span className="text-sm font-medium text-blue-600 dark:text-blue-400">View Options</span>
-              }
-            </span>
-            
-            <button className="text-sm font-medium px-4 py-2 rounded-md transition-colors
-              bg-black text-white hover:bg-gray-800
-              dark:bg-white dark:text-black dark:hover:bg-gray-200"
-            >
-              View
-            </button>
+          <div className="mt-auto flex items-end justify-between pt-3 border-t border-gray-100 dark:border-gray-700/50">
+            <div className="flex flex-col">
+              <span className="text-lg font-bold text-gray-900 dark:text-white">
+                {displayPrice > 0 ? `$${displayPrice.toFixed(2)}` : 'N/A'}
+              </span>
+            </div>
+
+            {!isOutOfStock && (
+               <div className="h-8 w-8 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white flex items-center justify-center transition-colors group-hover:bg-black group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black">
+                 <Plus className="w-4 h-4" />
+               </div>
+            )}
           </div>
         </div>
-      </div>
     </Link>
   );
 }
