@@ -4,17 +4,31 @@ export interface Category {
   slug: string;
 }
 
-// ADD THIS INTERFACE
-export interface Variant {
+// types/product.ts
+
+export interface Attribute {
   _id: string;
-  product: string; // Reference to parent product ID
-  sku: string;
-  price: number;
-  stock: number;
-  // Allows dynamic attributes like { Color: "Red", Size: "L" }
-  attributes: Record<string, string>; 
+  name: string; // e.g., "Color"
 }
 
+export interface AttributeValue {
+  _id: string;
+  value: string; // e.g., "Red" (Check your DB if this field is called 'name' or 'value')
+}
+
+export interface VariantAttribute {
+  _id?: string;
+  attribute: Attribute | string; // Can be populated object OR string ID
+  value: AttributeValue | string; // Can be populated object OR string ID
+}
+
+export interface Variant {
+  _id: string;
+  product: string;
+  price: number;
+  stock: number;
+  attributes: VariantAttribute[];
+}
 export interface Product {
   _id: string;
   name: string;

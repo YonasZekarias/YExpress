@@ -2,7 +2,7 @@ const protect = require('../middleware/auth.middleware')
 const role = require('../middleware/role.middleware')  
 const {getUserCart, clearUserCart, addToCart, editCartItemQuantity,} = require("../controllers/customer/cart.controller")
 const {createOrder, getUserOrders,getOrderById,cancelOrder,orderStats} = require('../controllers/customer/order.controller')
-const {getAllProduct,getProductById}=require('../controllers/customer/product.controller')
+const {getAllCategories,getAllProduct,getProductById}=require('../controllers/customer/product.controller')
 const {createReview} = require('../controllers/customer/review.controller')
 const {getUserStats,getUserProfile, editUserProfile} = require('../controllers/customer/user.controller')
 const router = require('express').Router();
@@ -23,6 +23,7 @@ router.put('/orders/:orderId/cancel', cancelOrder);
 router.get('/orders/stats', orderStats);
 
 // Product routes
+router.get('/products/categories', getAllCategories);
 router.get('/products', getAllProduct);
 router.get('/products/:id', getProductById);
 

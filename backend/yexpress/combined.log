@@ -5042,3 +5042,27 @@
 {"level":"info","message":"Cache hit for products:all:page=2","timestamp":"2026-01-29T20:29:18.230Z"}
 {"level":"info","message":"Cache hit for products:all:page=2","timestamp":"2026-01-29T20:29:42.450Z"}
 {"level":"info","message":"Cache hit for products:all:page=2","timestamp":"2026-01-29T20:30:04.587Z"}
+{"level":"info","message":"redis connected successfully","timestamp":"2026-01-29T20:39:05.728Z"}
+{"level":"info","message":"Redis connected successfully","timestamp":"2026-01-29T20:39:06.561Z"}
+{"level":"info","message":"MongoDB Atlas connected successfully!","timestamp":"2026-01-29T20:39:09.711Z"}
+{"level":"info","message":"redis connected successfully","timestamp":"2026-01-29T20:52:32.060Z"}
+{"level":"info","message":"Redis connected successfully","timestamp":"2026-01-29T20:52:32.698Z"}
+{"level":"info","message":"MongoDB Atlas connected successfully!","timestamp":"2026-01-29T20:52:35.262Z"}
+{"level":"info","message":"Redis connected successfully","timestamp":"2026-01-29T20:53:54.694Z"}
+{"level":"info","message":"redis connected successfully","timestamp":"2026-01-29T20:53:54.760Z"}
+{"level":"info","message":"MongoDB Atlas connected successfully!","timestamp":"2026-01-29T20:53:58.263Z"}
+{"level":"info","message":"redis connected successfully","timestamp":"2026-01-29T21:02:58.949Z"}
+{"level":"info","message":"Redis connected successfully","timestamp":"2026-01-29T21:02:59.572Z"}
+{"level":"info","message":"MongoDB Atlas connected successfully!","timestamp":"2026-01-29T21:03:02.502Z"}
+{"level":"info","message":"redis connected successfully","timestamp":"2026-01-29T21:12:21.125Z"}
+{"level":"info","message":"Redis connected successfully","timestamp":"2026-01-29T21:12:21.847Z"}
+{"level":"info","message":"MongoDB Atlas connected successfully!","timestamp":"2026-01-29T21:12:24.439Z"}
+{"level":"info","message":"redis connected successfully","timestamp":"2026-01-29T21:17:53.595Z"}
+{"level":"info","message":"Redis connected successfully","timestamp":"2026-01-29T21:17:54.113Z"}
+{"level":"info","message":"MongoDB Atlas connected successfully!","timestamp":"2026-01-29T21:17:56.804Z"}
+{"level":"info","message":"redis connected successfully","timestamp":"2026-01-29T21:20:26.706Z"}
+{"level":"info","message":"Redis connected successfully","timestamp":"2026-01-29T21:20:27.564Z"}
+{"level":"info","message":"MongoDB Atlas connected successfully!","timestamp":"2026-01-29T21:20:30.524Z"}
+{"level":"info","message":"redis connected successfully","timestamp":"2026-01-29T21:22:33.000Z"}
+{"level":"info","message":"Redis connected successfully","timestamp":"2026-01-29T21:22:33.389Z"}
+{"level":"info","message":"MongoDB Atlas connected successfully!","timestamp":"2026-01-29T21:22:36.414Z"}

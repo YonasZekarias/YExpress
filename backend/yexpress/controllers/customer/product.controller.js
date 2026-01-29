@@ -3,160 +3,167 @@ const Product = require("../../models/Product");
 const ProductVariant = require("../../models/productVariant"); 
 const {redisClient } = require("../../config/redis");
 const logger = require("../../utils/logger");
-
+const Category = require("../../models/Category");
+exports.getAllCategories = async (req, res) => {
+  try {
+    const categories = await Category.find({}).sort({ name: 1 });
+    res.status(200).json({ success: true, data: categories });
+  } catch (error) {
+    console.error("Error in getAllCategories:", error);
+    logger.error("Error in getAllCategories:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
 exports.getAllProduct = async (req, res) => {
   try {
-    const { page = 1, limit = 10, category } = req.query;
-    
-    // Cache key remains based on query params
-    const cacheKey = `products:${category || 'all'}:page=${page}`;
-    const cached = await redisClient.get(cacheKey);
+    const { 
+      page = 1, 
+      limit = 12, 
+      search = "", 
+      category, 
+      sort = "newest", // newest, price-low, price-high, rating
+      minPrice,
+      maxPrice
+    } = req.query;
 
-    if (cached) {
-      logger.info(`Cache hit for ${cacheKey}`);
-      return res.status(200).json({ success: true, cached: true, data: JSON.parse(cached) });
-    }
-
-    const skip = (Number(page) - 1) * Number(limit);
+    const skip = (parseInt(page) - 1) * parseInt(limit);
     
     // 1. Build the Match Stage (Filtering)
     const matchStage = { deleted: false };
-    if (category) {
-        // Ensure category is cast to ObjectId for aggregation
-        matchStage.category = new mongoose.Types.ObjectId(category);
+
+    // Search (Name or Description)
+    if (search) {
+      matchStage.$or = [
+        { name: { $regex: search, $options: "i" } }, // Case insensitive
+        { description: { $regex: search, $options: "i" } }
+      ];
     }
 
-    // 2. Aggregation Pipeline
+    // Category Filter
+    if (category && mongoose.isValidObjectId(category)) {
+      matchStage.category = new mongoose.Types.ObjectId(category);
+    }
+
+    // Price Filter (Base Price)
+    if (minPrice || maxPrice) {
+      matchStage.price = {};
+      if (minPrice) matchStage.price.$gte = parseFloat(minPrice);
+      if (maxPrice) matchStage.price.$lte = parseFloat(maxPrice);
+    }
+
+    // 2. Build Sort Stage
+    let sortStage = { createdAt: -1 }; // Default: Newest
+    if (sort === "price-low") sortStage = { price: 1 };
+    if (sort === "price-high") sortStage = { price: -1 };
+    if (sort === "rating") sortStage = { averageRating: -1 };
+
+    // 3. Aggregation Pipeline
     const pipeline = [
       { $match: matchStage },
-      
-      // Lookup Variants to get pricing
-      {
-        $lookup: {
-          from: "productvariants", // Mongoose creates lowercase plural collection names by default
-          localField: "_id",
-          foreignField: "product",
-          as: "variants"
-        }
-      },
-      
-      // Calculate Min/Max Price from the variants array
-      {
-        $addFields: {
-          minPrice: { $min: "$variants.price" },
-          maxPrice: { $max: "$variants.price" },
-          totalStock: { $sum: "$variants.stock" },
-          variantCount: { $size: "$variants" }
-        }
-      },
-
-      // Lookup Category (Simulate .populate('category'))
+      // Lookup Category for display
       {
         $lookup: {
           from: "categories",
           localField: "category",
           foreignField: "_id",
-          as: "categoryData"
+          as: "category"
         }
       },
-      { $unwind: { path: "$categoryData", preserveNullAndEmptyArrays: true } },
-
-      // Clean up the output (remove heavy variants array, keep calculated fields)
+      { $unwind: { path: "$category", preserveNullAndEmptyArrays: true } },
+      
+      // Lookup Variants (to get minPrice if variants exist)
       {
-        $project: {
-          name: 1,
-          description: 1,
-          photo: 1,
-          ratingsCount: 1,
-          averageRating: 1,
-          minPrice: 1,
-          maxPrice: 1,
-          totalStock: 1,
-          category: "$categoryData", // Replace ID with object
+        $lookup: {
+          from: "variants",
+          localField: "_id",
+          foreignField: "product",
+          as: "variants"
         }
       },
-
-      // Pagination using $facet
+      // Calculate minPrice: use variant min price if exists, else base price
       {
-        $facet: {
-          metadata: [{ $count: "total" }],
-          data: [{ $skip: skip }, { $limit: Number(limit) }]
+        $addFields: {
+          minPrice: {
+            $cond: {
+              if: { $gt: [{ $size: "$variants" }, 0] },
+              then: { $min: "$variants.price" },
+              else: "$price"
+            }
+          }
         }
-      }
+      },
+      // Remove heavy variants array to save bandwidth
+      { $project: { variants: 0 } },
+      
+      { $sort: sortStage },
+      { $skip: skip },
+      { $limit: parseInt(limit) }
     ];
 
-    const results = await Product.aggregate(pipeline);
+    // Execute Query
+    const products = await Product.aggregate(pipeline);
+    
+    // Get Total Count for Pagination
+    const totalProducts = await Product.countDocuments(matchStage);
 
-    // Extract data from facet result
-    const products = results[0].data;
-    const total = results[0].metadata[0] ? results[0].metadata[0].total : 0;
-    const totalPages = Math.ceil(total / limit);
-
-    const responseData = { products, total, totalPages, currentPage: Number(page) };
-
-    // Cache the result
-    await redisClient.setEx(cacheKey, 600, JSON.stringify(responseData));
-
-    res.status(200).json({ success: true, cached: false, data: responseData });
+    res.status(200).json({
+      success: true,
+      data: {
+        products,
+        totalProducts,
+        totalPages: Math.ceil(totalProducts / limit),
+        currentPage: parseInt(page)
+      }
+    });
 
   } catch (error) {
-    console.log("Error in getAllProduct:", error);
-    logger.error({ error: "Error fetching products", details: error });
+    console.error("Error in getAllProduct:", error);
+    logger.error("Error in getAllProduct:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
 exports.getProductById = async (req, res) => {
   try {
-    const productId = req.params.id;
-    const cacheKey = `product:${productId}`;
-    console.log("🔍 FETCHING PRODUCT ID:", productId);
-    const cached = await redisClient.get(cacheKey);
-    if (cached) {
-      logger.info(`Cache hit for ${cacheKey}`);
-      return res.status(200).json({ success: true, cached: true, data: JSON.parse(cached) });
+    const { id } = req.params;
+
+    if (!mongoose.isValidObjectId(id)) {
+      return res.status(400).json({ success: false, message: "Invalid ID" });
     }
 
-    // 1. Fetch Basic Product Info
-    const product = await Product.findById(productId)
-      .populate('category')
-      .lean();
+    // 1. Fetch the Product
+    const product = await Product.findById(id).populate("category");
 
-    if (!product || product.deleted) {
+    if (!product) {
       return res.status(404).json({ success: false, message: "Product not found" });
     }
+    // 2. Fetch Variants for this product
+   const variants = await ProductVariant.find({ product: id })
+  .populate("attributes.attribute") 
+  .populate("attributes.value"); 
 
-    // 2. Fetch All Variants for this Product
-    // We populate attributes so the frontend can display "Size: Large", "Color: Red"
-    const variants = await ProductVariant.find({ product: productId })
-      .populate({
-        path: 'attributes.attribute',
-        select: 'name'
-      })
-      .populate({
-        path: 'attributes.value',
-        select: 'value'
-      })
-      .lean();
+    // 3. Calculate Price Range (if variants exist)
+    let priceRange = { min: product.price, max: product.price };
+    if (variants.length > 0) {
+      const prices = variants.map(v => v.price);
+      priceRange = {
+        min: Math.min(...prices),
+        max: Math.max(...prices)
+      };
+    }
 
-    // 3. Combine Data
-    // We calculate the price range again here for the detail page header
-    const prices = variants.map(v => v.price);
-    const minPrice = prices.length > 0 ? Math.min(...prices) : 0;
-    const maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
-
-    const result = {
-      ...product,
-      variants, // Frontend can now map over these to make a selector
-      priceRange: { min: minPrice, max: maxPrice }
-    };
-
-    await redisClient.setEx(cacheKey, 900, JSON.stringify(result));
-
-    res.status(200).json({ success: true, cached: false, data: result });
+    res.status(200).json({
+      success: true,
+      data: {
+        ...product.toObject(),
+        variants,   
+        priceRange  
+      }
+    });
 
   } catch (error) {
-    logger.error({ error: "Error fetching product", details: error });
+    console.error("Error in getProductById:", error);
+    logger.error("Error in getProductById:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
