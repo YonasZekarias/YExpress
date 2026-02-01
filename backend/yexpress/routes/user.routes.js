@@ -5,6 +5,7 @@ const {createOrder, getUserOrders,getOrderById,cancelOrder,orderStats} = require
 const {getAllCategories,getAllProduct,getProductById}=require('../controllers/customer/product.controller')
 const {createReview} = require('../controllers/customer/review.controller')
 const {getUserStats,getUserProfile, editUserProfile} = require('../controllers/customer/user.controller')
+const {addToWishlist,getWishlist,removeFromWishlist}= require('../controllers/customer/wishlist.controller')
 const router = require('express').Router();
 
 // Cart routes
@@ -34,5 +35,8 @@ router.post('/reviews', createReview);
 router.get('/user/profile', getUserProfile);
 router.put('/user/profile', editUserProfile);
 router.get('/user/stats', getUserStats);
-
+//wishlist routes
+router.post('/wishlist', addToWishlist);
+router.get('/wishlist', getWishlist);
+router.delete('/wishlist/:productId', removeFromWishlist);
 module.exports = router;

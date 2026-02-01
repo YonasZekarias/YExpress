@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const Product = require("../../models/Product");
 const ProductVariant = require("../../models/productVariant"); 
 const Category = require("../../models/Category");
-const Wishlist = require('../../models/wishlist');
+
 const { redisClient } = require("../../config/redis");
 const logger = require("../../utils/logger");
 
@@ -10,7 +10,7 @@ const logger = require("../../utils/logger");
 const TTL_CATEGORIES = 3600; 
 const TTL_PRODUCTS = 300;    
 const TTL_DETAIL = 600;      
-const TTL_WISHLIST = 300;
+
 exports.getAllCategories = async (req, res) => {
   try {
     const cacheKey = "categories:all";
@@ -182,70 +182,6 @@ exports.getProductById = async (req, res) => {
 
   } catch (error) {
     console.error("Error in getProductById:", error);
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
-exports.getWishlistByUser = async (req, res) => {
-  try {
-    const userId = req.user._id;
-    const cacheKey = `wishlist:user:${userId}`;
-    const cachedData = await redisClient.get(cacheKey);
-    if (cachedData) return res.status(200).json(JSON.parse(cachedData));
-
-    let wishlist = await Wishlist.findOne({ user: userId }).populate({
-      path: "products",
-      populate: {
-        path: "category"
-      }
-    });
-    if (!wishlist) {
-      return res.status(200).json({ success: true, data: [] });
-    }
-
-    const response = {
-      success: true,
-      data: wishlist.products
-    };
-
-    await redisClient.setEx(cacheKey, TTL_WISHLIST, JSON.stringify(response));
-    res.status(200).json(response);
-
-  } catch (error) {
-    console.error("Error in getWishlistByUser:", error);
-    logger.error("Error in getWishlistByUser:", error);
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
-exports.addToWishlist = async (req, res) => {
-  try {
-    const userId = req.user._id;
-    const { productId } = req.body;
-
-    if (!mongoose.isValidObjectId(productId)) {
-      return res.status(400).json({ success: false, message: "Invalid Product ID" });
-    }
-
-    let wishlist = await Wishlist.findOne({ user: userId });
-    if (!wishlist) {
-      wishlist = new Wishlist({ user: userId, products: [] });
-    }
-
-    if (wishlist.products.includes(productId)) {
-      return res.status(400).json({ success: false, message: "Product already in wishlist" });
-    }
-
-    wishlist.products.push(productId);
-    await wishlist.save();
-
-    // Invalidate Cache
-    const cacheKey = `wishlist:user:${userId}`;
-    await redisClient.del(cacheKey);
-
-    res.status(200).json({ success: true, message: "Product added to wishlist" });
-
-  } catch (error) {
-    console.error("Error in addToWishlist:", error);
-    logger.error("Error in addToWishlist:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
