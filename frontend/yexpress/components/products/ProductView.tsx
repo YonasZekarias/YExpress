@@ -2,34 +2,43 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
-import { ShoppingCart, Heart} from 'lucide-react'; // Added icons back
+import { ShoppingCart, Heart } from 'lucide-react';
+import axios from 'axios';
+import { toast } from 'sonner';
 import { Product, Variant, Attribute, AttributeValue } from '@/types/product';
 
 interface ProductViewProps {
   product: Product;
   variants: Variant[];
   priceRange: { min: number; max: number };
+  initialWishlistState?: boolean; // Received from parent page
 }
 
 const getImageUrl = (photo?: string): string => {
-  if (!photo) return '/placeholder.jpg'; // Unified extension
+  if (!photo) return '/placeholder.jpg';
   if (photo.startsWith('http') || photo.startsWith('/')) return photo;
   return '/placeholder.jpg';
 };
 
-// HELPER 1: Get Attribute Name (Safe)
+// Safe Helpers for Attribute Access
 const getAttrName = (attr: string | Attribute): string => {
   if (typeof attr === 'string') return attr; 
   return attr.name; 
 };
 
-// HELPER 2: Get Attribute Value (Safe)
 const getAttrValue = (val: string | AttributeValue): string => {
   if (typeof val === 'string') return val;
   return val.value || (val as any).name || 'Unknown';
 };
 
-export default function ProductView({ product, variants, priceRange }: ProductViewProps) {
+export default function ProductView({ 
+  product, 
+  variants, 
+  priceRange, 
+  initialWishlistState = false 
+}: ProductViewProps) {
+  
+  // --- STATE ---
   const validPhotos = product.photo?.length 
     ? product.photo.map(getImageUrl) 
     : ['/placeholder.png'];
@@ -38,7 +47,12 @@ export default function ProductView({ product, variants, priceRange }: ProductVi
   const [quantity, setQuantity] = useState(1);
   const [selectedAttrs, setSelectedAttrs] = useState<Record<string, string>>({});
 
-  // 1. Extract Unique Attribute Types
+  // Wishlist Logic
+  const [isWishlisted, setIsWishlisted] = useState(initialWishlistState);
+  const [wishlistLoading, setWishlistLoading] = useState(false);
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1';
+
+  // --- ATTRIBUTE & VARIANT LOGIC ---
   const attributeTypes = useMemo(() => {
     const types = new Set<string>();
     variants.forEach(v => {
@@ -52,7 +66,6 @@ export default function ProductView({ product, variants, priceRange }: ProductVi
     return Array.from(types);
   }, [variants]);
 
-  // 2. Extract Values for a specific Attribute Type
   const getValuesForAttribute = (typeName: string) => {
     const values = new Set<string>();
     variants.forEach(v => {
@@ -64,7 +77,6 @@ export default function ProductView({ product, variants, priceRange }: ProductVi
     return Array.from(values);
   };
 
-  // 3. Find Active Variant (Exact Match)
   const activeVariant = useMemo(() => {
     if (!variants || variants.length === 0) return null;
     return variants.find(v => {
@@ -75,32 +87,21 @@ export default function ProductView({ product, variants, priceRange }: ProductVi
     });
   }, [variants, selectedAttrs]);
 
-  // 4. NEW: Calculate Stock for a specific button option
-  // (Logic: "If I click this, how many items are available considering my OTHER current selections?")
   const getStockForOption = (attributeType: string, attributeValue: string) => {
-    // Filter variants that match the option being checked AND the other currently selected attributes
     const matchingVariants = variants.filter(v => {
-      // A. Check if this variant has the specific attribute value we are rendering (e.g. Color = Red)
       const thisAttr = v.attributes.find(a => getAttrName(a.attribute) === attributeType);
       const thisVal = thisAttr ? getAttrValue(thisAttr.value) : null;
       if (thisVal !== attributeValue) return false;
 
-      // B. Check if this variant ALSO matches the *other* selections the user has made
-      // (e.g. If user selected Size=Small, we only count Red items that are also Small)
       return Object.entries(selectedAttrs).every(([selKey, selVal]) => {
-         // Skip the attribute we are currently checking (e.g. ignore Color selection when calculating Red stock)
          if (selKey === attributeType) return true; 
-
          const otherAttr = v.attributes.find(a => getAttrName(a.attribute) === selKey);
          return otherAttr && getAttrValue(otherAttr.value) === selVal;
       });
     });
-
-    // Sum up the stock of all valid variants found
     return matchingVariants.reduce((sum, v) => sum + v.stock, 0);
   };
 
-  // 5. Auto-select defaults
   useEffect(() => {
     if (variants.length > 0 && Object.keys(selectedAttrs).length === 0) {
       const firstVariant = variants[0];
@@ -111,6 +112,30 @@ export default function ProductView({ product, variants, priceRange }: ProductVi
       setSelectedAttrs(defaults);
     }
   }, [variants]);
+
+  // --- WISHLIST HANDLER ---
+  const handleWishlist = async () => {
+    if (wishlistLoading) return;
+    setWishlistLoading(true);
+
+    const previousState = isWishlisted;
+    setIsWishlisted(!isWishlisted); // Optimistic
+
+    try {
+      await axios.post(
+        `${API_URL}/user/wishlist`, 
+        { productId: product._id },
+        { withCredentials: true }
+      );
+      // Success - State matches UI
+    } catch (error) {
+      console.error("Wishlist error:", error);
+      setIsWishlisted(previousState); // Revert
+      toast.error("Failed to update wishlist");
+    } finally {
+      setWishlistLoading(false);
+    }
+  };
 
   const currentPrice = activeVariant ? activeVariant.price : product.price;
   const currentStock = activeVariant ? activeVariant.stock : product.stock;
@@ -143,7 +168,9 @@ export default function ProductView({ product, variants, priceRange }: ProductVi
       <div className="flex flex-col">
         <p className="text-sm text-gray-500 uppercase tracking-wide">{product.category?.name}</p>
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mt-2">{product.name}</h1>
-        <p className="text-2xl font-bold mt-4 text-gray-900 dark:text-white">${currentPrice.toFixed(2)}</p>
+        <p className="text-2xl font-bold mt-4 text-gray-900 dark:text-white">
+            ${currentPrice ? currentPrice.toFixed(2) : 'N/A'}
+        </p>
 
         {/* VARIANT SELECTORS */}
         <div className="mt-6 space-y-4">
@@ -159,7 +186,7 @@ export default function ProductView({ product, variants, priceRange }: ProductVi
                   return (
                     <button
                       key={`${type}-${val}`}
-                      disabled={isOutOfStock} // Disable click if stock is 0
+                      disabled={isOutOfStock}
                       onClick={() => setSelectedAttrs(prev => ({ ...prev, [type]: val }))}
                       className={`
                         relative px-4 py-2 text-sm border rounded-md transition-all flex items-center gap-2
@@ -172,7 +199,6 @@ export default function ProductView({ product, variants, priceRange }: ProductVi
                       `}
                     >
                       <span>{val}</span>
-                      {/* Show Count Badge */}
                       <span className={`text-xs px-1.5 py-0.5 rounded-full ${
                         isSelected 
                            ? 'bg-white text-black dark:bg-black dark:text-white' 
@@ -188,15 +214,14 @@ export default function ProductView({ product, variants, priceRange }: ProductVi
           ))}
         </div>
 
-        {/* STOCK STATUS & CART */}
+        {/* ACTIONS */}
         <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
            
-           {/* Main Stock Indicator */}
            <div className="mb-4">
               {currentStock > 0 ? (
                 <p className="text-green-600 font-medium flex items-center gap-2">
                   <span className="w-2 h-2 bg-green-600 rounded-full animate-pulse"></span>
-                  In Stock: {currentStock} items available
+                  In Stock: {currentStock} items
                 </p>
               ) : (
                 <p className="text-red-500 font-medium">Out of Stock</p>
@@ -212,7 +237,7 @@ export default function ProductView({ product, variants, priceRange }: ProductVi
                 >-</button>
                 <span className="px-3 py-1 border-x border-gray-300 dark:border-gray-600 font-medium">{quantity}</span>
                 <button 
-                  onClick={() => setQuantity(q => Math.min(q + 1, currentStock))} // Prevent going over stock
+                  onClick={() => setQuantity(q => Math.min(q + 1, currentStock))} 
                   className="px-3 py-1 hover:bg-gray-100 dark:hover:bg-gray-700"
                 >+</button>
              </div>
@@ -230,8 +255,17 @@ export default function ProductView({ product, variants, priceRange }: ProductVi
                 {currentStock > 0 ? 'Add to Cart' : 'Sold Out'}
               </button>
               
-              <button className="p-3 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300">
-                <Heart className="w-6 h-6" />
+              <button 
+                onClick={handleWishlist}
+                disabled={wishlistLoading}
+                className={`p-3 border rounded-lg transition-all duration-300
+                  ${isWishlisted 
+                    ? 'border-red-200 bg-red-50 text-red-500 dark:bg-red-900/20 dark:border-red-900 dark:text-red-400' 
+                    : 'border-gray-300 hover:bg-gray-50 text-gray-700 dark:border-gray-600 dark:hover:bg-gray-800 dark:text-gray-300'
+                  }
+                `}
+              >
+                <Heart className={`w-6 h-6 transition-colors ${isWishlisted ? 'fill-current' : ''}`} />
               </button>
            </div>
         </div>

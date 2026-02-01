@@ -1,9 +1,8 @@
 const mongoose = require("mongoose");
-const Wishlist = require("../models/Wishlist");
+const Wishlist = require("../../models/Wishlist");
 // Ensure these models are registered even if not used directly here
-const Product = require("../models/Product"); 
-const ProductVariant = require("../models/ProductVariant"); 
-const { redisClient } = require("../config/redis");
+
+const { redisClient } = require("../../config/redis");
 
 // 1. ADD TO WISHLIST (Atomic & Fast)
 exports.addToWishlist = async (req, res) => {

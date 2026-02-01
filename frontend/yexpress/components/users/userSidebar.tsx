@@ -32,8 +32,26 @@ const UserSidebar = ({
   const { username, email, avatar } = useAuthStore();
   const router = useRouter();
   const pathname = usePathname();
+  const currentTab = (() => {
+  if (!pathname) return "overview";
 
-  const currentTab = pathname?.split("/users/")[1] || "overview";
+  // Special non-user routes
+  if (pathname.startsWith("/product/")) return "products";
+  if (pathname.startsWith("/orders/")) return "orders";
+  if (pathname.startsWith("/wishlist") || pathname.startsWith("/cart"))
+    return "cart";
+  if (pathname.startsWith("/addresses")) return "addresses";
+  if (pathname.startsWith("/payment")) return "payment";
+  if (pathname.startsWith("/profile")) return "profile";
+
+  // Normal user routes: /users/{tab}
+  if (pathname.startsWith("/users/")) {
+    return pathname.split("/users/")[1]?.split("/")[0] || "overview";
+  }
+
+  return "overview";
+})();
+
 
   return (
     <>

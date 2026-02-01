@@ -1,10 +1,16 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Star, Plus } from 'lucide-react';
+import { Star, Plus, Heart } from 'lucide-react';
+import axios from 'axios';
+import { toast } from 'sonner'; // Replace with your toast library if different
 import { Product } from '@/types/product';
 
 interface ProductCardProps {
   product: Product;
+  initialWishlistState?: boolean; // Received from parent page
 }
 
 const getImageUrl = (photo?: string): string => {
@@ -22,21 +28,56 @@ const isNewArrival = (dateString?: string) => {
   return diffDays <= 7;
 };
 
-export default function ProductCard({ product }: ProductCardProps) {
-  // If product.photo is empty, use the variant photo if backend sends it, else placeholder
-  // For now, using product.photo as per your schema
+export default function ProductCard({ product, initialWishlistState = false }: ProductCardProps) {
+  // Initialize state based on what the server passed down
+  const [isWishlisted, setIsWishlisted] = useState(initialWishlistState);
+  const [loading, setLoading] = useState(false);
+
+  // Sync state if prop changes (rare, but good practice)
+  useEffect(() => {
+    setIsWishlisted(initialWishlistState);
+  }, [initialWishlistState]);
+
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1';
   const mainImage = getImageUrl(product.photo?.[0]);
-  
   const isOutOfStock = product.stock === 0;
   const isLowStock = product.stock > 0 && product.stock <= 5;
   const isNew = isNewArrival(product.createdAt);
-  
-  // Backend now guarantees 'price' is the minimum variant price
   const displayPrice = product.price || 0;
 
+  const handleWishlistClick = async (e: React.MouseEvent) => {
+    e.preventDefault(); // Stop link navigation
+    e.stopPropagation();
+
+    if (loading) return;
+    setLoading(true);
+
+    // 1. Optimistic Update (Immediate UI change)
+    const previousState = isWishlisted;
+    setIsWishlisted(!isWishlisted);
+
+    try {
+      await axios.post(
+        `${API_URL}/user/wishlist`, 
+        { productId: product._id },
+        { withCredentials: true }
+      );
+      // Optional: toast.success(isWishlisted ? "Added to wishlist" : "Removed from wishlist");
+    } catch (error) {
+      console.error("Wishlist failed", error);
+      // 2. Revert on failure
+      setIsWishlisted(previousState);
+      toast.error("Could not update wishlist. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <Link href={`/users/products/${product._id}`} className="group relative flex flex-col h-full bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-        
+    <Link 
+      href={`/users/products/${product._id}`} 
+      className="group relative flex flex-col h-full bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+    >
         <div className="relative aspect-4/5 w-full overflow-hidden bg-gray-100 dark:bg-gray-900">
           <Image
             src={mainImage}
@@ -66,6 +107,16 @@ export default function ProductCard({ product }: ProductCardProps) {
               </>
             )}
           </div>
+
+          {/* Wishlist Button */}
+          <button
+            onClick={handleWishlistClick}
+            className={`absolute top-3 right-3 z-20 p-2 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-sm transition-all duration-300 transform 
+              ${isWishlisted ? 'opacity-100 scale-100 text-red-500' : 'opacity-0 scale-90 text-gray-400'} 
+              group-hover:opacity-100 group-hover:scale-100 hover:bg-white hover:text-red-500`}
+          >
+            <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-current' : ''}`} />
+          </button>
         </div>
 
         <div className="p-4 flex flex-col flex-1">
