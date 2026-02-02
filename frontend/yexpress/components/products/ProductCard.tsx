@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Star, Plus, Heart } from 'lucide-react';
 import axios from 'axios';
-import { toast } from 'sonner'; // Replace with your toast library if different
+import { toast } from 'react-hot-toast'; // Replace with your toast library if different
 import { Product } from '@/types/product';
 
 interface ProductCardProps {
