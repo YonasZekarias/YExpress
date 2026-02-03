@@ -5,12 +5,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Star, Plus, Heart } from 'lucide-react';
 import axios from 'axios';
-import { toast } from 'react-hot-toast'; // Replace with your toast library if different
+import { toast } from 'react-hot-toast';
 import { Product } from '@/types/product';
 
 interface ProductCardProps {
   product: Product;
-  initialWishlistState?: boolean; // Received from parent page
+  initialWishlistState?: boolean; 
 }
 
 const getImageUrl = (photo?: string): string => {
@@ -29,32 +29,32 @@ const isNewArrival = (dateString?: string) => {
 };
 
 export default function ProductCard({ product, initialWishlistState = false }: ProductCardProps) {
-  // Initialize state based on what the server passed down
+  
+  // Initialize state from the passed prop
   const [isWishlisted, setIsWishlisted] = useState(initialWishlistState);
   const [loading, setLoading] = useState(false);
 
-  // Sync state if prop changes (rare, but good practice)
+  // Sync state if the prop changes (important for search/filtering updates)
   useEffect(() => {
     setIsWishlisted(initialWishlistState);
   }, [initialWishlistState]);
 
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1';
   const mainImage = getImageUrl(product.photo?.[0]);
   const isOutOfStock = product.stock === 0;
   const isLowStock = product.stock > 0 && product.stock <= 5;
   const isNew = isNewArrival(product.createdAt);
   const displayPrice = product.price || 0;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1';
 
   const handleWishlistClick = async (e: React.MouseEvent) => {
-    e.preventDefault(); // Stop link navigation
+    e.preventDefault(); 
     e.stopPropagation();
 
     if (loading) return;
     setLoading(true);
 
-    // 1. Optimistic Update (Immediate UI change)
     const previousState = isWishlisted;
-    setIsWishlisted(!isWishlisted);
+    setIsWishlisted(!isWishlisted); // Optimistic Toggle
 
     try {
       await axios.post(
@@ -62,12 +62,10 @@ export default function ProductCard({ product, initialWishlistState = false }: P
         { productId: product._id },
         { withCredentials: true }
       );
-      // Optional: toast.success(isWishlisted ? "Added to wishlist" : "Removed from wishlist");
+      toast.success(isWishlisted ? "Removed from wishlist" : "Added to wishlist");
     } catch (error) {
-      console.error("Wishlist failed", error);
-      // 2. Revert on failure
-      setIsWishlisted(previousState);
-      toast.error("Could not update wishlist. Please try again.");
+      setIsWishlisted(previousState); // Revert
+      toast.error("Could not update wishlist");
     } finally {
       setLoading(false);
     }
@@ -144,7 +142,7 @@ export default function ProductCard({ product, initialWishlistState = false }: P
                 {displayPrice > 0 ? `$${displayPrice.toFixed(2)}` : 'N/A'}
               </span>
             </div>
-
+            
             {!isOutOfStock && (
                <div className="h-8 w-8 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white flex items-center justify-center transition-colors group-hover:bg-black group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black">
                  <Plus className="w-4 h-4" />

@@ -4407,3 +4407,4 @@
 {"level":"error","message":{"details":{},"error":"Error fetching product"},"timestamp":"2026-01-28T19:45:59.830Z"}
 {"level":"error","message":{"details":{},"error":"Error fetching product"},"timestamp":"2026-01-28T19:47:42.190Z"}
 {"level":"error","message":"Redis error: getaddrinfo ENOTFOUND redis-16295.c73.us-east-1-2.ec2.cloud.redislabs.com","timestamp":"2026-02-02T09:58:17.989Z"}
+{"level":"error","message":"Redis error: Connection timeout","timestamp":"2026-02-03T19:42:35.823Z"}

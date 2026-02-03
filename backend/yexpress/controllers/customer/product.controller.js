@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Product = require("../../models/Product");
 const ProductVariant = require("../../models/productVariant"); 
+const Wishlist = require("../../models/Wishlist");
 const Category = require("../../models/Category");
 
 const { redisClient } = require("../../config/redis");
@@ -28,8 +29,10 @@ exports.getAllCategories = async (req, res) => {
 
 exports.getAllProduct = async (req, res) => {
   try {
-    // 1. Check Redis
-    const cacheKey = `products:list:${JSON.stringify(req.query)}`;
+    const userId = req.user ? req.user._id : null; 
+
+    // 1. Check Redis (Cache key now includes userId so users see their own wishlist state)
+    const cacheKey = `products:list:${userId || 'guest'}:${JSON.stringify(req.query)}`;
     const cachedData = await redisClient.get(cacheKey);
     if (cachedData) return res.status(200).json(JSON.parse(cachedData));
 
@@ -41,7 +44,6 @@ exports.getAllProduct = async (req, res) => {
     const skip = (parseInt(page) - 1) * parseInt(limit);
     const matchStage = { deleted: false };
 
-    // Filters
     if (search) {
       matchStage.$or = [
         { name: { $regex: search, $options: "i" } },
@@ -52,36 +54,47 @@ exports.getAllProduct = async (req, res) => {
       matchStage.category = new mongoose.Types.ObjectId(category);
     }
 
-    // 2. Aggregation Pipeline
     const pipeline = [
       { $match: matchStage },
-      
-      // --- FIX: LOOKUP CORRECT COLLECTION ---
-      // Mongoose models named "ProductVariant" usually create a collection named "productvariants".
       {
         $lookup: {
-          from: "productvariants", // <--- CHANGED from "variants" to "productvariants"
+          from: "productvariants",
           localField: "_id",
           foreignField: "product",
           as: "variants"
         }
       },
-      
-      // --- FIX: PRICE LOGIC ---
-      // Since you want "The Price", we grab the minimum price found in variants.
-      // If no variants exist, it defaults to 0.
       {
         $addFields: {
-          price: { 
-            $ifNull: [{ $min: "$variants.price" }, 0] 
-          }
+          price: { $ifNull: [{ $min: "$variants.price" }, 0] }
         }
       },
-      
-      // Remove heavy variants array
-      { $project: { variants: 0 } },
-
-      // Populate Category
+      // --- NEW: WISHLIST LOOKUP ---
+      {
+        $lookup: {
+          from: "Wishlist", // Ensure this matches your MongoDB collection name
+          let: { productId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$user", userId ? new mongoose.Types.ObjectId(userId) : null] },
+                    { $eq: ["$product", "$$productId"] }
+                  ]
+                }
+              }
+            }
+          ],
+          as: "wishlistEntry"
+        }
+      },
+      {
+        $addFields: {
+          isWishlisted: { $gt: [{ $size: "$wishlistEntry" }, 0] } // true if array has items
+        }
+      },
+      { $project: { variants: 0, wishlistEntry: 0 } }, // Clean up temporary fields
       {
         $lookup: {
           from: "categories",
@@ -93,7 +106,7 @@ exports.getAllProduct = async (req, res) => {
       { $unwind: { path: "$category", preserveNullAndEmptyArrays: true } }
     ];
 
-    // 3. Price Filter (Applied after we calculated price)
+    // ... Price Filtering and Sorting logic remains the same ...
     if (minPrice || maxPrice) {
       const priceFilter = {};
       if (minPrice) priceFilter.$gte = parseFloat(minPrice);
@@ -101,14 +114,12 @@ exports.getAllProduct = async (req, res) => {
       pipeline.push({ $match: { price: priceFilter } });
     }
 
-    // 4. Sort
     let sortStage = { createdAt: -1 };
     if (sort === "price-low") sortStage = { price: 1 };
     if (sort === "price-high") sortStage = { price: -1 };
     if (sort === "rating") sortStage = { averageRating: -1 };
     pipeline.push({ $sort: sortStage });
 
-    // 5. Pagination Facet
     pipeline.push({
       $facet: {
         metadata: [{ $count: "total" }],
@@ -142,38 +153,37 @@ exports.getAllProduct = async (req, res) => {
 exports.getProductById = async (req, res) => {
   try {
     const { id } = req.params;
+    const userId = req.user ? req.user.id : null;
+
     if (!mongoose.isValidObjectId(id)) {
       return res.status(400).json({ success: false, message: "Invalid ID" });
     }
 
-    const cacheKey = `product:detail:${id}`;
+    const cacheKey = `product:detail:${userId || 'guest'}:${id}`;
     const cachedData = await redisClient.get(cacheKey);
     if (cachedData) return res.status(200).json(JSON.parse(cachedData));
 
-    // 1. Fetch Product
-    const product = await Product.findById(id).populate("category").lean();
+    // 1. Fetch Product and Wishlist status in parallel
+    const [product, variants, wishlistEntry] = await Promise.all([
+      Product.findById(id).populate("category").lean(),
+      ProductVariant.find({ product: id }).populate("attributes.attribute").populate("attributes.value").lean(),
+      userId ? Wishlist.findOne({ user: userId, product: id }).lean() : null
+    ]);
+
     if (!product) {
       return res.status(404).json({ success: false, message: "Product not found" });
     }
 
-    // 2. Fetch Variants
-    const variants = await ProductVariant.find({ product: id })
-      .populate("attributes.attribute")
-      .populate("attributes.value")
-      .lean();
-
-    // 3. Attach Price (Min price from variants)
     const prices = variants.map(v => v.price);
     const price = prices.length > 0 ? Math.min(...prices) : 0;
     
-    product.price = price;
-
     const response = {
       success: true,
       data: {
         ...product,
         variants,
-        price
+        price,
+        isWishlisted: !!wishlistEntry // Convert to boolean
       }
     };
 

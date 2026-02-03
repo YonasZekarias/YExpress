@@ -4,14 +4,14 @@ import { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import { ShoppingCart, Heart } from 'lucide-react';
 import axios from 'axios';
-import { toast } from 'sonner';
+import { toast } from 'react-hot-toast'; // Replace with your toast library if different
 import { Product, Variant, Attribute, AttributeValue } from '@/types/product';
 
 interface ProductViewProps {
   product: Product;
   variants: Variant[];
   priceRange: { min: number; max: number };
-  initialWishlistState?: boolean; // Received from parent page
+  initialWishlistState: boolean; // <--- Received from Server Page
 }
 
 const getImageUrl = (photo?: string): string => {
@@ -34,8 +34,7 @@ const getAttrValue = (val: string | AttributeValue): string => {
 export default function ProductView({ 
   product, 
   variants, 
-  priceRange, 
-  initialWishlistState = false 
+  initialWishlistState 
 }: ProductViewProps) {
   
   // --- STATE ---
@@ -47,12 +46,18 @@ export default function ProductView({
   const [quantity, setQuantity] = useState(1);
   const [selectedAttrs, setSelectedAttrs] = useState<Record<string, string>>({});
 
-  // Wishlist Logic
+  // Initialize state using the prop from the server
   const [isWishlisted, setIsWishlisted] = useState(initialWishlistState);
   const [wishlistLoading, setWishlistLoading] = useState(false);
+  
   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1';
 
-  // --- ATTRIBUTE & VARIANT LOGIC ---
+  // Ensure state stays in sync if the prop updates (e.g. navigation)
+  useEffect(() => {
+    setIsWishlisted(initialWishlistState);
+  }, [initialWishlistState]);
+
+  // --- LOGIC: ATTRIBUTES & VARIANTS ---
   const attributeTypes = useMemo(() => {
     const types = new Set<string>();
     variants.forEach(v => {
@@ -113,24 +118,27 @@ export default function ProductView({
     }
   }, [variants]);
 
-  // --- WISHLIST HANDLER ---
+  // --- LOGIC: WISHLIST ---
   const handleWishlist = async () => {
     if (wishlistLoading) return;
     setWishlistLoading(true);
 
     const previousState = isWishlisted;
-    setIsWishlisted(!isWishlisted); // Optimistic
+    setIsWishlisted(!isWishlisted); // Optimistic Update (Instant Red Heart)
 
     try {
+      // Toggle logic usually happens on backend. 
+      // If your backend adds/removes based on existence, this is correct.
       await axios.post(
         `${API_URL}/user/wishlist`, 
         { productId: product._id },
         { withCredentials: true }
       );
-      // Success - State matches UI
+      
+      toast.success(isWishlisted ? "Removed from wishlist" : "Added to wishlist");
     } catch (error) {
       console.error("Wishlist error:", error);
-      setIsWishlisted(previousState); // Revert
+      setIsWishlisted(previousState); // Revert on error
       toast.error("Failed to update wishlist");
     } finally {
       setWishlistLoading(false);
@@ -169,7 +177,7 @@ export default function ProductView({
         <p className="text-sm text-gray-500 uppercase tracking-wide">{product.category?.name}</p>
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mt-2">{product.name}</h1>
         <p className="text-2xl font-bold mt-4 text-gray-900 dark:text-white">
-            ${currentPrice ? currentPrice.toFixed(2) : 'N/A'}
+          ${currentPrice ? currentPrice.toFixed(2) : 'N/A'}
         </p>
 
         {/* VARIANT SELECTORS */}
@@ -214,7 +222,7 @@ export default function ProductView({
           ))}
         </div>
 
-        {/* ACTIONS */}
+        {/* STOCK & ACTIONS */}
         <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
            
            <div className="mb-4">
