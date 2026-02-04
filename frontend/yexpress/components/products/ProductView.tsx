@@ -11,7 +11,7 @@ interface ProductViewProps {
   product: Product;
   variants: Variant[];
   priceRange: { min: number; max: number };
-  initialWishlistState: boolean; // <--- Received from Server Page
+  initialWishlistState: boolean;
 }
 
 const getImageUrl = (photo?: string): string => {

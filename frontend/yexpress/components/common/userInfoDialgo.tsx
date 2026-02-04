@@ -1,21 +1,29 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+
 import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "../ui/button";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { getUserById, banUnbanUser } from "@/services/admin.service";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge"; // Ensure you have this component
+import { Separator } from "@/components/ui/separator"; // Ensure you have this component
+import { 
+  User, Mail, Phone, Shield, Calendar, 
+  CheckCircle2, XCircle, Ban, Loader2 
+} from "lucide-react";
+
+import { getUserById } from "@/services/admin.service";
 import useAuthStore from "@/store/authStore";
-import toast from "react-hot-toast";
 import { getProfile } from "@/services/common.service";
+
+// --- Types ---
 interface UserData {
   _id: string;
   username: string;
@@ -34,104 +42,176 @@ interface UserInfoDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-const UserInfoDialog = ({ userId, open, onOpenChange }: UserInfoDialogProps) => {
+export default function UserInfoDialog({ userId, open, onOpenChange }: UserInfoDialogProps) {
   const userRole = useAuthStore((state) => state.role);
   const router = useRouter();
-  const [userData, setUserData] = useState<UserData>({
-    _id: "",
-    username: "",
-    email: "",
-    phone: "",
-    role: "",
-    isBanned: false,
-    verified: false,
-    createdAt: "",
-    updatedAt: "",
-  });
-
+  
+  const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Extract fetch logic into a reusable function
-  const fetchUserData = async () => {
-    if (!userId) return;
-    try {
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!open || !userId) return;
+      
       setLoading(true);
       setError(null);
-      const response = async () => {
+      
+      try {
+        let response;
         if (userRole === "admin") {
-          return getUserById(userId);
+          response = await getUserById(userId);
         } else {
-          return getProfile();
+          response = await getProfile();
         }
+        setUserData(response.data);
+      } catch (err) {
+        console.error("Error fetching user data:", err);
+        setError("Unable to load user information.");
+      } finally {
+        setLoading(false);
       }
-      setUserData((await response()).data);
-    } catch (err) {
-      console.error("Error fetching user data:", err);
-      setError("Failed to load user data");
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
 
-  useEffect(() => {
-    if (open) {
-      fetchUserData();
-    }
-  }, [userId, open]);
+    fetchUserData();
+  }, [userId, open, userRole]);
+
+  // --- Helper for Date Formatting ---
+  const formatDate = (dateString: string) => {
+    if (!dateString) return "N/A";
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle>User Information</DialogTitle>
-          <DialogDescription>Detailed information about the user.</DialogDescription>
+      <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden gap-0">
+        
+        {/* HEADER SECTION */}
+        <DialogHeader className="p-6 pb-2">
+          <DialogTitle className="text-xl font-bold flex items-center gap-2">
+            <User className="w-5 h-5 text-primary" />
+            User Profile
+          </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 mt-4">
+        <div className="px-6 py-4">
           {loading ? (
-            <p className="text-gray-700 dark:text-gray-300">Loading...</p>
+            <div className="flex flex-col items-center justify-center py-12 space-y-4">
+              <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+              <p className="text-sm text-muted-foreground">Loading details...</p>
+            </div>
           ) : error ? (
-            <p className="text-red-500">{error}</p>
-          ) : (
-            <>
-              <Info label="Username" value={userData.username} />
-              <Info label="Email" value={userData.email} />
-              <Info label="Phone" value={userData.phone} />
-              <Info label="Role" value={userData.role} />
-              <Info label="Status" value={userData.isBanned ? "Banned" : "Active"} />
-              <Info label="Verified" value={userData.verified ? "Yes" : "No"} />
-              <Info label="Joined On" value={new Date(userData.createdAt).toLocaleDateString()} />
-              <Info label="Last Updated" value={new Date(userData.updatedAt).toLocaleDateString()} />
-            </>
-          )}
+            <div className="py-8 text-center text-red-500 bg-red-50 dark:bg-red-900/20 rounded-lg">
+              <p>{error}</p>
+            </div>
+          ) : userData ? (
+            <div className="space-y-6">
+              {/* TOP PROFILE CARD */}
+              <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-xl border border-border">
+                <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center text-2xl font-bold text-primary">
+                  {userData.username.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-foreground">{userData.username}</h2>
+                  <div className="flex gap-2 mt-1">
+                    <Badge variant={userData.role === "admin" ? "default" : "secondary"} className="uppercase text-[10px]">
+                      {userData.role}
+                    </Badge>
+                    {userData.isBanned ? (
+                      <Badge variant="destructive" className="flex items-center gap-1 text-[10px]">
+                        <Ban className="w-3 h-3" /> Banned
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline" className="text-green-600 border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20 text-[10px] flex items-center gap-1">
+                        <CheckCircle2 className="w-3 h-3" /> Active
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* DETAILS GRID */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-5 gap-x-4">
+                <InfoItem 
+                  icon={<Mail className="w-4 h-4" />} 
+                  label="Email Address" 
+                  value={userData.email} 
+                />
+                <InfoItem 
+                  icon={<Phone className="w-4 h-4" />} 
+                  label="Phone Number" 
+                  value={userData.phone || "Not provided"} 
+                />
+                <InfoItem 
+                  icon={<Shield className="w-4 h-4" />} 
+                  label="Verification" 
+                  value={
+                    <span className={`flex items-center gap-1.5 ${userData.verified ? 'text-green-600' : 'text-amber-600'}`}>
+                      {userData.verified ? (
+                        <><CheckCircle2 className="w-4 h-4" /> Verified</>
+                      ) : (
+                        <><XCircle className="w-4 h-4" /> Unverified</>
+                      )}
+                    </span>
+                  } 
+                />
+                <InfoItem 
+                  icon={<Calendar className="w-4 h-4" />} 
+                  label="Joined On" 
+                  value={formatDate(userData.createdAt)} 
+                />
+              </div>
+            </div>
+          ) : null}
         </div>
 
-        <DialogFooter>
+        {/* FOOTER ACTIONS */}
+        <div className="p-6 bg-muted/40 border-t flex justify-end gap-3">
           <DialogClose asChild>
-            <Button variant="secondary">Close</Button>
+            <Button variant="outline">Close</Button>
           </DialogClose>
 
-          {userRole === "admin" && (
-            <Button variant="destructive">Delete User</Button>
+          {userData && userRole === "admin" && !loading && (
+             <Button variant="destructive" className="gap-2">
+               <Ban className="w-4 h-4" />
+               {userData.isBanned ? "Unban User" : "Ban User"}
+               {/* Note: changed label to Ban/Unban based on logic usually needed here, or 'Delete' if strictly delete */}
+             </Button>
           )}
-          {userRole === "user" &&(
-            <Button onClick={()=>{
-              router.push('/users/profile')
-              onOpenChange(false);
-            }} variant="default">Edit Profile</Button>
+
+          {userData && userRole === "user" && !loading && (
+            <Button 
+              onClick={() => {
+                router.push('/users/profile');
+                onOpenChange(false);
+              }} 
+            >
+              Edit Profile
+            </Button>
           )}
-        </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   );
-};
+}
 
-export default UserInfoDialog;
-
-const Info = ({ label, value }: { label: string; value: string | boolean }) => (
-  <div>
-    <h3 className="font-medium text-gray-900 dark:text-gray-100">{label}</h3>
-    <p className="text-gray-700 dark:text-gray-300">{value.toString()}</p>
-  </div>
-);
+// --- Sub-component for neat layout ---
+function InfoItem({ icon, label, value }: { icon: React.ReactNode, label: string, value: React.ReactNode }) {
+  return (
+    <div className="flex flex-col space-y-1.5">
+      <div className="flex items-center gap-2 text-muted-foreground">
+        {icon}
+        <span className="text-xs font-medium uppercase tracking-wider">{label}</span>
+      </div>
+      <div className="text-sm font-medium text-foreground pl-6">
+        {value}
+      </div>
+    </div>
+  );
+}

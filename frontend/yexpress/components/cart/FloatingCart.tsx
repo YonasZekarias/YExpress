@@ -21,7 +21,7 @@ export default function FloatingCart() {
       initial={{ scale: 0, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       exit={{ scale: 0, opacity: 0 }}
-      onClick={() => router.push("/customer/cart")}
+      onClick={() => router.push("/users/cart")}
       className="fixed top-20 right-6 z-40 group flex items-center bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 p-1 pr-4 rounded-full shadow-2xl transition-all"
     >
       <div className="relative bg-orange-500 p-2.5 rounded-full text-white shadow-lg shadow-orange-500/40">

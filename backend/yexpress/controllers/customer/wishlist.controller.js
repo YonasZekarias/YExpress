@@ -58,7 +58,7 @@ exports.getWishlist = async (req, res) => {
     }
 
     const wishlistData = await Wishlist.aggregate([
-      { $match: { user: new mongoose.Types.ObjectId(userId) } },
+      { $match: { user: userId } },
       
       // Lookup Products
       {

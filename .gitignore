@@ -1,58 +1,51 @@
 # ================================
-#      NEXT.JS / FRONTEND
+# NEXT.JS / FRONTEND
 # ================================
-
-# Node modules (inside frontend/yexpress)
 frontend/yexpress/node_modules/
-
-# Next.js build folders
 frontend/yexpress/.next/
 frontend/yexpress/out/
 frontend/yexpress/.turbo/
 frontend/yexpress/dist/
-frontend/yexpress/.DS_Store/
-
-# Env files
-frontend/yexpress/.env
-frontend/yexpress/.env.local
-frontend/yexpress/.env.production
-frontend/yexpress/.env.development
-frontend/yexpress/.env.test
-
+frontend/yexpress/.DS_Store
+# Env files (frontend)
+frontend/yexpress/.env*
+!frontend/yexpress/.env.example   # ← keep this if you have an example
 
 # ================================
-#        EXPRESS / BACKEND
+# EXPRESS / BACKEND
 # ================================
-
-# Node modules
-backend/node_modules/
-
-# Logs
-backend/logs
-backend/*.log
-backend/npm-debug.log*
-backend/yarn-debug.log*
-backend/yarn-error.log*
-
-# Env files
-backend/.env
-backend/.env.local
-backend/.env.production
-
+backend/yexpress/node_modules/
+# Explicitly ignore the log files you mentioned
+backend/yexpress/combined.log
+backend/yexpress/error.log
+# Catch any other .log files in the backend app folder
+backend/yexpress/*.log
+# Package manager debug logs
+backend/yexpress/npm-debug.log*
+backend/yexpress/yarn-debug.log*
+backend/yexpress/yarn-error.log*
+# Env files (backend)
+backend/yexpress/.env*
+!backend/yexpress/.env.example   # ← keep this if you have an example
 
 # ================================
-#        GLOBAL / SHARED
+# GLOBAL / SHARED – applies everywhere
 # ================================
+**/.DS_Store
+**/Thumbs.db
 
-# OS junk
-.DS_Store
-Thumbs.db
+**/.vscode/
+**/.idea/
 
-# IDE folders
-.vscode/
-.idea/
+# Common temporary / editor files
+**/*~
+**/*.swp
+**/*.swo
+**/*.bak
+**/*.tmp
 
-# Temp / backup files
-*.swp
-*.swo
-*.bak
+# Sometimes these appear deep in subfolders
+**/.turbo/
+**/dist/
+**/coverage/
+**/build/

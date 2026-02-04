@@ -1,7 +1,7 @@
 const User = require("../../models/User");
 const logger = require("../../utils/logger");
 const Order = require("../../models/Order");
-const Cart = require("../../models/Cart");
+const Wishlist = require("../../models/Wishlist");
 const getUserStats = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select("-password");
@@ -13,7 +13,11 @@ const getUserStats = async (req, res) => {
       userId: req.user._id,
       status: "pending",
     });
-    const wishListCount = await Cart.countDocuments({ userId: req.user._id });
+    const wishList = await Wishlist.aggregate([
+      { $match: { user: req.user._id } },
+      { $project: { count: { $size: "$products" } } }
+    ]);
+    const wishListCount = wishList.length > 0 ? wishList[0].count : 0;
     res.status(200).json({
       totalOrders,
       pendingOrders,
