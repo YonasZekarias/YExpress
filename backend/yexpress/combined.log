@@ -5149,3 +5149,28 @@
 {"level":"info","message":"redis connected successfully","timestamp":"2026-02-06T20:51:14.174Z"}
 {"level":"info","message":"Redis connected successfully","timestamp":"2026-02-06T20:51:14.187Z"}
 {"level":"info","message":"MongoDB Atlas connected successfully!","timestamp":"2026-02-06T20:51:16.434Z"}
+{"level":"info","message":"redis connected successfully","timestamp":"2026-02-06T20:56:56.519Z"}
+{"level":"info","message":"Redis connected successfully","timestamp":"2026-02-06T20:56:56.866Z"}
+{"level":"info","message":"MongoDB Atlas connected successfully!","timestamp":"2026-02-06T20:56:59.267Z"}
+{"level":"error","message":{"details":{"path":"items.products"},"error":"Error fetching cart by user ID"},"timestamp":"2026-02-06T20:57:18.171Z"}
+{"level":"error","message":{"details":{"path":"items.products"},"error":"Error fetching cart by user ID"},"timestamp":"2026-02-06T20:57:18.651Z"}
+{"level":"info","message":"redis connected successfully","timestamp":"2026-02-06T20:58:47.438Z"}
+{"level":"info","message":"Redis connected successfully","timestamp":"2026-02-06T20:58:47.762Z"}
+{"level":"info","message":"MongoDB Atlas connected successfully!","timestamp":"2026-02-06T20:58:50.527Z"}
+{"level":"info","message":"redis connected successfully","timestamp":"2026-02-06T20:59:59.162Z"}
+{"level":"info","message":"Redis connected successfully","timestamp":"2026-02-06T20:59:59.460Z"}
+{"level":"info","message":"MongoDB Atlas connected successfully!","timestamp":"2026-02-06T21:00:01.434Z"}
+{"level":"info","message":"redis connected successfully","timestamp":"2026-02-06T21:03:06.150Z"}
+{"level":"info","message":"Redis connected successfully","timestamp":"2026-02-06T21:03:06.303Z"}
+{"level":"info","message":"MongoDB Atlas connected successfully!","timestamp":"2026-02-06T21:03:08.754Z"}
+{"level":"info","message":"redis connected successfully","timestamp":"2026-02-06T21:03:12.806Z"}
+{"level":"info","message":"Redis connected successfully","timestamp":"2026-02-06T21:03:13.012Z"}
+{"level":"info","message":"MongoDB Atlas connected successfully!","timestamp":"2026-02-06T21:03:14.926Z"}
+{"level":"error","message":{"details":{"path":"items.products"},"error":"Error fetching cart by user ID"},"timestamp":"2026-02-06T21:03:32.407Z"}
+{"level":"error","message":{"details":{"path":"items.products"},"error":"Error fetching cart by user ID"},"timestamp":"2026-02-06T21:03:32.801Z"}
+{"level":"info","message":"redis connected successfully","timestamp":"2026-02-06T21:06:00.099Z"}
+{"level":"info","message":"Redis connected successfully","timestamp":"2026-02-06T21:06:00.406Z"}
+{"level":"info","message":"MongoDB Atlas connected successfully!","timestamp":"2026-02-06T21:06:02.814Z"}
+{"level":"info","message":"redis connected successfully","timestamp":"2026-02-06T21:11:27.171Z"}
+{"level":"info","message":"Redis connected successfully","timestamp":"2026-02-06T21:11:27.494Z"}
+{"level":"info","message":"MongoDB Atlas connected successfully!","timestamp":"2026-02-06T21:11:30.076Z"}

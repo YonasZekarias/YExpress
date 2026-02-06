@@ -4,14 +4,38 @@ const ProductVariant = require('../../models/productVariant')
 const logger = require('../../utils/logger')
 
 const getUserCart = async (req, res) => {
-    try {;
-        const cart = await Cart.findOne({ user: req.user._id }).populate('items.product').populate('items.variant');
+    try {
+        const cart = await Cart.findOne({ user: req.user._id })
+
+            .populate({
+                path: 'items.product',
+                model: 'Product' 
+            })
+            .populate({
+                path: 'items.variant',
+                model: 'ProductVariant',
+                populate: [
+                    { path: 'attributes.attribute', model: 'Attribute' },
+                    { path: 'attributes.value', model: 'AttributeValue' } 
+                ]
+            });
+
         if (!cart) {
-            return res.status(404).json({ success: false, message: "Cart not found" });
+            return res.status(200).json({ 
+                success: true, 
+                data: { items: [], totalPrice: 0 } 
+            });
         }
+
+        cart.items = cart.items.filter(item => item.product != null);
+        
+        if (cart.isModified('items')) {
+            await cart.save(); 
+        }
+
         res.status(200).json({ success: true, data: cart });
     } catch (error) {
-        logger.error({ error: "Error fetching cart by user ID", details: error });
+        console.error("Cart Fetch Error:", error);
         res.status(500).json({ success: false, message: error.message });
     }
 };

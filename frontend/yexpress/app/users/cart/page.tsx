@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import axios from 'axios';
-import { toast } from 'sonner'; // or 'react-hot-toast'
+import { toast } from 'react-hot-toast'; 
 import { ShoppingCart, ArrowLeft, Trash } from 'lucide-react';
 
 import CartItem from '@/components/cart/CartItem';
@@ -24,7 +24,6 @@ export default function CartPage() {
       }
     } catch (error) {
       console.error("Fetch cart error", error);
-      // Don't show error toast on 404 (empty cart), just set null
       setCart(null); 
     } finally {
       setLoading(false);
@@ -41,7 +40,7 @@ export default function CartPage() {
     setUpdating(true);
     try {
       // NOTE: Ensure your backend supports PUT /cart/items/:itemId
-      await axios.put(`${API_URL}/cart/items/${itemId}`, 
+      await axios.put(`${API_URL}/user/cart/item/${itemId}`, 
         { quantity: newQuantity },
         { withCredentials: true }
       );
