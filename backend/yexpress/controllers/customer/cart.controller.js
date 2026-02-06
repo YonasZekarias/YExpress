@@ -131,10 +131,34 @@ const editCartItemQuantity = async(req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 }
+// Add this to cart.controller.js
+const removeCartItem = async (req, res) => {
+    try {
+        const { itemId } = req.params; // The _id of the item inside the cart array
+        const userId = req.user._id;
+
+        const cart = await Cart.findOne({ user: userId });
+        if (!cart) return res.status(404).json({ success: false, message: "Cart not found" });
+
+        // Filter out the item
+        cart.items = cart.items.filter(item => item._id.toString() !== itemId);
+
+        // Recalculate Total
+        cart.totalPrice = cart.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+        await cart.save();
+        res.status(200).json({ success: true, message: "Item removed", data: cart });
+
+    } catch (error) {
+        logger.error(error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
 
 module.exports = {
     getUserCart,
     clearUserCart,
     addToCart,
-    editCartItemQuantity
+    editCartItemQuantity,
+    removeCartItem
 }
