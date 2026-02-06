@@ -28,46 +28,110 @@ const clearUserCart = async (req, res) => {
     }
 };
 const addToCart = async (req, res) => {
-    try{
+    try {
         const userId = req.user._id;
-        const {productId, variantId, quantity} = req.body;
-        const product = await Product.findByID(productId);
-        const productVarinat = ProductVariant.findByID(variantId)
-        if (!product) res.status(404).json({success : false, message : "Product Not Found"});
-        const price =productVarinat.price;
-        let cart = await Cart.findOne({user : userId});
-        if (!cart) await Cart.create({user : userId, item : [], totalPrice : 0})
-        const existingItem = Cart.items.find(
-            item => item.product.toString() === productId && item.variant?.toString() === variantId
-            )
-        if (existingItem){
-            existingItem.items.quantity +=quantity
-        }else{
-            cart.items.push({product : productId, variant : variantId,quantity, price})
+        const { productId, variantId, quantity } = req.body;
+
+        // 1. Validation
+        if (!productId || quantity < 1) {
+            return res.status(400).json({ success: false, message: "Invalid product or quantity" });
         }
 
-        cart.totalPrice = cart.items.reduce((sum, item) => sum + item.price * quantity)
+        // 2. Fetch Product & Variant
+        const product = await Product.findById(productId);
+        if (!product) {
+            return res.status(404).json({ success: false, message: "Product Not Found" });
+        }
 
-        await cart.save()
-        res.status(201).json({success : true, data : cart})
-    }catch(error){
-        logger.error(error)
-        res.status(500).json({success : false, message : error.message})
+        let price = product.price; // Default to base product price
+        let variant = null;
+
+        if (variantId) {
+            variant = await ProductVariant.findById(variantId);
+            if (!variant) {
+                return res.status(404).json({ success: false, message: "Variant Not Found" });
+            }
+            price = variant.price; // Override with variant price
+        }
+
+        // 3. Find or Create Cart
+        let cart = await Cart.findOne({ user: userId });
+        if (!cart) {
+            cart = new Cart({ user: userId, items: [], totalPrice: 0 });
+        }
+
+        // 4. Update Items
+        // Check if this exact product+variant combo exists
+        const itemIndex = cart.items.findIndex(item => 
+            item.product.toString() === productId && 
+            (item.variant ? item.variant.toString() === variantId : variantId === null)
+        );
+
+        if (itemIndex > -1) {
+            // Update existing item quantity
+            cart.items[itemIndex].quantity += quantity;
+            // Optional: Update price if it changed in the DB since last add
+            cart.items[itemIndex].price = price; 
+        } else {
+            // Push new item
+            cart.items.push({
+                product: productId,
+                variant: variantId || null,
+                quantity: quantity,
+                price: price
+            });
+        }
+
+        // 5. Recalculate Total Price
+        // Use item.quantity (total in cart) * item.price
+        cart.totalPrice = cart.items.reduce((sum, item) => {
+            return sum + (item.price * item.quantity);
+        }, 0);
+
+        await cart.save();
+        
+        // Populate for frontend response
+        await cart.populate(['items.product', 'items.variant']);
+
+        res.status(200).json({ success: true, data: cart });
+
+    } catch (error) {
+        logger.error("Add to cart error:", error);
+        res.status(500).json({ success: false, message: error.message });
     }
-}
+};
 
-const editCartItemQuantity = async(req , res) =>{
+const editCartItemQuantity = async(req, res) => {
     try {
-        const variantId = req.param.variantId;
-        const {quantity} = req.body;
-        const cart = Cart.findOne({user : req.user._id })
-        if (!cart ) res.status(404).json({success :false, message : "cart not found"})
+        // req.params usually holds the ID in the URL (e.g., /cart/:itemId)
+        // Using item's unique _id is safer than variantId for editing
+        const { itemId } = req.params; 
+        const { quantity } = req.body;
+
+        if (quantity < 1) {
+             return res.status(400).json({ success: false, message: "Quantity must be at least 1" });
+        }
+
+        const cart = await Cart.findOne({ user: req.user._id });
+        if (!cart) return res.status(404).json({ success: false, message: "Cart not found" });
+
+        const item = cart.items.id(itemId); // Mongoose helper to find subdocument
+        if (!item) return res.status(404).json({ success: false, message: "Item not found in cart" });
+
+        item.quantity = quantity;
+
+        // Recalculate Total
+        cart.totalPrice = cart.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+        await cart.save();
+        res.status(200).json({ success: true, data: cart });
         
     } catch (error) {
-        logger.error(error)
-        res.status(500).json({success : false, message : error.message})
+        logger.error(error);
+        res.status(500).json({ success: false, message: error.message });
     }
 }
+
 module.exports = {
     getUserCart,
     clearUserCart,

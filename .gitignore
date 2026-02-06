@@ -9,7 +9,7 @@ frontend/yexpress/dist/
 frontend/yexpress/.DS_Store
 # Env files (frontend)
 frontend/yexpress/.env*
-!frontend/yexpress/.env.example   # ← keep this if you have an example
+!frontend/yexpress/.env.example 
 
 # ================================
 # EXPRESS / BACKEND
@@ -26,7 +26,7 @@ backend/yexpress/yarn-debug.log*
 backend/yexpress/yarn-error.log*
 # Env files (backend)
 backend/yexpress/.env*
-!backend/yexpress/.env.example   # ← keep this if you have an example
+!backend/yexpress/.env.example 
 
 # ================================
 # GLOBAL / SHARED – applies everywhere
