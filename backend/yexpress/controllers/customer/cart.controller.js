@@ -127,8 +127,6 @@ const addToCart = async (req, res) => {
 
 const editCartItemQuantity = async(req, res) => {
     try {
-        // req.params usually holds the ID in the URL (e.g., /cart/:itemId)
-        // Using item's unique _id is safer than variantId for editing
         const { itemId } = req.params; 
         const { quantity } = req.body;
 
@@ -139,26 +137,35 @@ const editCartItemQuantity = async(req, res) => {
         const cart = await Cart.findOne({ user: req.user._id });
         if (!cart) return res.status(404).json({ success: false, message: "Cart not found" });
 
-        const item = cart.items.id(itemId); // Mongoose helper to find subdocument
-        if (!item) return res.status(404).json({ success: false, message: "Item not found in cart" });
+        // FIX: Use standard array find instead of mongoose .id() method for reliability
+        const itemIndex = cart.items.findIndex(item => item._id.toString() === itemId);
 
-        item.quantity = quantity;
+        if (itemIndex === -1) {
+             return res.status(404).json({ success: false, message: "Item not found in cart" });
+        }
 
-        // Recalculate Total
+        // Update quantity
+        cart.items[itemIndex].quantity = quantity;
+
+        // Recalculate Total Price
         cart.totalPrice = cart.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
         await cart.save();
+        
+        // Re-populate to return the full object to frontend immediately
+        await cart.populate(['items.product', 'items.variant']);
+
         res.status(200).json({ success: true, data: cart });
         
     } catch (error) {
-        logger.error(error);
+        console.error("Edit Cart Error:", error);
         res.status(500).json({ success: false, message: error.message });
     }
 }
-// Add this to cart.controller.js
+
 const removeCartItem = async (req, res) => {
     try {
-        const { itemId } = req.params; // The _id of the item inside the cart array
+        const { itemId } = req.params; 
         const userId = req.user._id;
 
         const cart = await Cart.findOne({ user: userId });

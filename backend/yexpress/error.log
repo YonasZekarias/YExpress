@@ -4412,3 +4412,5 @@
 {"level":"error","message":{"details":{"path":"items.products"},"error":"Error fetching cart by user ID"},"timestamp":"2026-02-06T20:57:18.651Z"}
 {"level":"error","message":{"details":{"path":"items.products"},"error":"Error fetching cart by user ID"},"timestamp":"2026-02-06T21:03:32.407Z"}
 {"level":"error","message":{"details":{"path":"items.products"},"error":"Error fetching cart by user ID"},"timestamp":"2026-02-06T21:03:32.801Z"}
+{"level":"error","message":"No refresh token provided","timestamp":"2026-02-09T20:13:19.434Z"}
+{"level":"error","timestamp":"2026-02-09T20:32:59.072Z"}
