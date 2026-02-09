@@ -16,43 +16,60 @@ export default function RootLayout({
             <AuthHydrator />
 
             {/* Full-width wrapper */}
-            <main className="w-full">
-              {children}
-            </main>
+            <main className="w-full">{children}</main>
 
             <Toaster
-              position="bottom-center"
+              position="bottom-right" // "top-center" is also a good professional choice
+              reverseOrder={false}
+              gutter={8}
               toastOptions={{
                 duration: 4000,
+                // Default styling for all toasts
+                className:
+                  "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700 shadow-lg",
                 style: {
-                  padding: "16px 20px",
-                  borderRadius: "12px",
-                  background: "var(--background-toast, #1F2937)",
-                  color: "var(--foreground-toast, #F9FAFB)",
-                  boxShadow: "0 4px 16px rgba(0,0,0,0.2)",
+                  padding: "12px 16px",
+                  borderRadius: "8px",
+                  fontSize: "0.875rem",
                   fontWeight: 500,
-                  fontSize: "0.9rem",
+                  maxWidth: "400px",
+                  // We rely on className for colors to support Dark Mode automatically,
+                  // but we set base styles here just in case Tailwind misses.
+                  background: "#fff",
+                  color: "#333",
+                  boxShadow:
+                    "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
                 },
+
+                // Custom Success State
                 success: {
-                  style: {
-                    background: "#22C55E",
-                    color: "#FFFFFF",
+                  duration: 3000,
+                  iconTheme: {
+                    primary: "#10B981", // Emerald-500
+                    secondary: "#fff",
                   },
-                  icon: "✅",
+                  style: {
+                    borderLeft: "4px solid #10B981", // Subtle green accent on left
+                  },
                 },
+
+                // Custom Error State
                 error: {
-                  style: {
-                    background: "#EF4444",
-                    color: "#FFFFFF",
+                  duration: 5000,
+                  iconTheme: {
+                    primary: "#EF4444", // Red-500
+                    secondary: "#fff",
                   },
-                  icon: "❌",
+                  style: {
+                    borderLeft: "4px solid #EF4444", // Subtle red accent on left
+                  },
                 },
+
+                // Custom Loading State
                 loading: {
                   style: {
-                    background: "#2563EB",
-                    color: "#FFFFFF",
+                    borderLeft: "4px solid #3B82F6", // Blue accent
                   },
-                  icon: "⏳",
                 },
               }}
             />

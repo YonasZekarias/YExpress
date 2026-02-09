@@ -4,7 +4,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Minus, Plus, Trash2, X } from 'lucide-react';
 import { CartItem as CartItemType } from '@/types/cart'; 
-
+import { Dialog,  } from '@radix-ui/react-dialog';
+import { useState } from 'react';
 interface CartItemProps {
   item: CartItemType;
   isUpdating: boolean;
@@ -12,17 +13,16 @@ interface CartItemProps {
   onUpdateQuantity: (itemId: string, newQuantity: number) => void;
   onRemove: (itemId: string) => void;
 }
-
 export default function CartItem({ item, isUpdating, onUpdateQuantity, onRemove, itemId }: CartItemProps) {
   const product = item.product;
   const variant = item.variant;
-  
   if (!product) return null; 
 
   const name = product.name;
   const price = variant ? variant.price : item.price;
   const image = (product?.photo?.[0] || product.photo?.[0] || '/placeholder.jpg');
-  
+  const [modalOpen, setModalOpen] = useState(false);
+
   // Format attributes (Color: Red)
   const variantText = variant?.attributes?.map((attr: any) => 
     `${attr.attribute.name || attr.attribute}: ${attr.value.value || attr.value}`
