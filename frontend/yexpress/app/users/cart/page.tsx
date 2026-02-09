@@ -48,7 +48,7 @@ export default function CartPage() {
         { quantity: newQuantity },
         { withCredentials: true },
       );
-      // Optimistic update or refetch
+      toast.success("Quantity updated");
       fetchCart();
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Failed to update quantity");
@@ -121,7 +121,7 @@ export default function CartPage() {
 
   // --- Main Render ---
   return (
-    <div className="max-w-7xl mx-auto px-4 md:px-6 py-8 pb-20">
+    <div className="max-w-7xl mx-auto py-8 pb-20">
       {" "}
       {/* Added pb-20 for mobile clearance */}
       {/* Header */}
