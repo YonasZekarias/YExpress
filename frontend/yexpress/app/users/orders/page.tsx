@@ -4,22 +4,14 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import axios from 'axios';
 import { format } from 'date-fns'; // You might need to install: npm install date-fns
-import { 
-  Package, 
-  Clock, 
-  CheckCircle, 
-  XCircle, 
-  ChevronRight, 
-  ShoppingBag,
-  Calendar
-} from 'lucide-react';
+import { Package, Clock, CheckCircle, XCircle, ChevronRight, ShoppingBag,Calendar,Truck} from 'lucide-react';
 
 // --- Interfaces ---
 interface OrderStats {
   pending: number;
   processing: number;
   delivered: number;
-  cancelled: number;
+  shipped: number;
 }
 
 interface OrderItem {
@@ -39,7 +31,6 @@ interface Order {
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [stats, setStats] = useState<OrderStats | null>(null);
-  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('all');
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -48,18 +39,16 @@ export default function OrdersPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [ordersRes, statsRes] = await Promise.all([
-          axios.get(`${API_URL}/user/orders`, { withCredentials: true }),
-          axios.get(`${API_URL}/user/orders/stats`, { withCredentials: true }) // Ensure this route exists
-        ]);
+        const orderRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/user/orders`, { withCredentials: true });
+        const statsRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/user/orders/stats`, { withCredentials: true });
 
-        if (ordersRes.data.success) setOrders(ordersRes.data.data);
+        if (orderRes.data.success) setOrders(orderRes.data.data);
+
         if (statsRes.data.success) setStats(statsRes.data.data);
+        
       } catch (error) {
-        console.error("Failed to fetch orders", error);
-      } finally {
-        setLoading(false);
-      }
+        console.log("Failed to fetch orders", error);
+      } 
     };
 
     fetchData();
@@ -81,14 +70,6 @@ export default function OrdersPage() {
   const filteredOrders = activeTab === 'all' 
     ? orders 
     : orders.filter(order => order.orderStatus === activeTab);
-
-  if (loading) {
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black dark:border-white"></div>
-      </div>
-    );
-  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 pb-20">
@@ -113,17 +94,17 @@ export default function OrdersPage() {
             icon={<Package className="w-5 h-5 text-blue-600" />} 
             bg="bg-blue-50 dark:bg-blue-900/10" 
           />
+            <StatCard 
+              label="Shipped" 
+              count={stats.shipped} 
+              icon={<Truck className="w-5 h-5 text-purple-600" />} 
+              bg="bg-purple-50 dark:bg-purple-900/10" 
+            />
           <StatCard 
             label="Delivered" 
             count={stats.delivered} 
             icon={<CheckCircle className="w-5 h-5 text-green-600" />} 
             bg="bg-green-50 dark:bg-green-900/10" 
-          />
-          <StatCard 
-            label="Cancelled" 
-            count={stats.cancelled} 
-            icon={<XCircle className="w-5 h-5 text-red-600" />} 
-            bg="bg-red-50 dark:bg-red-900/10" 
           />
         </div>
       )}

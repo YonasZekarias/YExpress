@@ -150,25 +150,37 @@ const getOrderById = async (req, res) => {
 
 const orderStats = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user._id; 
 
-    const pendingOrderCount = await Order.countDocuments({ user: userId, orderStatus: "pending" });
-    const processingOrderCount = await Order.countDocuments({ user: userId, orderStatus: "processing" });
-    const deliveredOrderCount = await Order.countDocuments({ user: userId, orderStatus: "delivered" });
-    const cancelledOrderCount = await Order.countDocuments({ user: userId, orderStatus: "cancelled" });
+    
+    const [
+      pendingOrderCount, 
+      processingOrderCount, 
+      shippedOrderCount, 
+      deliveredOrderCount, 
+      cancelledOrderCount
+    ] = await Promise.all([
+      Order.countDocuments({ user: userId, orderStatus: "pending" }),
+      Order.countDocuments({ user: userId, orderStatus: "processing" }),
+      Order.countDocuments({ user: userId, orderStatus: "shipped" }),
+      Order.countDocuments({ user: userId, orderStatus: "delivered" }),
+      Order.countDocuments({ user: userId, orderStatus: "cancelled" }),
+    ]);
     
     res.status(200).json({
       success: true,
       data: {
         pending: pendingOrderCount,
         processing: processingOrderCount,
+        shipped: shippedOrderCount,
         delivered: deliveredOrderCount,
         cancelled: cancelledOrderCount,
       },
     });
   } catch (error) {
-    logger.error(error);
-    res.status(500).json({ message: error.message });
+    // logger.error(error); // Uncomment if you have a logger
+    console.error("Order Stats Error:", error);
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 module.exports = {

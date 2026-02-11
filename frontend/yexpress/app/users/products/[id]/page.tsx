@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers';
 import ProductView from '@/components/products/ProductView';
 import axios from 'axios';
-
+import Link from 'next/link';
 // 1. Fetch Product Details (Public)
 async function getProduct(id: string) {
 
@@ -71,10 +71,10 @@ export default async function ProductDetailsPage({ params }: { params: { id: str
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
+      <Link href="/users/products" className="text-blue-500 hover:underline mb-4 block">← Back to Products</Link>
       <ProductView 
         product={product} 
         variants={product.variants || []}
-        priceRange={{ min: 0, max: 0 }} 
         // 👇 PASS THE RESULT HERE
         initialWishlistState={isWishlisted} 
       />

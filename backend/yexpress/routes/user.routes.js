@@ -20,8 +20,8 @@ router.delete('/cart', clearUserCart);
 // Order routes
 router.post('/orders', createOrder);
 router.get('/orders', getMyOrders);
-router.get('/orders/:orderId', getOrderById);
 router.get('/orders/stats', orderStats);
+router.get('/orders/:orderId', getOrderById);
 
 // Product routes
 router.get('/products/categories', getAllCategories);

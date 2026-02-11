@@ -16,7 +16,6 @@ import CheckoutModal from '@/components/cart/CheckoutModal';
 export default function CartPage() {
   const router = useRouter();
   const [cart, setCart] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -28,7 +27,6 @@ export default function CartPage() {
     axios.get(`${API_URL}/user/cart`, { withCredentials: true })
       .then(res => res.data.success && setCart(res.data.data))
       .catch(() => {})
-      .finally(() => setLoading(false));
   };
 
   useEffect(() => { fetchCart(); }, []);
@@ -65,8 +63,6 @@ export default function CartPage() {
       toast.error(error.response?.data?.message || "Checkout failed");
     }
   };
-
-  if (loading) return <div className="h-[60vh] flex center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div></div>;
 
   if (!cart?.items?.length) return (
     <div className="max-w-7xl mx-auto px-4 py-20 text-center flex flex-col items-center">
@@ -105,14 +101,14 @@ export default function CartPage() {
           </Link>
         </div>
 
-        {/* Right Col: Summary (Spans 1 column) */}
+
         <div className="lg:col-span-1">
           <div className="sticky top-24">
              <OrderSummary 
                 subtotal={cart.totalPrice} 
                 itemCount={cart.items.length} 
                 isCheckingOut={false} 
-                onCheckout={() => setCheckoutOpen(true)} // Opens Modal
+                onCheckout={() => setCheckoutOpen(true)}
               />
           </div>
         </div>
