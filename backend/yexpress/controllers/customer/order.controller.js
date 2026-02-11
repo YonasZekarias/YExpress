@@ -1,105 +1,154 @@
-const Order = require("../../models/Order");
-
-const Cart = require("../../models/Cart");  
-
-const { redisClient } = require("../../config/redis");
-const logger = require("../../utils/logger");
-
-
-exports.createOrder = async (req, res) => {
-  try {
-    const userId = req.user.id;
-
-    const cart = await Cart.findOne({ user: userId }).populate("items.product");
-    if (!cart || cart.items.length === 0)
-      return res.status(400).json({ message: "Cart is empty" });
-
-    const { shippingAddress, paymentMethod } = req.body;
-
-    const order = await Order.create({
-      user: userId,
-      items: cart.items.map(item => ({
-        product: item.product._id,
-        quantity: item.quantity,
-        price: item.price
-      })),
-      shippingAddress,
-      paymentInfo: { method: paymentMethod, status: "pending" },
-      totalAmount: cart.totalPrice
-    });
+const Order = require('../../models/Order');
+const Cart = require('../../models/Cart');
+const Product = require('../../models/Product');
+const ProductVariant = require('../../models/productVariant');
+const logger = require('../../utils/logger'); 
 
 
-    cart.items = [];
-    cart.totalPrice = 0;
-    await cart.save();
+const createOrder = async (req, res) => {
+    try {
+        const { shippingAddress, paymentMethod } = req.body;
+        const userId = req.user._id;
 
+        // 1. Fetch User's Cart
+        const cart = await Cart.findOne({ user: userId });
 
-    await redisClient.del(`orders:${userId}`);
+        if (!cart || cart.items.length === 0) {
+            return res.status(400).json({ success: false, message: "Your cart is empty" });
+        }
+        const orderItems = [];
+        let totalAmount = 0;
 
-    res.status(201).json({ success: true, data: order });
-  } catch (error) {
-    logger.error(error);
-    res.status(500).json({ message: error.message });
-  }
-};
+        for (const item of cart.items) {
+            let product, variant;
+            let currentStock = 0;
+            let priceToUse = item.price; // Default to cart price
 
+            // Check if it's a variant or base product
+            if (item.variant) {
+                variant = await ProductVariant.findById(item.variant);
+                if (!variant) {
+                    return res.status(404).json({ success: false, message: `Variant for product ${item.product} not found` });
+                }
+                currentStock = variant.stock;
+                priceToUse = variant.price; // Optional: Refresh price from DB
+            } else {
+                product = await Product.findById(item.product);
+                if (!product) {
+                    return res.status(404).json({ success: false, message: `Product not found` });
+                }
+                currentStock = product.stock;
+                priceToUse = product.price; // Optional: Refresh price from DB
+            }
 
-exports.getUserOrders = async (req, res) => {
-  try {
-    const userId = req.user.id;
-    const cacheKey = `orders:${userId}`;
+            // The Critical Check
+            if (currentStock < item.quantity) {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: `Out of stock: "${product?.name || 'Item'}" only has ${currentStock} left.` 
+                });
+            }
 
-    const cached = await redisClient.get(cacheKey);
-    if (cached) {
-      return res.status(200).json({ cached: true, data: JSON.parse(cached) });
+            // Prepare item for the Order Model
+            orderItems.push({
+                product: item.product,
+                variant: item.variant || null,
+                quantity: item.quantity,
+                price: priceToUse
+            });
+
+            totalAmount += (priceToUse * item.quantity);
+        }
+
+        // --- 3. STOCK DEDUCTION PHASE ---
+        // Since validation passed, we now decrement the stock.
+        for (const item of orderItems) {
+            if (item.variant) {
+                await ProductVariant.findByIdAndUpdate(item.variant, { 
+                    $inc: { stock: -item.quantity } 
+                });
+            } else {
+                await Product.findByIdAndUpdate(item.product, { 
+                    $inc: { stock: -item.quantity } 
+                });
+            }
+        }
+
+        // --- 4. CREATE ORDER ---
+        const order = new Order({
+            user: userId,
+            items: orderItems,
+            shippingAddress,
+            paymentInfo: {
+                method: paymentMethod, 
+                status: 'pending', // Usually pending until webhook confirms or COD
+            },
+            totalAmount,
+            orderStatus: "pending"
+        });
+
+        const createdOrder = await order.save();
+
+        // --- 5. CLEAR CART ---
+        await Cart.findOneAndDelete({ user: userId });
+
+        res.status(201).json({ 
+            success: true, 
+            message: "Order placed successfully",
+            data: createdOrder 
+        });
+
+    } catch (error) {
+        console.error("Create Order Error:", error);
+        res.status(500).json({ success: false, message: error.message });
     }
-
-    const orders = await Order.find({ user: userId }).sort({ createdAt: -1 });
-
-    await redisClient.set(cacheKey, JSON.stringify(orders), { EX: 60 * 5 });
-
-    res.status(200).json({ success: true, data: orders });
-  } catch (error) {
-    logger.error(error);
-    res.status(500).json({ message: error.message });
-  }
 };
 
+const getMyOrders = async (req, res) => {
+    try {
+        const orders = await Order.find({ user: req.user._id })
+            .sort({ createdAt: -1 }) 
+            .populate('items.product', 'name photo')
+            .populate({
+                path: 'items.variant',
+                select: 'attributes',
+                populate: { path: 'attributes.attribute', select: 'name' }
+            });
 
-exports.getOrderById = async (req, res) => {
-  try {
-    const order = await Order.findById(req.params.id).populate("items.product");
-    if (!order) return res.status(404).json({ message: "Order not found" });
-
-    res.status(200).json({ success: true, data: order });
-  } catch (error) {
-    logger.error(error);
-    res.status(500).json({ message: error.message });
-  }
+        res.status(200).json({ success: true, data: orders });
+    } catch (error) {
+        console.error("Get My Orders Error:", error);
+        res.status(500).json({ success: false, message: error.message });
+    }
 };
 
-exports.cancelOrder = async (req, res) => {
-  try {
-    const order = await Order.findOne({
-      _id: req.params.id,
-      user: req.user.id
-    });
+const getOrderById = async (req, res) => {
+    try {
+        const order = await Order.findOne({ 
+            _id: req.params.id, 
+            user: req.user._id 
+        })
+        .populate('items.product', 'name photo price')
+        .populate({
+            path: 'items.variant',
+            populate: [
+                { path: 'attributes.attribute', select: 'name' },
+                { path: 'attributes.value', select: 'value' }
+            ]
+        });
 
-    if (!order) return res.status(404).json({ message: "Order not found" });
+        if (!order) {
+            return res.status(404).json({ success: false, message: "Order not found" });
+        }
 
-    if (order.orderStatus !== "pending")
-      return res.status(400).json({ message: "Order cannot be cancelled" });
-
-    order.orderStatus = "cancelled";
-    await order.save();
-
-    res.status(200).json({ success: true, message: "Order cancelled" });
-  } catch (error) {
-    logger.error(error);
-    res.status(500).json({ message: error.message });
-  }
+        res.status(200).json({ success: true, data: order });
+    } catch (error) {
+        console.error("Get Order By ID Error:", error);
+        res.status(500).json({ success: false, message: error.message });
+    }
 };
-exports.orderStats = async (req, res) => {
+
+const orderStats = async (req, res) => {
   try {
     const userId = req.user.id;
 
@@ -121,4 +170,10 @@ exports.orderStats = async (req, res) => {
     logger.error(error);
     res.status(500).json({ message: error.message });
   }
+};
+module.exports = {
+    createOrder,
+    getMyOrders,
+    getOrderById,
+    orderStats
 };

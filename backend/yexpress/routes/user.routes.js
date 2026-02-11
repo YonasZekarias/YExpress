@@ -1,7 +1,7 @@
 const protect = require('../middleware/auth.middleware')
 const role = require('../middleware/role.middleware')  
 const {getUserCart, clearUserCart, addToCart, editCartItemQuantity,removeCartItem} = require("../controllers/customer/cart.controller")
-const {createOrder, getUserOrders,getOrderById,cancelOrder,orderStats} = require('../controllers/customer/order.controller')
+const {createOrder,getOrderById,orderStats, getMyOrders} = require('../controllers/customer/order.controller')
 const {getAllCategories,getAllProduct,getProductById}=require('../controllers/customer/product.controller')
 const {createReview} = require('../controllers/customer/review.controller')
 const {getUserStats,getUserProfile, editUserProfile} = require('../controllers/customer/user.controller')
@@ -19,9 +19,8 @@ router.delete('/cart', clearUserCart);
 
 // Order routes
 router.post('/orders', createOrder);
-router.get('/orders', getUserOrders);
+router.get('/orders', getMyOrders);
 router.get('/orders/:orderId', getOrderById);
-router.put('/orders/:orderId/cancel', cancelOrder);
 router.get('/orders/stats', orderStats);
 
 // Product routes
