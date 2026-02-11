@@ -106,22 +106,48 @@ const createOrder = async (req, res) => {
 
 const getMyOrders = async (req, res) => {
     try {
-        const orders = await Order.find({ user: req.user._id })
-            .sort({ createdAt: -1 }) 
+        const { status, sort } = req.query;
+
+        // 1. Base Query: Always filter by the current user
+        let query = { user: req.user._id };
+
+        // 2. Add Status Filter (if provided and not 'all')
+        if (status && status !== 'all') {
+            query.orderStatus = status;
+        }
+
+        // 3. Define Sorting Logic
+        let sortOptions = { createdAt: -1 }; // Default: Newest first
+
+        if (sort === 'oldest') {
+            sortOptions = { createdAt: 1 };
+        } else if (sort === 'price_high') {
+            sortOptions = { totalAmount: -1 };
+        } else if (sort === 'price_low') {
+            sortOptions = { totalAmount: 1 };
+        }
+
+        // 4. Execute Query
+        const orders = await Order.find(query)
+            .sort(sortOptions)
             .populate('items.product', 'name photo')
             .populate({
                 path: 'items.variant',
                 select: 'attributes',
-                populate: { path: 'attributes.attribute', select: 'name' }
+                populate: { path: 'attributes.attribute', select: 'name' } // Adjust based on your schema
             });
 
-        res.status(200).json({ success: true, data: orders });
+        res.status(200).json({ 
+            success: true, 
+            count: orders.length, 
+            data: orders 
+        });
+
     } catch (error) {
         console.error("Get My Orders Error:", error);
         res.status(500).json({ success: false, message: error.message });
     }
 };
-
 const getOrderById = async (req, res) => {
     try {
         const order = await Order.findOne({ 
