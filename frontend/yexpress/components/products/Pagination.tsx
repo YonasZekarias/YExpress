@@ -22,7 +22,7 @@ export default function Pagination({ currentPage, totalPages }: PaginationProps)
       <button
         disabled={currentPage <= 1}
         onClick={() => handlePageChange(currentPage - 1)}
-        className="px-4 py-2 border rounded disabled:opacity-50 hover:bg-gray-50"
+        className="px-4 py-2 border rounded disabled:opacity-50 hover:bg-indigo-500 hover:disabled:bg-transparent"
       >
         Previous
       </button>
@@ -32,7 +32,7 @@ export default function Pagination({ currentPage, totalPages }: PaginationProps)
       <button
         disabled={currentPage >= totalPages}
         onClick={() => handlePageChange(currentPage + 1)}
-        className="px-4 py-2 border rounded disabled:opacity-50 hover:bg-gray-50"
+        className="px-4 py-2 border rounded disabled:opacity-50 hover:bg-indigo-500 hover:disabled:bg-transparent"
       >
         Next
       </button>
