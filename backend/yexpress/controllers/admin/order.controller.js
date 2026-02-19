@@ -1,114 +1,133 @@
-const Order = require('../../models/Order')
-const Cart = require('../../models/Cart')
-const logger = require('../../utils/logger')
-const redisClient = require('../../utils/redisClinet')
+const Order = require('../../models/Order');
+const logger = require('../../utils/logger');
+const redisClient = require('../../utils/redisClinet');
 const buildOrderQuery = require("../../utils/orderQueryBuilder");
 
 const getAllOrder = async (req, res) => {
   try {
     const limit = Number(req.query.limit) || 10;
-
-    const pipeline = buildOrderQuery(req.query, req.user);
-
+    
+    // Ensure pipeline handles pagination logic or manual slice is needed
+    const pipeline = buildOrderQuery(req.query, req.user); 
     const orders = await Order.aggregate(pipeline);
 
+    // Manual Pagination Check
     let nextCursor = null;
     if (orders.length > limit) {
-      nextCursor = orders[limit - 1]._id;
-      orders.pop();
+      nextCursor = orders[limit - 1]._id; // Assuming sorted by _id or createdAt
+      orders.pop(); // Remove the extra item fetched to check for next page
     }
 
     res.status(200).json({
+      success: true,
       nextCursor,
       results: orders.length,
-      orders,
+      data: orders,
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error" });
+    logger.error("Get All Orders Error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
-const getOrderById = async (req, res) =>{
+
+const getOrderById = async (req, res) => {
     try {
-        const orderID = req.params.id
-        const order = await Order.findById(orderID).populate('user').populate('items.product').populate('items.variant')
-        if(!order){
-            return res.status(404).json({success: false, message: "Order not found"})
-        }
-        res.status(200).json({success: true, data: order})
+        const order = await Order.findById(req.params.id)
+            .populate('user', 'name email')
+            .populate('items.product', 'name photo')
+            .populate('items.variant'); // Add specific fields if needed
+
+        if (!order) return res.status(404).json({ success: false, message: "Order not found" });
+
+        res.status(200).json({ success: true, data: order });
     } catch (error) {
-      res.status(500).json({success: false, message: error.message})
-      logger.error({error: "Error fetching order by ID", details: error})  
+        logger.error("Get Order By ID Error:", error);
+        res.status(500).json({ success: false, message: error.message });
     }
 };
-const getOrderByStatus = async (req, res) =>{
+
+const getOrderByStatus = async (req, res) => {
     try {
-        const status = req.params.body;
-        const orders = await Order.find({orderStatus: status}).populate('user').populate('items.product').populate('items.variant')
-        res.status(200).json({success: true, data: orders})
+        const status = req.params.status; // FIX: was req.params.body
+        const orders = await Order.find({ orderStatus: status })
+            .populate('user', 'name email')
+            .populate('items.product', 'name');
+
+        res.status(200).json({ success: true, count: orders.length, data: orders });
     } catch (error) {
-        res.status(500).json({success: false, message: error.message})
-        logger.error({error: "Error fetching orders by status", details: error})  
+        logger.error("Get Order By Status Error:", error);
+        res.status(500).json({ success: false, message: error.message });
     }
 };
+
 const updateOrderStatus = async (req, res) => {
   try {
     const { status } = req.body;
     const { id } = req.params;
 
     const order = await Order.findById(id);
-    if (!order || order.deleted) {
-      return res.status(404).json({ success: false, message: "Order not found" });
-    }
+    if (!order) return res.status(404).json({ success: false, message: "Order not found" });
 
     order.orderStatus = status;
-
-    if (status === "delivered") {
-      order.deliveredAt = Date.now();
-    }
+    if (status === "delivered") order.deliveredAt = Date.now();
 
     await order.save();
 
-    // Clear cache
-    await redisClient.del(`order:${id}`);
-    await redisClient.del("orders:all");
+    // Clear cache safely
+    try {
+        if (redisClient.isOpen) {
+            await redisClient.del(`order:${id}`);
+            await redisClient.del("orders:all");
+        }
+    } catch (redisErr) {
+        logger.warn("Redis Error:", redisErr);
+    }
 
-    res.status(200).json({ success: true, data: order });
+    res.status(200).json({ success: true, message: "Order status updated", data: order });
   } catch (error) {
-    logger.error("Error updating order", error);
+    logger.error("Update Order Status Error:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
-const orderStats= async(req, res)=>{
+
+const orderStats = async (req, res) => {
   try {
-    const totalOrders = await Order.countDocuments();
-    const wishlistCount = await Cart.countDocuments()
-    const pendingOrderCount = await Order.countDocuments({ orderStatus: "pending" });
-    const processingOrderCount = await Order.countDocuments({ orderStatus: "processing" });
-    const deliveredOrderCount = await Order.countDocuments({ orderStatus: "delivered" });
-    const cancelledOrderCount = await Order.countDocuments({ orderStatus: "cancelled" });
+    // FIX: Run queries in parallel
+    const [
+        totalOrders, 
+        pending, 
+        processing, 
+        delivered, 
+        cancelled
+    ] = await Promise.all([
+        Order.countDocuments(),
+        Order.countDocuments({ orderStatus: "pending" }),
+        Order.countDocuments({ orderStatus: "processing" }),
+        Order.countDocuments({ orderStatus: "delivered" }),
+        Order.countDocuments({ orderStatus: "cancelled" }),
+    ]);
 
     res.status(200).json({
       success: true,
       data: {
-        totalOrders: totalOrders,
-        wishlistCount: wishlistCount,
-        pending:  pendingOrderCount,
-        processing:  processingOrderCount,
-        delivered:  deliveredOrderCount,
-        cancelled:  cancelledOrderCount,
+        totalOrders,
+        pending,
+        processing,
+        delivered,
+        cancelled,
       },
     });
 
   } catch (error) {
-    logger.error("error",error)
-    res.status(500).json({success :false, message : error.message })
+    logger.error("Order Stats Error:", error);
+    res.status(500).json({ success: false, message: error.message });
   }
-}
-module.exports ={
+};
+
+module.exports = {
     getAllOrder,
     getOrderById,
     getOrderByStatus,
     updateOrderStatus,
     orderStats,
-} 
+};

@@ -1,33 +1,35 @@
-const ProductVariant = require('../../models/ProductVariant');
+const Product = require('../../models/Product'); // Ensure capitalized consistency
+const ProductVariant = require('../../models/productVariant'); // Check file name casing
 const Attribute = require('../../models/Attribute');
 const AttributeValue = require('../../models/AttributeValue');
-const Product = require('../../models/product')
-const logger = require('../../utils/logger')
+const logger = require('../../utils/logger');
 const buildProductQuery = require("../../utils/productQueryBuilder");
+
 const addProduct = async (req, res) => {
   try {
     const { name, description, category_id, variants } = req.body;
 
-    // 1. Create the product
+    // 1. Create the base product
     const product = await Product.create({
       name,
       description,
       category: category_id,
     });
 
-    // 2. Loop through variants
+    // 2. Process Variants (Optimized)
+    // Note: In production, consider using a Transaction (session) here
     for (const variant of variants) {
       const variantAttributes = [];
 
       for (const attr of variant.attributes) {
-        // 3. Find the attribute under the category
+        
+        // Find Attribute (Scoped to Category usually, not Product)
+        // If attributes like "Size" are global to a category:
         let attribute = await Attribute.findOne({
           name: attr.attribute,
-          category: category_id,
-          product: product._id
+          category: category_id
         });
 
-        // If attribute does not exist, create it
         if (!attribute) {
           attribute = await Attribute.create({
             name: attr.attribute,
@@ -35,7 +37,7 @@ const addProduct = async (req, res) => {
           });
         }
 
-        // 4. Find or create attribute value
+        // Find/Create Attribute Value
         let attributeValue = await AttributeValue.findOne({
           attribute: attribute._id,
           value: attr.value
@@ -54,7 +56,7 @@ const addProduct = async (req, res) => {
         });
       }
 
-      // 5. Create product variant
+      // Create the Variant
       await ProductVariant.create({
         product: product._id,
         price: variant.price,
@@ -63,23 +65,23 @@ const addProduct = async (req, res) => {
       });
     }
 
-    res.status(201).json({ message: "Product created successfully", product });
+    res.status(201).json({ success: true, message: "Product created successfully", data: product });
 
   } catch (err) {
-    logger.error(err);
-    res.status(500).json({ error: "Server error" });
+    logger.error("Add Product Error:", err);
+    // If product was created but variants failed, you might want to delete the product here (rollback)
+    res.status(500).json({ success: false, message: err.message });
   }
 };
-
-
 
 const getAllProducts = async (req, res) => {
   try {
     const limit = Number(req.query.limit) || 10;
-
     const pipeline = buildProductQuery(req.query);
+    
     const products = await Product.aggregate(pipeline);
 
+    // Pagination Logic
     let nextCursor = null;
     if (products.length > limit) {
       nextCursor = products[limit - 1]._id;
@@ -87,34 +89,41 @@ const getAllProducts = async (req, res) => {
     }
 
     res.status(200).json({
+      success: true,
       nextCursor,
       results: products.length,
-      products,
+      data: products,
     });
   } catch (err) {
-    res.status(500).json({ error: "Server error" });
+    logger.error("Get All Products Error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
-
-module.exports = { getAllProducts };
 
 const getAProductByID = async (req, res) => {
   try {
     const productId = req.params.id;
-    const product = await Product.findById(productId)
-      .populate({ 
-        path: 'ProductVariant',
-        populate: {
-          path: 'Attributes.attribute',
-        },
-      });
+    // Note: Ensure your Product model has a virtual named 'variants' or matches 'ProductVariant'
+    const product = await Product.findById(productId);
+    
+    // Manual population if virtuals aren't set up, or use virtual populate
+    // Assuming you want to find variants associated with this product:
+    const variants = await ProductVariant.find({ product: productId })
+        .populate('attributes.attribute', 'name')
+        .populate('attributes.value', 'value');
 
-    res.status(200).json(product);
+    if (!product) return res.status(404).json({ success: false, message: "Product not found" });
+
+    res.status(200).json({ 
+        success: true, 
+        data: { ...product.toObject(), variants } 
+    });
   } catch (err) {
-    logger.error(err);
-    res.status(500).json({ error: "Server error" });
+    logger.error("Get Product ID Error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
 const updateAProduct = async (req, res) => {
   try {
     const productId = req.params.id;
@@ -123,31 +132,39 @@ const updateAProduct = async (req, res) => {
     const updatedProduct = await Product.findByIdAndUpdate(
       productId,
       { name, description, category: category_id },
-      { new: true }
+      { new: true, runValidators: true }
     );
 
-    res.status(200).json({ message: "Product updated successfully", updatedProduct });  
+    if (!updatedProduct) return res.status(404).json({ success: false, message: "Product not found" });
+
+    res.status(200).json({ success: true, message: "Product updated", data: updatedProduct });  
   } catch (error) {
-    logger.error(error);
-    res.status(500).json({ error: "Server error" });
+    logger.error("Update Product Error:", error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
 const deleteAProduct = async (req, res) => {
   try {
     const productId = req.params.id;
+    const product = await Product.findByIdAndDelete(productId);
 
-    await Product.findByIdAndDelete(productId);
+    if (!product) return res.status(404).json({ success: false, message: "Product not found" });
 
-    res.status(200).json({ message: "Product deleted successfully" });
+    // CLEANUP: Delete associated variants
+    await ProductVariant.deleteMany({ product: productId });
+
+    res.status(200).json({ success: true, message: "Product and variants deleted successfully" });
   } catch (error) {
-    logger.error(error);
-    res.status(500).json({ error: "Server error" });
+    logger.error("Delete Product Error:", error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
 module.exports = {
     addProduct,
     getAllProducts,
     getAProductByID,
     updateAProduct,
     deleteAProduct
-}
+};

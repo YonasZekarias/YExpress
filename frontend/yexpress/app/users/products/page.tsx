@@ -22,7 +22,6 @@ async function getProducts(searchParams: any) {
         maxPrice: searchParams.maxPrice,
       },
       headers: {
-        // ✅ FIX 2: Format as "key=value" string
         Cookie: token ? `token=${token}` : "",
       },
     },
