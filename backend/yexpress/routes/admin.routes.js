@@ -1,6 +1,6 @@
 const protect = require('../middleware/auth.middleware');
 const role = require('../middleware/role.middleware');
-const {addAttribute,deleteAttribute,editAttribute,getAllAtributes} = require('../controllers/admin/attribute.controller')
+const {addAttribute,deleteAttribute,editAttribute,getAllAttributes} = require('../controllers/admin/attribute.controller')
 const {addCategory, allCategories,deleteCategory,editCategory,getACategoryByID} = require('../controllers/admin/category.controller')
 const {getAllOrder,getOrderById,getOrderByStatus,updateOrderStatus,orderStats} = require('../controllers/admin/order.controller')
 const {addProduct,deleteAProduct,getAProductByID,getAllProducts,updateAProduct} = require('../controllers/admin/product.controller')
@@ -10,7 +10,7 @@ const router = require('express').Router();
 router.use(protect, role('admin'));
 // Attribute routes
 router.post('/attributes', addAttribute);
-router.get('/attributes', getAllAtributes);
+router.get('/attributes', getAllAttributes);
 router.put('/attributes/:attributeId', editAttribute);
 router.delete('/attributes/:attributeId', deleteAttribute);
 
@@ -24,9 +24,9 @@ router.delete('/categories/:categoryId', deleteCategory);
 // Product routes
 router.post('/products', addProduct);
 router.get('/products', getAllProducts);
-router.get('/products/:productId', getAProductByID);
-router.put('/products/:productId', updateAProduct);
-router.delete('/products/:productId', deleteAProduct);
+router.get('/products/:id', getAProductByID);
+router.put('/products/:id', updateAProduct);
+router.delete('/products/:id', deleteAProduct);
 
 // Order routes
 router.get('/orders', getAllOrder);

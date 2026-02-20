@@ -10,7 +10,7 @@ const buildProductQuery = (queryParams) => {
     limit = 10,
   } = queryParams;
 
-  let matchStage = { deleted: false };
+  let matchStage = { deleted: { $ne: true } };
 
   if (search) {
     matchStage.$or = [
@@ -19,17 +19,38 @@ const buildProductQuery = (queryParams) => {
     ];
   }
 
-  if (category) {
+  if (category && mongoose.isValidObjectId(category)) {
     matchStage.category = new mongoose.Types.ObjectId(category);
   }
 
-  if (cursor) {
+  if (cursor && mongoose.isValidObjectId(cursor)) {
     matchStage._id = { $lt: new mongoose.Types.ObjectId(cursor) };
   }
 
   let pipeline = [
+    // 1. Filter Products
     { $match: matchStage },
 
+    // ---------------------------------------------------------
+    // NEW: Populate Category (Lookup + Unwind)
+    // ---------------------------------------------------------
+    {
+      $lookup: {
+        from: "categories",       // Ensure this matches your MongoDB collection name exactly (usually lowercase plural)
+        localField: "category",   // Field in Product
+        foreignField: "_id",      // Field in Category
+        as: "category"            // Overwrite the existing 'category' field
+      }
+    },
+    {
+      $unwind: {
+        path: "$category",
+        preserveNullAndEmptyArrays: true // Keep product even if category is missing/deleted
+      }
+    },
+    // ---------------------------------------------------------
+
+    // 2. Lookup Variants (Existing)
     {
       $lookup: {
         from: "productvariants",
@@ -39,6 +60,7 @@ const buildProductQuery = (queryParams) => {
       },
     },
 
+    // 3. Filter Variants by Price
     ...(minPrice || maxPrice
       ? [
           {
@@ -61,6 +83,12 @@ const buildProductQuery = (queryParams) => {
               },
             },
           },
+          // Remove products with 0 variants after filtering
+          {
+             $match: {
+               "ProductVariant": { $not: { $size: 0 } }
+             }
+          }
         ]
       : []),
 

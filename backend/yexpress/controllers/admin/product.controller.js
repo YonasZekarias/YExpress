@@ -77,6 +77,8 @@ const addProduct = async (req, res) => {
 const getAllProducts = async (req, res) => {
   try {
     const limit = Number(req.query.limit) || 10;
+    
+    // The builder now handles the complex logic safely
     const pipeline = buildProductQuery(req.query);
     
     const products = await Product.aggregate(pipeline);
@@ -84,26 +86,25 @@ const getAllProducts = async (req, res) => {
     // Pagination Logic
     let nextCursor = null;
     if (products.length > limit) {
-      nextCursor = products[limit - 1]._id;
-      products.pop();
+      nextCursor = products[limit - 1]._id; // Get ID of the last item
+      products.pop(); // Remove the extra item used for checking "next page"
     }
 
     res.status(200).json({
       success: true,
       nextCursor,
       results: products.length,
-      data: products,
+      data: products, // This now contains products that actually match the filters
     });
   } catch (err) {
     logger.error("Get All Products Error:", err);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
-
 const getAProductByID = async (req, res) => {
   try {
     const productId = req.params.id;
-    // Note: Ensure your Product model has a virtual named 'variants' or matches 'ProductVariant'
+   
     const product = await Product.findById(productId);
     
     // Manual population if virtuals aren't set up, or use virtual populate
