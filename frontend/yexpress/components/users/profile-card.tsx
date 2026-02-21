@@ -73,7 +73,7 @@ export function ProfileCard({
             className="w-24 h-24 border-4 border-[#d4a574] cursor-pointer hover:opacity-80 transition-opacity"
             onClick={handleAvatarClick}
           >
-            <AvatarImage src={profileImage || "/profile-avatar.png"} alt={profileName} />
+            <AvatarImage src={profileImage || undefined} alt={profileName} />
             <AvatarFallback className="bg-muted text-muted-foreground">
               <User className="w-12 h-12" />
             </AvatarFallback>

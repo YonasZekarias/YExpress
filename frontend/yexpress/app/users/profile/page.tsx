@@ -29,7 +29,7 @@ export default function ProfilePage() {
     const fetchUserData = async () => {
       try {
         const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/me/profile`, { withCredentials: true });
-        const user = res.data.data;
+        const user = res.data
         setProfileData({
           firstName: user.firstName || "",
           lastName: user.lastName || "",
