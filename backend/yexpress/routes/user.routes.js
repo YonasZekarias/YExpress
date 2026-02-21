@@ -32,8 +32,6 @@ router.get('/products/:id', getProductById);
 router.post('/reviews', createReview);
 
 // User routes
-router.get('/user/profile', getUserProfile);
-router.put('/user/profile', editUserProfile);
 router.get('/user/stats', getUserStats);
 //wishlist routes
 router.post('/wishlist', toggleWishlist);
