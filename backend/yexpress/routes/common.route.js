@@ -10,4 +10,5 @@ router.use(protect);
 router.get('/profile', getUserProfile);
 router.put('/profile', editUserProfile);
 
+
 module.exports = router;

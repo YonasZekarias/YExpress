@@ -4,7 +4,7 @@ const {getUserCart, clearUserCart, addToCart, editCartItemQuantity,removeCartIte
 const {createOrder,getOrderById,orderStats, getMyOrders} = require('../controllers/customer/order.controller')
 const {getAllCategories,getAllProduct,getProductById}=require('../controllers/customer/product.controller')
 const {createReview} = require('../controllers/customer/review.controller')
-const {getUserStats,getUserProfile, editUserProfile} = require('../controllers/customer/user.controller')
+const {getUserStats} = require('../controllers/customer/user.controller')
 const {getWishlist,toggleWishlist}= require('../controllers/customer/wishlist.controller')
 const router = require('express').Router();
 

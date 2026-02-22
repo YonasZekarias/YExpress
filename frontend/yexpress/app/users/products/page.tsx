@@ -28,12 +28,27 @@ async function getProducts(searchParams: any) {
   );
 
   return res.data;
-}
 
+}
+async function getProductsCategories(searchParams: any) {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value || "";
+
+  const res = await axios.get(
+    `${process.env.NEXT_PUBLIC_API_URL}/user/products/categories`,
+    {
+      headers: {
+        Cookie: token ? `token=${token}` : "",
+      },
+    },
+  );
+
+  return res.data;
+}
 export default async function ProductsPage(props: { searchParams: Promise<any> }) {
-  // ✅ FIX 3: Await searchParams (Next.js 15 requirement)
   const searchParams = await props.searchParams;
   const productData = await getProducts(searchParams);
+  const categoriesData = await getProductsCategories(searchParams);
 
   if (!productData?.success) {
     return <div className="p-10 text-center">Failed to load products</div>;
@@ -43,7 +58,7 @@ export default async function ProductsPage(props: { searchParams: Promise<any> }
 
   return (
     <div className="max-w-7xl mx-auto px-4">
-      <SearchAndFilter categories={[]} />
+      <SearchAndFilter categories={categoriesData.data || []} />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {products.map((product: any) => (
