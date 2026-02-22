@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Star, Plus, Heart } from 'lucide-react';
+import { Star, Plus, Heart,ShoppingCart } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { Product } from '@/types/product';
@@ -145,7 +145,7 @@ export default function ProductCard({ product, initialWishlistState = false }: P
             
             {!isOutOfStock && (
                <div className="h-8 w-8 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white flex items-center justify-center transition-colors group-hover:bg-black group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black">
-                 <Plus className="w-4 h-4" />
+                 <ShoppingCart className="w-4 h-4" />
                </div>
             )}
           </div>
