@@ -19,4 +19,6 @@ export interface Order {
   totalAmount: number;
   createdAt: string;
   items: OrderItem[];
+  image?: string; // Optional field for backward compatibility
+  date?: string; // Optional field for backward compatibility
 }
