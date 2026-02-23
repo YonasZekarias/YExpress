@@ -20,7 +20,6 @@ export default function ProfilePage() {
   const [isSaving, setIsSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
 
-  // 1. Fetch Real User Data
   useEffect(() => {
     const fetchUserData = async () => {
       try {

@@ -4,7 +4,6 @@ import { Menu } from "lucide-react";
 import { usePathname } from "next/navigation";
 import ProfileDropdown from "../common/profileDropdown";
 import { ModeToggle } from "../common/modeToggle";
-// Changed from 'require' to standard import
 import useAuthStore from "@/store/authStore"; 
 
 const Header = ({
