@@ -21,7 +21,7 @@ export default function CartPage() {
 
   // Modal States
   const [confirmModal, setConfirmModal] = useState<{ open: boolean; type: 'delete' | 'clear' | null; id?: string }>({ open: false, type: null });
-  const [checkoutOpen, setCheckoutOpen] = useState(false); // New Checkout Modal state
+  const [checkoutOpen, setCheckoutOpen] = useState(false); 
 
   const fetchCart = () => {
     axios.get(`${API_URL}/user/cart`, { withCredentials: true })

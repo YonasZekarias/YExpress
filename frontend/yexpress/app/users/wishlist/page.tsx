@@ -3,7 +3,6 @@ import Link from 'next/link';
 import ProductCard from '@/components/products/ProductCard';
 import axios from 'axios';
 
-// Helper to get wishlist items
 async function getWishlistItems() {
   try {
     const cookieStore = await cookies();
