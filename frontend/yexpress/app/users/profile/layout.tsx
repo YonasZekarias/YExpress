@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'ASTU Food - My Profile',
+  title: 'Profile',
   description: 'Manage your account settings and preferences',
 }
 

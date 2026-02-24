@@ -22,35 +22,34 @@ const UserSidebar = ({
   const menuItems = [
     { id: "overview", label: "Overview", icon: <User className="w-5 h-5" /> },
     { id: "orders", label: "Orders", icon: <Package className="w-5 h-5" /> },
-    { id: "profile", label: "Profile", icon: <User className="w-5 h-5" /> },
-    { id: "products", label: "Products", icon: <Package className="w-5 h-5" /> },
-    { id: "wishlist", label: "Wishlist", icon: <Heart className="w-5 h-5" /> },
     { id: "cart", label: "Cart", icon: <ShoppingBag className="w-5 h-5" /> },
-    { id: "addresses", label: "Addresses", icon: <MapPin className="w-5 h-5" /> },
-    { id: "payment", label: "Payment Methods", icon: <CreditCard className="w-5 h-5" /> },
+    { id: "wishlist", label: "Wishlist", icon: <Heart className="w-5 h-5" /> },
+    {
+      id: "products",
+      label: "Products",
+      icon: <Package className="w-5 h-5" />,
+    },
+    { id: "profile", label: "Profile", icon: <User className="w-5 h-5" /> },
   ];
 
   const { username, email, avatar } = useAuthStore();
   const router = useRouter();
   const pathname = usePathname();
   const currentTab = (() => {
-  if (!pathname) return "overview";
+    if (!pathname) return "overview";
 
-  // Special non-user routes
-  if (pathname.startsWith("/product/")) return "products";
-  if (pathname.startsWith("/orders/")) return "orders";
-  if (pathname.startsWith("/wishlist")) return "cart";
-  if (pathname.startsWith("/addresses")) return "addresses";
-  if (pathname.startsWith("/payment")) return "payment";
-  if (pathname.startsWith("/profile")) return "profile";
-  if (pathname.startsWith("/cart")) return "cart";
-  // Normal user routes: /users/{tab}
-  if (pathname.startsWith("/users/")) {
-    return pathname.split("/users/")[1]?.split("/")[0] || "overview";
-  }
-  return "overview";
-})();
+    if (pathname.startsWith("/product/")) return "products";
+    if (pathname.startsWith("/orders")) return "orders";
+    if (pathname.startsWith("/wishlist")) return "wishlist";
+    if (pathname.startsWith("/cart")) return "cart";
+    if (pathname.startsWith("/profile")) return "profile";
 
+    if (pathname.startsWith("/users/")) {
+      return pathname.split("/users/")[1]?.split("/")[0] || "overview";
+    }
+
+    return "overview";
+  })();
 
   return (
     <>
@@ -84,7 +83,11 @@ const UserSidebar = ({
           </div>
 
           {/* User Info */}
-          <UserInfo avatar={avatar} username={username ?? ""} email={email ?? ""} />
+          <UserInfo
+            avatar={avatar}
+            username={username ?? ""}
+            email={email ?? ""}
+          />
           {/* Navigation */}
           <nav className="flex-1 space-y-1">
             {menuItems.map((item) => (
