@@ -3,22 +3,12 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
-import {
-  CheckCircle,
-  Truck,
-  Clock,
-  ChevronRight,
-  XCircle,
-  Package,
-  AlertCircle,
-  Loader2
-} from "lucide-react";
+import {CheckCircle,Truck,Clock,ChevronRight,XCircle,Package,AlertCircle,Loader2} from "lucide-react";
 
-// Define the interface based on your Mongoose Model
 interface Product {
   _id: string;
   name: string;
-  images: string[]; // Assuming your Product model has an array of images
+  images: string[]; 
 }
 
 interface OrderItem {
@@ -34,8 +24,6 @@ interface Order {
   orderStatus: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
   items: OrderItem[];
 }
-
-// Map your model's lowercase statuses to visual styles
 const statusStyles: Record<string, string> = {
   delivered:
     "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400",
@@ -68,14 +56,12 @@ const RecentOrdersWidget = () => {
     const fetchRecentOrders = async () => {
       try {
         const API_URL = process.env.NEXT_PUBLIC_API_URL;
-        // Fetch sorted by newest
         const { data } = await axios.get(
           `${API_URL}/user/orders?sort=newest&limit=5`, 
           { withCredentials: true }
         );
 
         if (data.success) {
-          // Take the first 5 if the API doesn't support the limit param natively yet
           setOrders(data.data.slice(0, 5));
         }
       } catch (err) {
@@ -144,17 +130,13 @@ const RecentOrdersWidget = () => {
 
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {orders.map((order) => {
-                // 1. Get the first product image safely
                 const firstItem = order.items?.[0];
-                // Check if product is populated and has images, otherwise use placeholder
                 const itemImage = firstItem?.product?.images?.[0] || "/images/placeholder-product.jpg";
-                
-                // 2. Format Date (using createdAt from model)
+
                 const date = new Date(order.createdAt).toLocaleDateString("en-US", {
                   month: "short", day: "numeric", year: "numeric"
                 });
 
-                // 3. Status Capitalization for Display
                 const displayStatus = order.orderStatus.charAt(0).toUpperCase() + order.orderStatus.slice(1);
                 
                 return (
@@ -205,13 +187,9 @@ const RecentOrdersWidget = () => {
                         {displayStatus}
                       </span>
                     </td>
-
-                    {/* Total (Using totalAmount) */}
                     <td className="px-6 py-4 text-right font-semibold text-slate-900 dark:text-slate-100 whitespace-nowrap">
                       ${order.totalAmount.toFixed(2)}
                     </td>
-
-                    {/* Action */}
                     <td className="px-6 py-4 text-center">
                       <Link href={`/users/orders/${order._id}`}>
                         <button className="p-2 rounded-full text-slate-400 hover:text-indigo-600 dark:text-slate-500 dark:hover:text-indigo-400 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-500/10 transition">
