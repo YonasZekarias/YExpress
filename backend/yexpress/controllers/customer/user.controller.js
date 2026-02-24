@@ -8,16 +8,20 @@ const getUserStats = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    const totalOrders = await Order.countDocuments({ userId: req.user._id });
-    const pendingOrders = await Order.countDocuments({
-      userId: req.user._id,
-      status: "pending",
+    const totalOrders = await Order.countDocuments({
+      user: req.user._id,
     });
-    const wishList = await Wishlist.aggregate([
-      { $match: { user: req.user._id } },
-      { $project: { count: { $size: "$products" } } }
-    ]);
-    const wishListCount = wishList.length > 0 ? wishList[0].count : 0;
+
+    const pendingOrders = await Order.countDocuments({
+      user: req.user._id,
+      orderStatus: "pending",
+    });
+const wishlist = await Wishlist.findOne({ user: req.user._id }).populate('products');
+
+// Filter out any products that came back null (deleted from DB)
+const validProducts = wishlist.products.filter(product => product !== null);
+
+const wishListCount = validProducts.length;
     res.status(200).json({
       totalOrders,
       pendingOrders,
