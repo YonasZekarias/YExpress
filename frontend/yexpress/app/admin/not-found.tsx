@@ -18,7 +18,6 @@ export default function NotFound() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center px-6 font-sans">
       <div className="max-w-md w-full text-center">
-        {/* Animated Illustration Placeholder */}
         <div className="relative mb-8">
           <h1 className="text-[12rem] font-black text-slate-200 dark:text-slate-800 select-none">404</h1>
           <div className="absolute inset-0 flex items-center justify-center">
