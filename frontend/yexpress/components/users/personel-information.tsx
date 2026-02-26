@@ -21,7 +21,6 @@ export function PersonalInformation({
   onFieldChange
 }: PersonalInformationProps) {
   
-  // Local state for the inputs
   const [formData, setFormData] = useState({
     firstName,
     lastName,
@@ -29,7 +28,6 @@ export function PersonalInformation({
     phone
   })
 
-  // IMPORTANT: Sync local state when parent props change (after API fetch)
   useEffect(() => {
     setFormData({ firstName, lastName, email, phone });
   }, [firstName, lastName, email, phone]);
@@ -38,11 +36,9 @@ export function PersonalInformation({
 
   const handleFieldChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
-    // Notify parent immediately so the main Save button works
     onFieldChange?.(field, value)
   }
 
-  // Helper component for fields
   const EditableField = ({ 
     field, 
     label, 
