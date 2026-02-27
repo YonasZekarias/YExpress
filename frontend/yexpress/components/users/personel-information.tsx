@@ -86,7 +86,7 @@ export function PersonalInformation({
   }
 
   return (
-    <div className="bg-white dark:bg-card rounded-xl p-6 border border-border shadow-sm">
+    <div className="bg-white dark:bg-slate-850 rounded-xl p-6 border border-border shadow-sm">
       <div className="flex items-center justify-between mb-6 border-b border-border pb-4">
         <div className="flex items-center gap-2">
           <div className="p-2 bg-orange-100 dark:bg-orange-900/20 rounded-lg">
