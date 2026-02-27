@@ -22,7 +22,7 @@ export function ProfileCard({
   const fullName = `${firstName} ${lastName}`.trim();
 
   return (
-    <div className="bg-white dark:bg-card rounded-xl p-6 border border-border shadow-sm">
+    <div className="bg-white dark:bg-slate-850 rounded-xl p-6 border border-border shadow-sm">
       <div className="flex items-center gap-6">
         <div className="relative">
           <Avatar className="w-24 h-24 border-4 border-[#d4a574]">
