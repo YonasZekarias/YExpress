@@ -4,7 +4,8 @@ const {addAttribute,deleteAttribute,editAttribute,getAllAttributes} = require('.
 const {addCategory, allCategories,deleteCategory,editCategory,getACategoryByID} = require('../controllers/admin/category.controller')
 const {getAllOrder,getOrderById,getOrderByStatus,updateOrderStatus,orderStats} = require('../controllers/admin/order.controller')
 const {addProduct,deleteAProduct,getAProductByID,getAllProducts,updateAProduct} = require('../controllers/admin/product.controller')
-const {allUsers,banUnbanUser,getUserById} = require('../controllers/admin/users.controller')  
+const {allUsers,banUnbanUser,getUserById} = require('../controllers/admin/users.controller') 
+const { getDashboardStats } = require('../controllers/admin/dashboard.controller');
 const router = require('express').Router();
 
 router.use(protect, role('admin'));
@@ -39,5 +40,6 @@ router.get('/orders/stats', orderStats);
 router.get('/users', allUsers);
 router.get('/users/:userId', getUserById);
 router.put('/users/:userId/ban', banUnbanUser);
-
+// Dashboard stats
+router.get('/dashboard/stats', getDashboardStats);
 module.exports = router;

@@ -1,59 +1,57 @@
-"use client";
-import { Plus } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 
-interface Product {
+// Define the type based on the API response we just built
+interface LowStockItem {
   id: string;
   name: string;
-  price: string;
   stock: number;
-  category: string;
+  price: number;
+  image: string | null;
 }
 
-const mockProducts: Product[] = [
-  { id: "PROD-001", name: "Premium Leather Bag", price: "$120.00", stock: 15, category: "Accessories" },
-  { id: "PROD-002", name: "Wireless Headphones", price: "$250.00", stock: 8, category: "Electronics" },
-  { id: "PROD-003", name: "Summer Sneakers", price: "$85.00", stock: 0, category: "Footwear" },
-];
+export default function InventoryWidget({ products }: { products: LowStockItem[] }) {
+  return (
+    <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm h-full">
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="font-bold text-gray-900 dark:text-white">Low Stock Alert</h3>
+        <span className="bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 text-xs font-bold px-2 py-1 rounded-full">
+          {products.length} Items
+        </span>
+      </div>
 
-const InventoryWidget = () => (
-  <div className="bg-card dark:bg-slate-900 rounded-2xl border border-border shadow-sm overflow-hidden h-full">
-    <div className="p-6 border-b border-border flex justify-between items-center">
-      <h3 className="font-bold text-foreground">Low Stock Alert</h3>
-      <button className="text-primary text-sm font-medium hover:text-primary/80">
-        Manage
+      <div className="space-y-4">
+        {products.length === 0 ? (
+           <p className="text-sm text-gray-500 text-center py-4">No low stock items.</p>
+        ) : (
+          products.map((item) => (
+            <div key={item.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-800/50 rounded-xl">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 overflow-hidden">
+                  {item.image ? (
+                     <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                  ) : (
+                     <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">N/A</div>
+                  )}
+                </div>
+                <div>
+                  <h4 className="font-medium text-sm text-gray-900 dark:text-white truncate max-w-[120px]" title={item.name}>
+                    {item.name}
+                  </h4>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">${item.price}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
+                <AlertCircle className="w-4 h-4" />
+                <span className="font-bold text-sm">{item.stock} left</span>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+      
+      <button className="w-full mt-6 py-2 text-sm text-indigo-600 dark:text-indigo-400 font-medium hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors">
+        View Inventory
       </button>
     </div>
-
-    <div className="p-4 space-y-4">
-      {mockProducts.map((product) => (
-        <div
-          key={product.id}
-          className="flex items-center dark:bg-slate-800 justify-between p-3 bg-muted rounded-xl"
-        >
-          <div>
-            <p className="font-semibold text-foreground  text-sm">{product.name}</p>
-            <p className="text-xs text-muted-foreground">{product.category}</p>
-          </div>
-          <div className="text-right">
-            <span
-              className={`text-xs font-bold px-2 py-1 rounded-md ${
-                product.stock === 0
-                  ? "bg-destructive/30 text-destructive"
-                  : "bg-yellow-500/20 text-yellow-700"
-              }`}
-            >
-              {product.stock} left
-            </span>
-          </div>
-        </div>
-      ))}
-
-      <button className="w-full py-2 border border-dashed border-border rounded-xl text-muted-foreground text-sm hover:bg-muted/50 hover:text-primary flex items-center justify-center transition-colors">
-        <Plus className="w-4 h-4 mr-2" />
-        Add New Product
-      </button>
-    </div>
-  </div>
-);
-
-export default InventoryWidget;
+  );
+}
