@@ -135,7 +135,7 @@ export default function AdminOrdersTable() {
                   </td>
 
                   {/* Customer */}
-                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
+                  <td className="px-6 py-4 text-sm width-full text-gray-600 dark:text-gray-300">
                     <div className="flex flex-col">
                       <span className="font-medium">
                         {/* Safe check: user might be null or just an ID string depending on population */}
@@ -143,7 +143,7 @@ export default function AdminOrdersTable() {
                           ? `${order.user.firstName || ''} ${order.user.lastName || ''}`.trim() || 'Guest'
                           : 'User'}
                       </span>
-                      <span className="text-xs text-gray-400 hidden group-hover:block transition-all">
+                      <span className="text-xs text-gray-400 group-hover:inline">
                         {typeof order.user === 'object' && order.user?.email}
                       </span>
                     </div>

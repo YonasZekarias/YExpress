@@ -1,6 +1,6 @@
 import { AlertCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
 
-// Define the type based on the API response we just built
 interface LowStockItem {
   id: string;
   name: string;
@@ -10,6 +10,7 @@ interface LowStockItem {
 }
 
 export default function InventoryWidget({ products }: { products: LowStockItem[] }) {
+  const router = useRouter();
   return (
     <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm h-full">
       <div className="flex justify-between items-center mb-6">
@@ -49,7 +50,7 @@ export default function InventoryWidget({ products }: { products: LowStockItem[]
         )}
       </div>
       
-      <button className="w-full mt-6 py-2 text-sm text-indigo-600 dark:text-indigo-400 font-medium hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors">
+      <button onClick={()=> router.push("/admin/products")} className="w-full mt-6 py-2 text-sm text-indigo-600 dark:text-indigo-400 font-medium hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors">
         View Inventory
       </button>
     </div>
