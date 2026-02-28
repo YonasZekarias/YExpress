@@ -32,10 +32,10 @@ const getAllOrder = async (req, res) => {
 
 const getOrderById = async (req, res) => {
     try {
-        const order = await Order.findById(req.params.id)
+        const order = await Order.findById(req.params.orderId)
             .populate('user', 'name email')
             .populate('items.product', 'name photo')
-            .populate('items.variant'); // Add specific fields if needed
+            .populate('items.variant'); 
 
         if (!order) return res.status(404).json({ success: false, message: "Order not found" });
 
@@ -63,9 +63,9 @@ const getOrderByStatus = async (req, res) => {
 const updateOrderStatus = async (req, res) => {
   try {
     const { status } = req.body;
-    const { id } = req.params;
+    const { orderId } = req.params;
 
-    const order = await Order.findById(id);
+    const order = await Order.findById(orderId);
     if (!order) return res.status(404).json({ success: false, message: "Order not found" });
 
     order.orderStatus = status;
