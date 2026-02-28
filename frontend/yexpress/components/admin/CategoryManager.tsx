@@ -27,11 +27,9 @@ export default function CategoryManager() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isDeleteLoading, setIsDeleteLoading] = useState(false);
 
-  const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
   const fetchCategories = async () => {
     try {
-      const { data } = await axios.get(`${API_URL}/admin/categories`, { withCredentials: true });
+      const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/admin/categories`, { withCredentials: true });
       if (data.success) setCategories(data.data);
     } catch (err) {
       console.error(err);
@@ -50,7 +48,7 @@ export default function CategoryManager() {
     if (!newName.trim()) return;
     setIsAdding(true);
     try {
-      await axios.post(`${API_URL}/admin/categories`, { name: newName }, { withCredentials: true });
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/admin/categories`, { name: newName }, { withCredentials: true });
       setNewName('');
       toast.success("Category added");
       fetchCategories();
@@ -64,7 +62,7 @@ export default function CategoryManager() {
   const handleUpdate = async (id: string) => {
     if (!editName.trim()) return;
     try {
-      await axios.put(`${API_URL}/admin/categories/${id}`, { name: editName }, { withCredentials: true });
+      await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/admin/categories/${id}`, { name: editName }, { withCredentials: true });
       setEditingId(null);
       toast.success("Category updated");
       fetchCategories();
@@ -78,11 +76,12 @@ export default function CategoryManager() {
     if (!deleteId) return;
     setIsDeleteLoading(true);
     try {
-      await axios.delete(`${API_URL}/admin/categories/${deleteId}`, { withCredentials: true });
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/admin/categories/${deleteId}`, { withCredentials: true });
       toast.success("Category deleted");
       fetchCategories();
     } catch (err) {
       toast.error("Failed to delete. Check if products are using this category.");
+      console.error(err);
     } finally {
       setIsDeleteLoading(false);
       setDeleteId(null);
