@@ -1,6 +1,6 @@
 const Order = require('../../models/Order');
 const logger = require('../../utils/logger');
-const redisClient = require('../../utils/redisClinet');
+const redisClient = require('../../config/redis');
 const buildOrderQuery = require("../../utils/orderQueryBuilder");
 
 const getAllOrder = async (req, res) => {
