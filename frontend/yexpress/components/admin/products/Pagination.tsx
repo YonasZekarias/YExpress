@@ -12,7 +12,7 @@ interface PaginationProps {
 
 export default function Pagination({ hasPrev, hasNext, onPrev, onNext, pageIndex }: PaginationProps) {
   return (
-    <div className="bg-gray-50 dark:bg-gray-800/50 border border-t-0 border-gray-200 dark:border-gray-700 rounded-b-xl px-6 py-4 flex items-center justify-between">
+    <div className="px-8 py-4 flex items-center justify-between">
       <button 
         onClick={onPrev} 
         disabled={!hasPrev}

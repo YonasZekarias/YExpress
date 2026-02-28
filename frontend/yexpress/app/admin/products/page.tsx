@@ -100,7 +100,7 @@ export default function AdminProductsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6 transition-colors duration-200">
+    <div className="min-h-screen bg-white dark:bg-slate-900 p-6 transition-colors duration-200">
       <div className="max-w-7xl mx-auto space-y-6">
         
         {/* Header & Tabs */}

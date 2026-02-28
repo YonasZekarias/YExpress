@@ -16,7 +16,7 @@ export default function OrderToolbar({
   onRefresh
 }: OrderToolbarProps) {
   return (
-    <div className="flex flex-col md:flex-row gap-3 bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700 dark:text-white shadow-sm">
+    <div className="flex flex-col md:flex-row gap-3 p-4  dark:text-white shadow-sm">
       {/* Search Bar */}
       <div className="relative flex-1">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
