@@ -1,4 +1,4 @@
-# 🛒 E-Commerce Web Application
+# 🛒 YExpress E-Commerce Web Application
 
 A modern **online shopping platform** that allows customers to browse products, add them to a cart, place orders, and track their purchases — while providing administrators with a powerful dashboard to manage products, users, and orders.
 
