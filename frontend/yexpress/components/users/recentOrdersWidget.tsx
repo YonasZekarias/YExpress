@@ -4,11 +4,12 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
 import {CheckCircle,Truck,Clock,ChevronRight,XCircle,Package,AlertCircle,Loader2} from "lucide-react";
+import { getDisplayableImageUrl } from "@/lib/imageUrl";
 
 interface Product {
   _id: string;
   name: string;
-  images: string[]; 
+  photo?: string[];
 }
 
 interface OrderItem {
@@ -131,7 +132,9 @@ const RecentOrdersWidget = () => {
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {orders.map((order) => {
                 const firstItem = order.items?.[0];
-                const itemImage = firstItem?.product?.images?.[0] || "/images/placeholder-product.jpg";
+                const itemImage = getDisplayableImageUrl(
+                  firstItem?.product?.photo?.[0]
+                );
 
                 const date = new Date(order.createdAt).toLocaleDateString("en-US", {
                   month: "short", day: "numeric", year: "numeric"

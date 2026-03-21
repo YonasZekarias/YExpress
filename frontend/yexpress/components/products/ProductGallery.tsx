@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 
 interface GalleryProps {
@@ -8,6 +8,11 @@ interface GalleryProps {
 
 export const ProductGallery = ({ images, productName }: GalleryProps) => {
   const [selected, setSelected] = useState(images[0] || '/placeholder.jpg');
+
+  useEffect(() => {
+    const first = images[0] || '/placeholder.jpg';
+    setSelected((prev) => (images.includes(prev) ? prev : first));
+  }, [images]);
 
   return (
     <div className="space-y-4">

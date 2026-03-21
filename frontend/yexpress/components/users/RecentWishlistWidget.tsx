@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
 import { Heart, ChevronRight, Loader2, AlertCircle } from "lucide-react";
+import { getDisplayableImageUrl } from "@/lib/imageUrl";
 
 interface Category {
   name: string;
@@ -13,9 +14,9 @@ interface Product {
   _id: string;
   name: string;
   price: number;
-  images: string[];
-  // Category can be a string ID or a populated Object depending on your API
-  category?: string | Category; 
+  photo?: string[];
+  displayPhoto?: string;
+  category?: string | Category;
 }
 
 const RecentWishlistWidget = () => {
@@ -124,7 +125,9 @@ const RecentWishlistWidget = () => {
                 {/* Image */}
                 <div className="relative w-14 h-14 shrink-0">
                   <img
-                    src={product.images?.[0] || "/placeholder.jpg"}
+                    src={getDisplayableImageUrl(
+                      product.photo?.[0] || product.displayPhoto
+                    )}
                     alt={typeof product.name === 'string' ? product.name : 'Product'}
                     className="w-full h-full object-cover rounded-lg border border-slate-200 dark:border-slate-600"
                     onError={(e) => {
