@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { format } from 'date-fns';
 import { Package, Calendar, ChevronRight } from 'lucide-react';
 import { Order } from '@/types/order';
+import { getDisplayableImageUrl } from '@/lib/imageUrl';
 
 export default function OrderCard({ order }: { order: Order }) {
   const getStatusColor = (status: string) => {
@@ -49,7 +50,7 @@ export default function OrderCard({ order }: { order: Order }) {
           <div className="flex -space-x-3 overflow-hidden">
             {order.items.slice(0, 4).map((item, idx) => (
               <div key={idx} className="relative w-10 h-10 rounded-full border-2 border-white dark:border-gray-800 bg-gray-200 overflow-hidden">
-                 <img src={item.product?.photo?.[0] || '/placeholder.jpg'} alt="product" className="w-full h-full object-cover" />
+                 <img src={getDisplayableImageUrl(item.product?.photo?.[0])} alt="product" className="w-full h-full object-cover" />
               </div>
             ))}
             {order.items.length > 4 && (

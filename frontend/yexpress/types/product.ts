@@ -27,6 +27,7 @@ export interface Variant {
   product: string;
   price: number;
   stock: number;
+  photo?: string[];
   attributes: VariantAttribute[];
 }
 export interface Product {

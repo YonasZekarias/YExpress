@@ -16,6 +16,7 @@ import {
   Phone
 } from "lucide-react";
 import toast from "react-hot-toast";
+import { getDisplayableImageUrl } from "@/lib/imageUrl";
 
 // --- Types Matching Your Mongoose Model ---
 interface OrderItem {
@@ -225,11 +226,11 @@ export default function OrderDetailPage() {
                             <div key={index} className="p-6 flex gap-4 items-center hover:bg-gray-50 dark:hover:bg-gray-700/20 transition-colors">
                                 {/* Product Image */}
                                 <div className="w-16 h-16 bg-gray-100 dark:bg-gray-900 rounded-lg overflow-hidden shrink-0 border border-gray-200 dark:border-gray-700">
-                                    {item.product?.photo?.[0] ? (
-                                        <img src={item.product.photo[0]} alt={item.product.name} className="w-full h-full object-cover" />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">No Img</div>
-                                    )}
+                                    <img
+                                      src={getDisplayableImageUrl(item.product?.photo?.[0])}
+                                      alt={item.product?.name || "Product"}
+                                      className="w-full h-full object-cover"
+                                    />
                                 </div>
                                 {/* Product Details */}
                                 <div className="flex-1">

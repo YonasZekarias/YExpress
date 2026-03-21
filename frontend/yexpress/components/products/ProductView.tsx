@@ -8,6 +8,7 @@ import { Product, Variant } from '@/types/product';
 import { useProductLogic } from '@/hooks/useProductLogic';
 import { ProductGallery } from './ProductGallery';
 import { VariantSelector } from './VariantSelector';
+import { productGalleryImages } from '@/lib/imageUrl';
 
 // --- MAIN COMPONENT ---
 export default function ProductView({ 
@@ -66,10 +67,10 @@ export default function ProductView({
     }
   };
 
-  // 4. Prepare Images
-  const images = product.photo?.map(p => 
-    p.startsWith('http') ? p : '/placeholder.jpg'
-  ) || ['/placeholder.jpg'];
+  const images = productGalleryImages(
+    product.photo,
+    activeVariant?.photo
+  );
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">

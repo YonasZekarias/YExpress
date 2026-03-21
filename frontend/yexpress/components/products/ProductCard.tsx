@@ -7,17 +7,12 @@ import { Star, Plus, Heart,ShoppingCart } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { Product } from '@/types/product';
+import { getDisplayableImageUrl } from '@/lib/imageUrl';
 
 interface ProductCardProps {
   product: Product;
   initialWishlistState?: boolean; 
 }
-
-const getImageUrl = (photo?: string): string => {
-  if (!photo) return '/placeholder.jpg';
-  if (photo.startsWith('http') || photo.startsWith('/')) return photo;
-  return '/placeholder.jpg';
-};
 
 const isNewArrival = (dateString?: string) => {
   if (!dateString) return false;
@@ -39,18 +34,23 @@ export default function ProductCard({ product, initialWishlistState = false }: P
     setIsWishlisted(initialWishlistState);
   }, [initialWishlistState]);
 
-  const mainImage = getImageUrl(product.photo?.[0]);
+  const mainImage = getDisplayableImageUrl(product.photo?.[0]);
   const isOutOfStock = product.stock === 0;
   const isLowStock = product.stock > 0 && product.stock <= 5;
   const isNew = isNewArrival(product.createdAt);
   const displayPrice = product.price || 0;
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1';
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
   const handleWishlistClick = async (e: React.MouseEvent) => {
     e.preventDefault(); 
     e.stopPropagation();
 
     if (loading) return;
+    if (!API_URL) {
+      toast.error("API is not configured");
+      return;
+    }
+
     setLoading(true);
 
     const previousState = isWishlisted;
@@ -58,11 +58,13 @@ export default function ProductCard({ product, initialWishlistState = false }: P
 
     try {
       await axios.post(
-        `${API_URL}/user/wishlist`, 
+        `${API_URL}/user/wishlist`,
         { productId: product._id },
         { withCredentials: true }
       );
-      toast.success(isWishlisted ? "Removed from wishlist" : "Added to wishlist");
+      toast.success(
+        previousState ? "Removed from wishlist" : "Added to wishlist"
+      );
     } catch (error) {
       setIsWishlisted(previousState); // Revert
       toast.error("Could not update wishlist");
