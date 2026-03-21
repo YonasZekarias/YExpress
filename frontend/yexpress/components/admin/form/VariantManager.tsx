@@ -2,6 +2,7 @@
 
 import { Plus, Trash2, X } from 'lucide-react';
 import { VariantInput } from '@/types/admin';
+import ImageUploader from './ImageUploader';
 
 interface VariantManagerProps {
   variants: VariantInput[];
@@ -11,7 +12,15 @@ interface VariantManagerProps {
 export default function VariantManager({ variants, setVariants }: VariantManagerProps) {
   
   const addVariant = () => {
-    setVariants([...variants, { price: 0, stock: 0, attributes: [{ attribute: '', value: '' }] }]);
+    setVariants([
+      ...variants,
+      {
+        price: 0,
+        stock: 0,
+        photo: [],
+        attributes: [{ attribute: '', value: '' }],
+      },
+    ]);
   };
 
   const removeVariant = (index: number) => {
@@ -67,6 +76,15 @@ export default function VariantManager({ variants, setVariants }: VariantManager
               <Trash2 className="w-4 h-4" />
             </button>
             
+            <div className="mb-4">
+              <ImageUploader
+                label="Variant images"
+                urls={variant.photo || []}
+                onChange={(next) => updateVariant(vIndex, 'photo', next)}
+                max={5}
+              />
+            </div>
+
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div>
                 <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Price ($)</label>

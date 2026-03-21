@@ -7,6 +7,7 @@ import toast from 'react-hot-toast'; // IMPORT TOAST
 import { Product, Category, VariantInput } from '@/types/admin';
 import BasicInfo from '../form/BasicInfo';
 import VariantManager from '../form/VariantManager';
+import ImageUploader from '../form/ImageUploader';
 
 interface ProductFormProps {
   initialData?: Product | null;
@@ -25,8 +26,14 @@ export default function ProductForm({ initialData, onClose, onSuccess }: Product
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [categoryId, setCategoryId] = useState('');
+  const [productPhotos, setProductPhotos] = useState<string[]>([]);
   const [variants, setVariants] = useState<VariantInput[]>([
-    { price: 0, stock: 0, attributes: [{ attribute: '', value: '' }] }
+    {
+      price: 0,
+      stock: 0,
+      photo: [],
+      attributes: [{ attribute: '', value: '' }],
+    },
   ]);
 
   const isEditing = !!initialData;
@@ -58,6 +65,9 @@ export default function ProductForm({ initialData, onClose, onSuccess }: Product
           // Handle Category: It might be populated object OR just an ID string
           const catId = typeof product.category === 'object' ? product.category?._id : product.category;
           setCategoryId(catId || '');
+          setProductPhotos(
+            Array.isArray(product.photo) ? product.photo : []
+          );
 
           // TRANSFORM VARIANTS: Safely map DB structure to Form structure
           if (Array.isArray(product.variants) && product.variants.length > 0) {
@@ -65,6 +75,7 @@ export default function ProductForm({ initialData, onClose, onSuccess }: Product
               _id: v._id,
               price: v.price || 0,
               stock: v.stock || 0,
+              photo: Array.isArray(v.photo) ? v.photo : [],
               // Check if attributes exist and map them
               attributes: Array.isArray(v.attributes) 
                 ? v.attributes.map((attr: any) => ({
@@ -101,7 +112,8 @@ export default function ProductForm({ initialData, onClose, onSuccess }: Product
       name,
       description,
       category_id: categoryId,
-      variants
+      photo: productPhotos,
+      variants,
     };
 
     try {
@@ -156,6 +168,18 @@ export default function ProductForm({ initialData, onClose, onSuccess }: Product
                   description={description} setDescription={setDescription}
                   categoryId={categoryId} setCategoryId={setCategoryId}
                   categories={categories}
+                />
+              </section>
+
+              <section>
+                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4 border-b border-gray-100 dark:border-gray-700 pb-2">
+                  Product images
+                </h3>
+                <ImageUploader
+                  label="Gallery (shared)"
+                  urls={productPhotos}
+                  onChange={setProductPhotos}
+                  max={8}
                 />
               </section>
 

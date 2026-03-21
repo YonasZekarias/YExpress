@@ -11,6 +11,7 @@ export interface VariantInput {
   _id?: string; // Optional because new variants won't have IDs yet
   price: number;
   stock: number;
+  photo?: string[];
   attributes: AttributeInput[];
 }
 
@@ -20,5 +21,6 @@ export interface Product {
   name: string;
   description: string;
   category: { _id: string; name: string } | string;
-  variants?: any[]; // We will transform this
+  photo?: string[];
+  variants?: unknown[];
 }
