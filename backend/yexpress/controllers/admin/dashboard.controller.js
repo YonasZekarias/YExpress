@@ -1,6 +1,6 @@
 const Order = require('../../models/Order'); // Adjust path to your models
 const User = require('../../models/User');
-const ProductVariant = require('../../models/productVariant');
+const ProductVariant = require('../../models/ProductVariant');
 const Product = require('../../models/Product');
 
 exports.getDashboardStats = async (req, res) => {

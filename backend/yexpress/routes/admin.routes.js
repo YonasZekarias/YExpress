@@ -4,11 +4,16 @@ const {addAttribute,deleteAttribute,editAttribute,getAllAttributes} = require('.
 const {addCategory, allCategories,deleteCategory,editCategory,getACategoryByID} = require('../controllers/admin/category.controller')
 const {getAllOrder,getOrderById,getOrderByStatus,updateOrderStatus,orderStats} = require('../controllers/admin/order.controller')
 const {addProduct,deleteAProduct,getAProductByID,getAllProducts,updateAProduct} = require('../controllers/admin/product.controller')
+const { uploadImages } = require('../controllers/admin/upload.controller');
+const { uploadImagesMiddleware } = require('../middleware/upload.middleware');
 const {allUsers,banUnbanUser,getUserById} = require('../controllers/admin/users.controller') 
 const { getDashboardStats } = require('../controllers/admin/dashboard.controller');
 const router = require('express').Router();
 
 router.use(protect, role('admin'));
+
+router.post('/upload/images', uploadImagesMiddleware, uploadImages);
+
 // Attribute routes
 router.post('/attributes', addAttribute);
 router.get('/attributes', getAllAttributes);
