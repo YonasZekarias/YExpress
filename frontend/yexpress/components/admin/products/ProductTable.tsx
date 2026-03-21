@@ -2,6 +2,7 @@
 
 import { Edit, Trash2, Tags, Package } from 'lucide-react';
 import { Product } from '@/types/admin';
+import { getDisplayableImageUrl } from '@/lib/imageUrl';
 
 interface ProductTableProps {
   products: Product[];
@@ -18,6 +19,7 @@ export default function ProductTable({ products, loading, onEdit, onDelete, onCl
         <table className="w-full text-left text-sm">
           <thead className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
             <tr>
+              <th className="px-4 py-4 w-16 font-semibold text-gray-700 dark:text-gray-300">Image</th>
               <th className="px-6 py-4 font-semibold text-gray-700 dark:text-gray-300">Product</th>
               <th className="px-6 py-4 font-semibold text-gray-700 dark:text-gray-300">Category</th>
               <th className="px-6 py-4 font-semibold text-gray-700 dark:text-gray-300">Variants</th>
@@ -26,10 +28,10 @@ export default function ProductTable({ products, loading, onEdit, onDelete, onCl
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
             {loading ? (
-              <tr><td colSpan={4} className="p-8 text-center text-gray-500 dark:text-gray-400">Loading inventory...</td></tr>
+              <tr><td colSpan={5} className="p-8 text-center text-gray-500 dark:text-gray-400">Loading inventory...</td></tr>
             ) : products.length === 0 ? (
               <tr>
-                <td colSpan={4} className="p-12 text-center text-gray-500 dark:text-gray-400">
+                <td colSpan={5} className="p-12 text-center text-gray-500 dark:text-gray-400">
                   <div className="flex flex-col items-center gap-2">
                      <Package className="w-8 h-8 opacity-20" />
                      <p>No products found matching your filters.</p>
@@ -42,6 +44,14 @@ export default function ProductTable({ products, loading, onEdit, onDelete, onCl
             ) : (
               products.map((product) => (
                 <tr key={product._id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors group">
+                  <td className="px-4 py-4">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={getDisplayableImageUrl(product.photo?.[0])}
+                      alt=""
+                      className="h-12 w-12 rounded-lg object-cover border border-gray-200 dark:border-gray-600 bg-gray-100 dark:bg-gray-900"
+                    />
+                  </td>
                   <td className="px-6 py-4">
                     <div className="flex flex-col">
                       <span className="font-semibold text-gray-900 dark:text-white">{product.name}</span>
