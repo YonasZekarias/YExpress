@@ -23,7 +23,9 @@ const orderSchema = new mongoose.Schema({
 
   paymentInfo: {
     method: { type: String, enum: ["card", "paypal", "chapa", "cash_on_delivery"], required: true },
-    transactionId: { type: String }, 
+    transactionId: { type: String },
+    /** Chapa tx_ref used for initialize + verify */
+    chapaTxRef: { type: String },
     status: { type: String, enum: ["pending", "paid", "failed", "refunded"], default: "pending" },
   },
 
