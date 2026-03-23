@@ -55,7 +55,12 @@ export default function CartPage() {
   // --- The Actual Checkout Submission ---
   const submitOrder = async (formData: any) => {
     try {
-      await axios.post(`${API_URL}/user/orders`, formData, { withCredentials: true });
+      const { data } = await axios.post(`${API_URL}/user/orders`, formData, { withCredentials: true });
+      if (data.checkoutUrl && typeof data.checkoutUrl === 'string') {
+        setCheckoutOpen(false);
+        window.location.href = data.checkoutUrl;
+        return;
+      }
       toast.success("Order placed successfully!");
       setCheckoutOpen(false);
       router.push('/users/orders');

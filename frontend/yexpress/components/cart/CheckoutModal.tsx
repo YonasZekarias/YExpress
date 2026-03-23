@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { X, CreditCard, Truck, Banknote } from 'lucide-react';
+import { X, CreditCard, Truck, Wallet } from 'lucide-react';
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -84,12 +84,23 @@ export default function CheckoutModal({ isOpen, onClose, onSubmit, total }: Chec
                   <span className="font-medium text-sm">Cash on Delivery</span>
                 </label>
 
-                <label className={`cursor-pointer border p-4 rounded-xl flex items-center gap-3 transition-all ${formData.paymentMethod === 'card' ? 'border-black bg-black/5 ring-1 ring-black dark:border-white dark:bg-white/10' : 'border-gray-200 dark:border-gray-700'}`}>
+                <label className={`cursor-pointer border p-4 rounded-xl flex items-center gap-3 transition-all ${formData.paymentMethod === 'chapa' ? 'border-black bg-black/5 ring-1 ring-black dark:border-white dark:bg-white/10' : 'border-gray-200 dark:border-gray-700'}`}>
+                  <input type="radio" name="paymentMethod" value="chapa" checked={formData.paymentMethod === 'chapa'} onChange={handleChange} className="hidden" />
+                  <Wallet className="w-5 h-5" />
+                  <span className="font-medium text-sm">Chapa</span>
+                </label>
+
+                <label className={`cursor-pointer border p-4 rounded-xl flex items-center gap-3 transition-all sm:col-span-2 ${formData.paymentMethod === 'card' ? 'border-black bg-black/5 ring-1 ring-black dark:border-white dark:bg-white/10' : 'border-gray-200 dark:border-gray-700'}`}>
                   <input type="radio" name="paymentMethod" value="card" checked={formData.paymentMethod === 'card'} onChange={handleChange} className="hidden" />
                   <CreditCard className="w-5 h-5" />
-                  <span className="font-medium text-sm">Credit Card</span>
+                  <span className="font-medium text-sm">Credit Card (not connected)</span>
                 </label>
               </div>
+              {formData.paymentMethod === 'chapa' && (
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  You will be redirected to Chapa to pay securely. Amount and currency follow your server configuration (e.g. ETB).
+                </p>
+              )}
             </div>
           </form>
         </div>
