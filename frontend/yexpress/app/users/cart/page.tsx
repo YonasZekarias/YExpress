@@ -12,28 +12,30 @@ import CartItem from '@/components/cart/CartItem';
 import OrderSummary from '@/components/cart/OrderSummary';
 import ConfirmModal from '@/components/cart/ConfirmModal'; 
 import CheckoutModal from '@/components/cart/CheckoutModal'; 
+import { getApiUrlOrNull } from '@/lib/apiUrl';
 
 export default function CartPage() {
   const router = useRouter();
   const [cart, setCart] = useState<any>(null);
   const [updating, setUpdating] = useState(false);
-  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+  const API_URL = getApiUrlOrNull();
 
   // Modal States
   const [confirmModal, setConfirmModal] = useState<{ open: boolean; type: 'delete' | 'clear' | null; id?: string }>({ open: false, type: null });
   const [checkoutOpen, setCheckoutOpen] = useState(false); 
 
   const fetchCart = () => {
+    if (!API_URL) return;
     axios.get(`${API_URL}/user/cart`, { withCredentials: true })
       .then(res => res.data.success && setCart(res.data.data))
       .catch(() => {})
   };
 
-  useEffect(() => { fetchCart(); }, []);
+  useEffect(() => { fetchCart(); }, [API_URL]);
 
   // --- Handlers ---
   const handleUpdateQty = async (itemId: string, qty: number) => {
-    if (qty < 1) return;
+    if (qty < 1 || !API_URL) return;
     setUpdating(true);
     try {
       await axios.put(`${API_URL}/user/cart/item/${itemId}`, { quantity: qty }, { withCredentials: true });
@@ -43,6 +45,7 @@ export default function CartPage() {
   };
 
   const handleRemoveAction = async () => {
+    if (!API_URL) return;
     try {
       const url = confirmModal.type === 'delete' ? `/item/${confirmModal.id}` : '';
       await axios.delete(`${API_URL}/user/cart${url}`, { withCredentials: true });
@@ -54,6 +57,10 @@ export default function CartPage() {
 
   // --- The Actual Checkout Submission ---
   const submitOrder = async (formData: any) => {
+    if (!API_URL) {
+      toast.error("API URL is not configured");
+      return;
+    }
     try {
       const { data } = await axios.post(`${API_URL}/user/orders`, formData, { withCredentials: true });
       if (data.checkoutUrl && typeof data.checkoutUrl === 'string') {
