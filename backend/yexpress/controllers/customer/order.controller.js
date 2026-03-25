@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const Order = require("../../models/Order");
 const Cart = require("../../models/Cart");
 const Product = require("../../models/Product");
@@ -5,10 +6,7 @@ const ProductVariant = require("../../models/ProductVariant");
 const User = require("../../models/User");
 const logger = require("../../utils/logger");
 const { initializeTransaction } = require("../../utils/chapaClient");
-const {
-  deductStockForOrderItems,
-  fulfillChapaOrderByTxRef,
-} = require("../../utils/chapaOrderFulfillment");
+const { fulfillChapaOrderByTxRef } = require("../../utils/chapaOrderFulfillment");
 
 /**
  * @returns {Promise<{ orderItems: any[], totalAmount: number, cart: object } | { error: { status: number, message: string } }>}
@@ -72,6 +70,60 @@ async function compileCartToOrderItems(userId) {
   return { orderItems, totalAmount, cart };
 }
 
+/**
+ * Atomic stock decrement with rollback list (no replica-set transaction required).
+ */
+async function decrementStocksForCheckout(orderItems) {
+  const reverts = [];
+  for (const item of orderItems) {
+    let updated;
+    if (item.variant) {
+      updated = await ProductVariant.findOneAndUpdate(
+        { _id: item.variant, stock: { $gte: item.quantity } },
+        { $inc: { stock: -item.quantity } },
+        { new: true }
+      );
+    } else {
+      updated = await Product.findOneAndUpdate(
+        {
+          _id: item.product,
+          $expr: {
+            $gte: [{ $ifNull: ["$stock", 0] }, item.quantity],
+          },
+        },
+        { $inc: { stock: -item.quantity } },
+        { new: true }
+      );
+    }
+    if (!updated) {
+      for (const fn of reverts.reverse()) {
+        try {
+          await fn();
+        } catch (_) {}
+      }
+      return {
+        ok: false,
+        message:
+          "An item in your cart is no longer available in that quantity.",
+      };
+    }
+    if (item.variant) {
+      reverts.push(() =>
+        ProductVariant.findByIdAndUpdate(item.variant, {
+          $inc: { stock: item.quantity },
+        })
+      );
+    } else {
+      reverts.push(() =>
+        Product.findByIdAndUpdate(item.product, {
+          $inc: { stock: item.quantity },
+        })
+      );
+    }
+  }
+  return { ok: true, reverts };
+}
+
 function formatPhoneForChapa(phone) {
   if (!phone || typeof phone !== "string") return "0900000000";
   const digits = phone.replace(/\D/g, "");
@@ -88,10 +140,58 @@ function splitName(fullName) {
   return { first_name: first, last_name: last };
 }
 
+function buildChapaUrls() {
+  const backendPublic =
+    process.env.BACKEND_PUBLIC_URL ||
+    process.env.API_PUBLIC_URL ||
+    `http://localhost:${process.env.PORT || 5000}`;
+  const frontend = process.env.FRONTEND_URL || "http://localhost:3000";
+  return {
+    backendPublic: backendPublic.replace(/\/$/, ""),
+    frontend: frontend.replace(/\/$/, ""),
+  };
+}
+
+function buildChapaInitializePayload({
+  order,
+  user,
+  shippingAddress,
+  txRef,
+}) {
+  const { first_name, last_name } = splitName(shippingAddress.fullName);
+  const currency = process.env.CHAPA_CURRENCY || "ETB";
+  const { backendPublic, frontend } = buildChapaUrls();
+  const callbackUrl = `${backendPublic}/api/chapa/callback`;
+  const returnUrl = `${frontend}/users/orders/payment/chapa?tx_ref=${encodeURIComponent(txRef)}`;
+
+  return {
+    amount: String(Number(order.totalAmount).toFixed(2)),
+    currency,
+    email: user.email,
+    first_name,
+    last_name,
+    phone_number: formatPhoneForChapa(shippingAddress.phone),
+    tx_ref: txRef,
+    callback_url: callbackUrl,
+    return_url: returnUrl,
+    customization: {
+      title: process.env.CHAPA_CHECKOUT_TITLE || "YExpress order",
+      description: `Order ${order._id}`,
+    },
+  };
+}
+
 const createOrder = async (req, res) => {
   try {
     const { shippingAddress, paymentMethod } = req.body;
     const userId = req.user._id;
+
+    if (paymentMethod === "card") {
+      return res.status(501).json({
+        success: false,
+        message: "Card payments are not enabled. Use Chapa or cash on delivery.",
+      });
+    }
 
     const compiled = await compileCartToOrderItems(userId);
     if (compiled.error) {
@@ -136,33 +236,12 @@ const createOrder = async (req, res) => {
         });
       }
 
-      const { first_name, last_name } = splitName(shippingAddress.fullName);
-      const currency = process.env.CHAPA_CURRENCY || "ETB";
-      const backendPublic =
-        process.env.BACKEND_PUBLIC_URL ||
-        process.env.API_PUBLIC_URL ||
-        `http://localhost:${process.env.PORT || 5000}`;
-      const frontend = process.env.FRONTEND_URL || "http://localhost:3000";
-
-      const callbackUrl = `${backendPublic.replace(/\/$/, "")}/api/chapa/callback`;
-      const txRef = pending.paymentInfo.chapaTxRef;
-      const returnUrl = `${frontend.replace(/\/$/, "")}/users/orders/payment/chapa?tx_ref=${encodeURIComponent(txRef)}`;
-
-      const payload = {
-        amount: String(Number(totalAmount).toFixed(2)),
-        currency,
-        email: user.email,
-        first_name,
-        last_name,
-        phone_number: formatPhoneForChapa(shippingAddress.phone),
-        tx_ref: txRef,
-        callback_url: callbackUrl,
-        return_url: returnUrl,
-        customization: {
-          title: process.env.CHAPA_CHECKOUT_TITLE || "YExpress order",
-          description: `Order ${pending._id}`,
-        },
-      };
+      const payload = buildChapaInitializePayload({
+        order: pending,
+        user,
+        shippingAddress,
+        txRef: pending.paymentInfo.chapaTxRef,
+      });
 
       try {
         const init = await initializeTransaction(payload);
@@ -184,41 +263,151 @@ const createOrder = async (req, res) => {
       }
     }
 
-    for (const item of orderItems) {
-      if (item.variant) {
-        await ProductVariant.findByIdAndUpdate(item.variant, {
-          $inc: { stock: -item.quantity },
-        });
-      } else {
-        await Product.findByIdAndUpdate(item.product, {
-          $inc: { stock: -item.quantity },
-        });
-      }
+    const dec = await decrementStocksForCheckout(orderItems);
+    if (!dec.ok) {
+      return res.status(400).json({ success: false, message: dec.message });
     }
 
-    const order = new Order({
-      user: userId,
-      items: orderItems,
-      shippingAddress,
-      paymentInfo: {
-        method: paymentMethod,
-        status: paymentMethod === "cash_on_delivery" ? "pending" : "pending",
-      },
-      totalAmount,
-      orderStatus: "pending",
-    });
+    try {
+      const order = new Order({
+        user: userId,
+        items: orderItems,
+        shippingAddress,
+        paymentInfo: {
+          method: paymentMethod,
+          status: "pending",
+        },
+        totalAmount,
+        orderStatus: "pending",
+      });
 
-    const createdOrder = await order.save();
-    await Cart.findOneAndDelete({ user: userId });
+      const createdOrder = await order.save();
+      await Cart.findOneAndDelete({ user: userId });
 
-    res.status(201).json({
-      success: true,
-      message: "Order placed successfully",
-      data: createdOrder,
-    });
+      res.status(201).json({
+        success: true,
+        message: "Order placed successfully",
+        data: createdOrder,
+      });
+    } catch (saveErr) {
+      for (const fn of dec.reverts.reverse()) {
+        try {
+          await fn();
+        } catch (_) {}
+      }
+      throw saveErr;
+    }
   } catch (error) {
-    console.error("Create Order Error:", error);
+    logger.error("Create Order Error:", error);
     res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+async function buildChapaResumeResponse(order, userId) {
+  if (!order) {
+    return { status: 404, body: { success: false, message: "Order not found" } };
+  }
+  if (order.paymentInfo?.method !== "chapa") {
+    return {
+      status: 400,
+      body: { success: false, message: "This order does not use Chapa" },
+    };
+  }
+  if (order.isPaid) {
+    return {
+      status: 400,
+      body: { success: false, message: "This order is already paid" },
+    };
+  }
+  if (!process.env.CHAPA_SECRET_KEY) {
+    return {
+      status: 503,
+      body: {
+        success: false,
+        message: "Chapa payments are not configured on the server",
+      },
+    };
+  }
+
+  const txRef = order.paymentInfo?.chapaTxRef;
+  if (!txRef) {
+    return {
+      status: 400,
+      body: {
+        success: false,
+        message: "Missing Chapa reference on this order",
+      },
+    };
+  }
+
+  const user = await User.findById(userId).lean();
+  if (!user?.email) {
+    return {
+      status: 400,
+      body: {
+        success: false,
+        message: "Your account needs an email address to pay with Chapa",
+      },
+    };
+  }
+
+  const payload = buildChapaInitializePayload({
+    order,
+    user,
+    shippingAddress: order.shippingAddress,
+    txRef,
+  });
+
+  const init = await initializeTransaction(payload);
+  return {
+    status: 200,
+    body: { success: true, checkoutUrl: init.data.checkout_url },
+  };
+}
+
+const resumeChapaCheckout = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    if (!mongoose.isValidObjectId(orderId)) {
+      return res.status(400).json({ success: false, message: "Invalid order id" });
+    }
+
+    const order = await Order.findOne({
+      _id: orderId,
+      user: req.user._id,
+    });
+
+    const out = await buildChapaResumeResponse(order, req.user._id);
+    return res.status(out.status).json(out.body);
+  } catch (err) {
+    logger.error("resumeChapaCheckout:", err);
+    res.status(502).json({
+      success: false,
+      message: err.message || "Could not resume Chapa checkout",
+    });
+  }
+};
+
+const resumeChapaByTxRef = async (req, res) => {
+  try {
+    const { tx_ref } = req.body;
+    if (!tx_ref || typeof tx_ref !== "string") {
+      return res.status(400).json({ success: false, message: "tx_ref is required" });
+    }
+
+    const order = await Order.findOne({
+      "paymentInfo.chapaTxRef": tx_ref.trim(),
+      user: req.user._id,
+    });
+
+    const out = await buildChapaResumeResponse(order, req.user._id);
+    return res.status(out.status).json(out.body);
+  } catch (err) {
+    logger.error("resumeChapaByTxRef:", err);
+    res.status(502).json({
+      success: false,
+      message: err.message || "Could not resume Chapa checkout",
+    });
   }
 };
 
@@ -286,10 +475,11 @@ const getMyOrders = async (req, res) => {
       data: orders,
     });
   } catch (error) {
-    console.error("Get My Orders Error:", error);
+    logger.error("Get My Orders Error:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
 const getOrderById = async (req, res) => {
   try {
     const order = await Order.findOne({
@@ -313,7 +503,7 @@ const getOrderById = async (req, res) => {
 
     res.status(200).json({ success: true, data: order });
   } catch (error) {
-    console.error("Get Order By ID Error:", error);
+    logger.error("Get Order By ID Error:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -347,12 +537,15 @@ const orderStats = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Order Stats Error:", error);
+    logger.error("Order Stats Error:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
 module.exports = {
   createOrder,
+  resumeChapaCheckout,
+  resumeChapaByTxRef,
   verifyChapaPayment,
   getMyOrders,
   getOrderById,

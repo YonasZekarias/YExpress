@@ -1,7 +1,8 @@
 const protect = require('../middleware/auth.middleware')
 const role = require('../middleware/role.middleware')  
 const {getUserCart, clearUserCart, addToCart, editCartItemQuantity,removeCartItem} = require("../controllers/customer/cart.controller")
-const {createOrder,getOrderById,orderStats, getMyOrders, verifyChapaPayment} = require('../controllers/customer/order.controller')
+const {createOrder,getOrderById,orderStats, getMyOrders, verifyChapaPayment, resumeChapaCheckout, resumeChapaByTxRef} = require('../controllers/customer/order.controller')
+const { checkoutLimiter, chapaVerifyLimiter } = require('../middleware/rateLimit.middleware');
 const {getAllCategories,getAllProduct,getProductById}=require('../controllers/customer/product.controller')
 const {createReview} = require('../controllers/customer/review.controller')
 const {getUserStats} = require('../controllers/customer/user.controller')
@@ -18,8 +19,10 @@ router.delete('/cart/item/:itemId', removeCartItem);
 router.delete('/cart', clearUserCart);
 
 // Order routes
-router.post('/orders', createOrder);
-router.post('/chapa/verify', verifyChapaPayment);
+router.post('/orders', checkoutLimiter, createOrder);
+router.post('/chapa/verify', chapaVerifyLimiter, verifyChapaPayment);
+router.post('/chapa/resume-checkout', checkoutLimiter, resumeChapaByTxRef);
+router.post('/orders/:orderId/chapa/resume', checkoutLimiter, resumeChapaCheckout);
 router.get('/orders', getMyOrders);
 router.get('/orders/stats', orderStats);
 router.get('/orders/:orderId', getOrderById);
