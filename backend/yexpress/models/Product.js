@@ -5,6 +5,8 @@ const productSchema = new mongoose.Schema({
   category: { type: mongoose.Schema.Types.ObjectId, ref: "Category", required: true },
   description: { type: String },
   photo: [String],
+  /** Base product stock when sold without a variant */
+  stock: { type: Number, default: 0, min: 0 },
   deleted: { type: Boolean, default: false },
   ratingsCount: { type: Number, default: 0 },
   reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review" }],
