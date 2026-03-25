@@ -5,6 +5,10 @@ const AttributeValue = require("../../models/AttributeValue");
 const logger = require("../../utils/logger");
 const buildProductQuery = require("../../utils/productQueryBuilder");
 const mongoose = require("mongoose");
+const { redisClient } = require("../../config/redis");
+const {
+  invalidateAfterProductMutation,
+} = require("../../utils/invalidateProductCaches");
 
 async function buildVariantAttributes(category_id, variant) {
   const variantAttributes = [];
@@ -71,6 +75,10 @@ const addProduct = async (req, res) => {
         attributes: variantAttributes,
       });
     }
+
+    await invalidateAfterProductMutation(redisClient, {
+      productId: String(product._id),
+    });
 
     res.status(201).json({
       success: true,
@@ -230,6 +238,10 @@ const deleteAProduct = async (req, res) => {
         .json({ success: false, message: "Product not found" });
 
     await ProductVariant.deleteMany({ product: productId });
+
+    await invalidateAfterProductMutation(redisClient, {
+      productId: String(productId),
+    });
 
     res.status(200).json({
       success: true,

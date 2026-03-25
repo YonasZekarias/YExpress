@@ -145,7 +145,7 @@ exports.getAllProduct = async (req, res) => {
     res.status(200).json(response);
 
   } catch (error) {
-    console.error("Error in getAllProduct:", error);
+    logger.error("Error in getAllProduct:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -191,7 +191,7 @@ exports.getProductById = async (req, res) => {
     res.status(200).json(response);
 
   } catch (error) {
-    console.error("Error in getProductById:", error);
+    logger.error("Error in getProductById:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
