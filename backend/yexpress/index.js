@@ -1,4 +1,7 @@
 require("dotenv").config();
+const { validateEnv } = require("./config/validateEnv");
+validateEnv();
+
 const cors = require("cors");
 const express = require("express");
 const cookieParser = require("cookie-parser");
@@ -12,12 +15,24 @@ const adminRoutes = require("./routes/admin.routes");
 const commonRoutes = require("./routes/common.route");
 const app = express();
 
+if (process.env.NODE_ENV === "production") {
+  app.set("trust proxy", 1);
+}
+
+const allowedOrigins = (
+  process.env.ALLOWED_ORIGINS ||
+  process.env.FRONTEND_URL ||
+  "http://localhost:3000"
+)
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
 
 connectDB();
 connectRedis();
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: allowedOrigins.length === 1 ? allowedOrigins[0] : allowedOrigins,
     credentials: true,
   })
 );
