@@ -78,6 +78,6 @@ export const useProductLogic = (product: Product, variants: Variant[]) => {
     getStockForOption,
     activeVariant,
     currentPrice: activeVariant ? activeVariant.price : product.price,
-    currentStock: activeVariant ? activeVariant.stock : product.stock,
+    currentStock: activeVariant ? activeVariant.stock : (product.stock ?? 0),
   };
 };

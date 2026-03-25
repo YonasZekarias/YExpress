@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
         hostname: "res.cloudinary.com",
         pathname: "/**",
       },
+      // Add another entry here if you use a Cloudinary custom CNAME, e.g. hostname: "images.yourdomain.com"
     ],
   },
 };

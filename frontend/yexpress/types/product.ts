@@ -37,7 +37,8 @@ export interface Product {
   price: number;
   category: Category | null; // Can be populated or null
   photo: string[];
-  stock: number;
+  /** Base product stock when no variant is used */
+  stock?: number;
   averageRating: number;
   ratingsCount: number;
   

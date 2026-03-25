@@ -35,8 +35,9 @@ export default function ProductCard({ product, initialWishlistState = false }: P
   }, [initialWishlistState]);
 
   const mainImage = getDisplayableImageUrl(product.photo?.[0]);
-  const isOutOfStock = product.stock === 0;
-  const isLowStock = product.stock > 0 && product.stock <= 5;
+  const stockLevel = product.stock ?? 0;
+  const isOutOfStock = stockLevel === 0;
+  const isLowStock = stockLevel > 0 && stockLevel <= 5;
   const isNew = isNewArrival(product.createdAt);
   const displayPrice = product.price || 0;
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
