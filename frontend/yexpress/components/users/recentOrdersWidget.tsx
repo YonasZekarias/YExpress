@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
-import {CheckCircle,Truck,Clock,ChevronRight,XCircle,Package,AlertCircle,Loader2} from "lucide-react";
+import {CheckCircle,Truck,Clock,ChevronRight,XCircle,Package,AlertCircle} from "lucide-react";
+import { LoadingState } from "@/components/ui/loading-state";
 import { getDisplayableImageUrl } from "@/lib/imageUrl";
 
 interface Product {
@@ -78,9 +79,12 @@ const RecentOrdersWidget = () => {
 
   if (loading) {
     return (
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 h-full flex flex-col justify-center items-center">
-        <Loader2 className="w-8 h-8 text-indigo-600 animate-spin mb-4" />
-        <p className="text-slate-500 text-sm">Loading recent orders...</p>
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 h-full min-h-[200px] flex flex-col justify-center items-center">
+        <LoadingState
+          variant="bare"
+          message="Loading recent orders…"
+          description="Syncing your latest purchases."
+        />
       </div>
     );
   }

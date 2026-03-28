@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
-import { Heart, ChevronRight, Loader2, AlertCircle } from "lucide-react";
+import { Heart, ChevronRight, AlertCircle } from "lucide-react";
+import { LoadingState } from "@/components/ui/loading-state";
 import { getDisplayableImageUrl } from "@/lib/imageUrl";
 
 interface Category {
@@ -61,8 +62,12 @@ const RecentWishlistWidget = () => {
 
   if (loading) {
     return (
-      <div className="p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm bg-white dark:bg-slate-800 h-full flex items-center justify-center">
-        <Loader2 className="w-6 h-6 text-indigo-600 animate-spin" />
+      <div className="p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm bg-white dark:bg-slate-800 h-full min-h-[200px] flex items-center justify-center">
+        <LoadingState
+          variant="bare"
+          message="Loading your wishlist…"
+          description="Finding saved items."
+        />
       </div>
     );
   }

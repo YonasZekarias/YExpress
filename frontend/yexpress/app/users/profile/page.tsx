@@ -6,8 +6,8 @@ import { ProfileCard } from "@/components/users/profile-card";
 import { PersonalInformation } from "@/components/users/personel-information";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react"; 
-import Loading from "../loading";
+import { Loader2 } from "lucide-react";
+import { LoadingState } from "@/components/ui/loading-state";
 
 export default function ProfilePage() {
   const [profileData, setProfileData] = useState({
@@ -69,8 +69,12 @@ export default function ProfilePage() {
 
   if (isLoading) {
     return (
-      <Loading/>
-   );
+      <LoadingState
+        variant="page"
+        message="Loading your profile…"
+        description="Fetching your account information."
+      />
+    );
   }
 
   return (

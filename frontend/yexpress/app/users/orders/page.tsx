@@ -9,6 +9,7 @@ import { Order, OrderStats } from '@/types/order';
 import StatsGrid from '@/components/orders/StatsGrid';
 import FilterBar from '@/components/orders/FilterBar';
 import OrderCard from '@/components/orders/OrderCard';
+import { LoadingState } from '@/components/ui/loading-state';
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -64,9 +65,18 @@ export default function OrdersPage() {
 
       <div className="space-y-4">
         {loading ? (
-           <div className="space-y-4 animate-pulse">
-             {[1,2,3].map(i => <div key={i} className="h-40 bg-gray-100 dark:bg-gray-800 rounded-xl" />)}
-           </div>
+          <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/40 p-8">
+            <LoadingState
+              variant="bare"
+              message="Loading your orders…"
+              description="Applying filters and sorting—this stays fast."
+            />
+            <div className="mt-8 space-y-4 animate-pulse">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="h-36 bg-gray-100 dark:bg-gray-800 rounded-xl" />
+              ))}
+            </div>
+          </div>
         ) : orders.length === 0 ? (
           <div className="text-center py-20 bg-gray-50 dark:bg-gray-900 rounded-2xl border border-dashed border-gray-300">
             <ShoppingBag className="w-12 h-12 text-gray-300 mx-auto mb-4" />
