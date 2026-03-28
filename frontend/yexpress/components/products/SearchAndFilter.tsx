@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect, useTransition } from 'react';
 import { Search, X, Loader2 } from 'lucide-react';
-import { cn } from '@/lib/utils'; // Assuming you have a cn utility, if not, standard strings work
+import { LoadingState } from '@/components/ui/loading-state';
 
 interface Category {
   _id: string;
@@ -12,25 +12,22 @@ interface Category {
 
 interface SearchAndFilterProps {
   categories: Category[];
-  isLoading?: boolean; // New prop to force skeleton state if parent is fetching categories
+  isLoading?: boolean;
 }
 
 export default function SearchAndFilter({ categories, isLoading = false }: SearchAndFilterProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [isPending, startTransition] = useTransition(); // Tracks URL update status
+  const [isPending, startTransition] = useTransition();
 
-  // Local state
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
-  
-  // Note: We sync these with URL params to ensure they update if the URL changes externally
+
   const selectedCategory = searchParams.get('category') || '';
   const sort = searchParams.get('sort') || 'newest';
 
-  // Update URL function wrapped in startTransition
   const updateFilters = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
-    
+
     if (value) {
       params.set(key, value);
     } else {
@@ -41,13 +38,11 @@ export default function SearchAndFilter({ categories, isLoading = false }: Searc
       params.set('page', '1');
     }
 
-    // Wrap the navigation in startTransition to track loading state
     startTransition(() => {
       router.push(`?${params.toString()}`);
     });
   };
 
-  // Debounce Search
   useEffect(() => {
     const timer = setTimeout(() => {
       if (searchTerm !== (searchParams.get('search') || '')) {
@@ -57,7 +52,6 @@ export default function SearchAndFilter({ categories, isLoading = false }: Searc
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  // 1. Show Skeleton if parent says we are loading initial data
   if (isLoading) {
     return <SearchAndFilterSkeleton />;
   }
@@ -65,18 +59,22 @@ export default function SearchAndFilter({ categories, isLoading = false }: Searc
   return (
     <div className="p-4 mb-6 shadow-sm">
       <div className="flex flex-col md:flex-row gap-4 items-center">
-        
-        {/* 1. Search Bar */}
         <div className="relative flex-1 w-full">
-          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+          <div
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            title={isPending ? 'Updating product list…' : undefined}
+          >
             {isPending ? (
-              <Loader2 className="w-4 h-4 animate-spin text-orange-500" />
+              <Loader2
+                className="w-4 h-4 animate-spin text-orange-500"
+                aria-label="Updating product list"
+              />
             ) : (
               <Search className="w-4 h-4" />
             )}
           </div>
-          
-          <input 
+
+          <input
             type="text"
             placeholder="Search products..."
             value={searchTerm}
@@ -87,9 +85,10 @@ export default function SearchAndFilter({ categories, isLoading = false }: Searc
               dark:border-slate-700 dark:text-white dark:placeholder-slate-500
               ${isPending ? 'opacity-70 cursor-wait' : ''}`}
           />
-          
+
           {searchTerm && !isPending && (
-            <button 
+            <button
+              type="button"
               onClick={() => {
                 setSearchTerm('');
                 updateFilters('search', '');
@@ -101,9 +100,8 @@ export default function SearchAndFilter({ categories, isLoading = false }: Searc
           )}
         </div>
 
-        {/* 2. Category Dropdown */}
         <div className="w-full md:w-48 relative">
-          <select 
+          <select
             value={selectedCategory}
             onChange={(e) => updateFilters('category', e.target.value)}
             disabled={isPending}
@@ -119,12 +117,10 @@ export default function SearchAndFilter({ categories, isLoading = false }: Searc
               </option>
             ))}
           </select>
-          {/* Custom chevron or loader for dropdown could go here */}
         </div>
 
-        {/* 3. Sort Dropdown */}
         <div className="w-full md:w-48">
-          <select 
+          <select
             value={sort}
             onChange={(e) => updateFilters('sort', e.target.value)}
             disabled={isPending}
@@ -139,27 +135,24 @@ export default function SearchAndFilter({ categories, isLoading = false }: Searc
             <option value="rating">Best Rating</option>
           </select>
         </div>
-
       </div>
     </div>
   );
 }
 
-
 export function SearchAndFilterSkeleton() {
   return (
-    <div className="p-4 mb-6 bg-white dark:bg-slate-950 rounded-xl border dark:border-slate-800 shadow-sm animate-pulse">
-      <div className="flex flex-col md:flex-row gap-4 items-center">
-        
-        {/* Search Bar Skeleton */}
+    <div className="p-4 mb-6 bg-white dark:bg-slate-950 rounded-xl border dark:border-slate-800 shadow-sm space-y-4">
+      <LoadingState
+        variant="inline"
+        message="Loading search & filters…"
+        description="Fetching categories so you can narrow results."
+        className="justify-start"
+      />
+      <div className="flex flex-col md:flex-row gap-4 items-center animate-pulse">
         <div className="flex-1 w-full h-11 bg-slate-200 dark:bg-slate-800 rounded-lg" />
-
-        {/* Category Dropdown Skeleton */}
         <div className="w-full md:w-48 h-11 bg-slate-200 dark:bg-slate-800 rounded-lg" />
-
-        {/* Sort Dropdown Skeleton */}
         <div className="w-full md:w-48 h-11 bg-slate-200 dark:bg-slate-800 rounded-lg" />
-        
       </div>
     </div>
   );

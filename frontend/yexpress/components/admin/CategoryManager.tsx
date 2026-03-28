@@ -5,6 +5,7 @@ import axios from 'axios';
 import { Plus, Edit, Trash2, X, Save, Layers, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import ConfirmModal from '@/components/admin/ConfirmModal';
+import { LoadingState } from '@/components/ui/loading-state';
 
 interface Category {
   _id: string;
@@ -14,16 +15,13 @@ interface Category {
 export default function CategoryManager() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
-  
-  // Edit State
+
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
-  
-  // Add State
+
   const [newName, setNewName] = useState('');
   const [isAdding, setIsAdding] = useState(false);
 
-  // Delete Modal State
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isDeleteLoading, setIsDeleteLoading] = useState(false);
 
@@ -71,7 +69,6 @@ export default function CategoryManager() {
     }
   };
 
-  // Triggered by the Modal
   const executeDelete = async () => {
     if (!deleteId) return;
     setIsDeleteLoading(true);
@@ -90,11 +87,9 @@ export default function CategoryManager() {
 
   return (
     <div className="space-y-6">
-      
-      {/* ADD SECTION */}
       <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
         <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-          <Layers className="w-5 h-5 text-blue-600" /> 
+          <Layers className="w-5 h-5 text-blue-600" />
           Manage Categories
         </h3>
         <form onSubmit={handleAdd} className="flex flex-col sm:flex-row gap-3">
@@ -105,9 +100,9 @@ export default function CategoryManager() {
             onChange={(e) => setNewName(e.target.value)}
             className="flex-1 p-2.5 rounded-lg border border-gray-300 bg-white dark:bg-gray-900 dark:border-gray-600 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all shadow-sm"
           />
-          <button 
-            type="submit" 
-            disabled={!newName || isAdding} 
+          <button
+            type="submit"
+            disabled={!newName || isAdding}
             className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg flex items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm min-w-[120px]"
           >
             {isAdding ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
@@ -116,7 +111,6 @@ export default function CategoryManager() {
         </form>
       </div>
 
-      {/* LIST SECTION */}
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm">
         <table className="w-full text-left text-sm">
           <thead className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
@@ -127,9 +121,17 @@ export default function CategoryManager() {
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
             {loading ? (
-               <tr><td colSpan={2} className="p-8 text-center text-gray-500">Loading categories...</td></tr>
+              <tr>
+                <td colSpan={2} className="p-6">
+                  <LoadingState
+                    variant="bare"
+                    message="Loading categories…"
+                    description="Fetching your category list."
+                  />
+                </td>
+              </tr>
             ) : categories.length === 0 ? (
-               <tr><td colSpan={2} className="p-8 text-center text-gray-500">No categories found.</td></tr>
+              <tr><td colSpan={2} className="p-8 text-center text-gray-500">No categories found.</td></tr>
             ) : (
               categories.map((cat) => (
                 <tr key={cat._id} className="group hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
@@ -140,8 +142,8 @@ export default function CategoryManager() {
                         value={editName}
                         onChange={(e) => setEditName(e.target.value)}
                         onKeyDown={(e) => {
-                            if(e.key === 'Enter') handleUpdate(cat._id);
-                            if(e.key === 'Escape') setEditingId(null);
+                          if (e.key === 'Enter') handleUpdate(cat._id);
+                          if (e.key === 'Escape') setEditingId(null);
                         }}
                         className="w-full max-w-sm p-2 rounded border border-blue-400 dark:bg-gray-900 dark:border-blue-500 dark:text-white outline-none ring-2 ring-blue-100 dark:ring-blue-900/50"
                       />
@@ -152,26 +154,28 @@ export default function CategoryManager() {
                   <td className="px-6 py-4 text-right">
                     {editingId === cat._id ? (
                       <div className="flex justify-end gap-2">
-                        <button onClick={() => handleUpdate(cat._id)} className="p-2 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded transition-colors" title="Save">
-                            <Save className="w-4 h-4" />
+                        <button type="button" onClick={() => handleUpdate(cat._id)} className="p-2 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded transition-colors" title="Save">
+                          <Save className="w-4 h-4" />
                         </button>
-                        <button onClick={() => setEditingId(null)} className="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors" title="Cancel">
-                            <X className="w-4 h-4" />
+                        <button type="button" onClick={() => setEditingId(null)} className="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors" title="Cancel">
+                          <X className="w-4 h-4" />
                         </button>
                       </div>
                     ) : (
                       <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button 
-                            onClick={() => { setEditingId(cat._id); setEditName(cat.name); }} 
-                            className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition-colors"
+                        <button
+                          type="button"
+                          onClick={() => { setEditingId(cat._id); setEditName(cat.name); }}
+                          className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition-colors"
                         >
-                            <Edit className="w-4 h-4" />
+                          <Edit className="w-4 h-4" />
                         </button>
-                        <button 
-                            onClick={() => setDeleteId(cat._id)} 
-                            className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
+                        <button
+                          type="button"
+                          onClick={() => setDeleteId(cat._id)}
+                          className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
                         >
-                            <Trash2 className="w-4 h-4" />
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     )}
@@ -183,8 +187,7 @@ export default function CategoryManager() {
         </table>
       </div>
 
-      {/* DELETE CONFIRMATION MODAL */}
-      <ConfirmModal 
+      <ConfirmModal
         isOpen={!!deleteId}
         onClose={() => setDeleteId(null)}
         onConfirm={executeDelete}
@@ -194,7 +197,6 @@ export default function CategoryManager() {
         confirmText="Delete Category"
         variant="danger"
       />
-
     </div>
   );
 }
