@@ -3,6 +3,7 @@
 import { Settings } from "lucide-react";
 import { useUsers } from "./useUsers";
 import UserRow from "./UserRow";
+import { LoadingState } from "@/components/ui/loading-state";
 
 export default function UsersTable() {
   const { users, loading, next, prev, hasNext, hasPrev } = useUsers(undefined);
@@ -31,22 +32,29 @@ export default function UsersTable() {
             </tr>
           </thead>
           <tbody>
-            {users.map((u) => (
-              <UserRow
-                key={u._id}
-                user={u}
-                onBanToggle={(id: string) => {}}
-                canBan={true}
-              />
-            ))}
+            {loading ? (
+              <tr>
+                <td colSpan={6} className="p-0">
+                  <LoadingState
+                    variant="section"
+                    message="Loading customers…"
+                    description="Fetching users for this page."
+                  />
+                </td>
+              </tr>
+            ) : (
+              users.map((u) => (
+                <UserRow
+                  key={u._id}
+                  user={u}
+                  onBanToggle={(_id: string) => {}}
+                  canBan={true}
+                />
+              ))
+            )}
           </tbody>
         </table>
       </div>
-
-      {/* Loading */}
-      {loading && (
-        <p className="text-sm text-slate-500 mt-3 dark:text-gray-300">Loading...</p>
-      )}
 
       {/* Pagination */}
       <div className="flex justify-between mt-4">

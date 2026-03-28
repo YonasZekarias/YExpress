@@ -1,6 +1,7 @@
 'use client';
 
 import { Eye, CreditCard, Banknote } from 'lucide-react';
+import { LoadingState } from '@/components/ui/loading-state';
 import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
 
@@ -50,7 +51,15 @@ export default function OrderTable({ orders, loading }: OrderTableProps) {
   };
 
   if (loading) {
-      return <div className="p-12 text-center text-gray-500">Loading orders...</div>;
+    return (
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm mt-6 p-6">
+        <LoadingState
+          variant="section"
+          message="Loading orders…"
+          description="Fetching all orders for the admin list."
+        />
+      </div>
+    );
   }
 
   return (

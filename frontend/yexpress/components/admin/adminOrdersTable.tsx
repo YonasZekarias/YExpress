@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { MoreVertical, Loader2, Eye } from "lucide-react";
+import { MoreVertical, Eye } from "lucide-react";
+import { LoadingState } from "@/components/ui/loading-state";
 import Link from "next/link";
 import { useRouter } from "next/navigation"; // Import router for redirection
 import { format } from "date-fns"; 
@@ -81,8 +82,12 @@ export default function AdminOrdersTable() {
 
   if (loading) {
     return (
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-12 flex justify-center">
-        <Loader2 className="w-6 h-6 animate-spin text-indigo-600" />
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6">
+        <LoadingState
+          variant="section"
+          message="Loading recent orders…"
+          description="Pulling the latest from the admin queue."
+        />
       </div>
     );
   }

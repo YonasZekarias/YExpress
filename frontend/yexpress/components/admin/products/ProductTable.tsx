@@ -3,6 +3,7 @@
 import { Edit, Trash2, Tags, Package } from 'lucide-react';
 import { Product } from '@/types/admin';
 import { getDisplayableImageUrl } from '@/lib/imageUrl';
+import { LoadingState } from '@/components/ui/loading-state';
 
 interface ProductTableProps {
   products: Product[];
@@ -28,7 +29,15 @@ export default function ProductTable({ products, loading, onEdit, onDelete, onCl
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
             {loading ? (
-              <tr><td colSpan={5} className="p-8 text-center text-gray-500 dark:text-gray-400">Loading inventory...</td></tr>
+              <tr>
+                <td colSpan={5} className="p-6">
+                  <LoadingState
+                    variant="bare"
+                    message="Loading inventory…"
+                    description="Fetching products, categories, and variant counts."
+                  />
+                </td>
+              </tr>
             ) : products.length === 0 ? (
               <tr>
                 <td colSpan={5} className="p-12 text-center text-gray-500 dark:text-gray-400">

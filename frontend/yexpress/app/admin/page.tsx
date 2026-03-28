@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { DollarSign, ShoppingBag, Users, Package, Loader2 } from "lucide-react";
+import { DollarSign, ShoppingBag, Users, Package } from "lucide-react";
 import StatsCard from "@/components/admin/statsCard";
 import AdminOrdersTable from "@/components/admin/adminOrdersTable";
 import InventoryWidget from "@/components/admin/inventoryWidget";
-import Loading from "../loading";
+import { LoadingState } from "@/components/ui/loading-state";
 
 export default function DashboardPage() {
   const [stats, setStats] = useState<any>(null);
@@ -35,7 +35,11 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <Loading/>
+      <LoadingState
+        variant="page"
+        message="Loading dashboard…"
+        description="Collecting sales, orders, and inventory stats."
+      />
     );
   }
 
